@@ -1,0 +1,26 @@
+title {label: "Scalable App ERD (condensed)", size: "20"}
+
+# Entities
+
+[Member] {bgcolor: "#d0e0d0"}
+    *member_id {label: "varchar, not null"}
+    email {label: "varchar, not null, unique"}
+    password_hash {label: "varchar, not null"}
+    first_name {label: "varchar, not null"}
+    last_name {label: "varchar, not null"}
+    date_of_birth {label: "date"}
+    creation_date {label: "date"}
+    last_login {label: "datetime"}
+
+[User] {bgcolor: "#daeada"}
+    *+user_id {label: "varchar, not null"}
+
+[Admin] {bgcolor: "#dbebdb"}
+    *+admin_id {label: "varchar, not null"}
+
+
+
+
+# Relationships
+Member      1--1 User
+Member      1--1 Admin
