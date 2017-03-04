@@ -3,7 +3,7 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 # Entities
 
 [Member] {bgcolor: "#d0e0d0"}
-    *member_id {label: "varchar, not null"}
+    *member_id {label: "int, not null"}
     email {label: "varchar, not null, unique"}
     password_hash {label: "varchar, not null"}
     first_name {label: "varchar, not null"}
@@ -13,41 +13,47 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     last_login {label: "datetime"}
 
 [User] {bgcolor: "#daeada"}
-    *+user_id {label: "varchar, not null"}
+    *+user_id {label: "int, not null"}
 
 [Admin] {bgcolor: "#dbebdb"}
-    *+admin_id {label: "varchar, not null"}
+    *+admin_id {label: "int, not null"}
 
 [Post]
-    +id
-    *user_id
-    post_text
-    hashtags
-    *user_tags
-    creation_time
-    update_time
+    +id {label: "int, not null"}
+    *user_id {label: "int, not null"}
+    post_text {label: "varchar, not null"}
+    hashtags {label: "varchar"}
+    creation_time {label: "datetime"}
+    update_time {label: "datetime"}
+
+[Post_Tags]
+    +*post_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
 
 [Comment]
-    +id
-    *user_id
-    comment_text
-    *user_tags
-    creation_time
-    update_time
+    +id {label: "int, not null"}
+    *user_id {label: "int, not null"}
+    comment_text {label: "varchar, not null"}
+    creation_time {label: "datetime"}
+    update_time {label: "datetime"}
+
+[Comment_Tags]
+    +*comment_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
 
 [Message]
-    +id
-    message_text
-    *thread_id
-    creation_time
+    +id {label: "int, not null"}
+    *thread_id {label: "int, not null"}
+    message_text {label: "varchar, not null"}
+    creation_time {label: "datetime"}
 
 [Message_Thread]
-    +id
+    +id {label: "int, not null"}
     *message_users
 
 [Message_Thread_Users]
-    +*thread_id
-    +*user_id
+    +*thread_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
 
 #[Page]
 
@@ -56,11 +62,20 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 
 
 # Relationships
-Member      1--1 User
-Member      1--1 Admin
-User        *--* User {label: "friends"}
-User        1--* Post
-User        1--* Comment
-Message_Thread      1--* Message_Thread_Users
-Message_Thread      1--* Message
-Message_Thread_Users        1--* User
+Member                      1--1 User
+Member                      1--1 Admin
+User                        *--* User {label: "friends"}
+
+User                        1--* Post
+Post                        1--* Post_Tags
+Post_Tags                   1--* User
+
+
+User                        1--* Comment
+Comment                     1--* Comment_Tags
+Comment_Tags                1--* User
+
+Message_Thread              1--+ Message_Thread_Users
+Message_Thread              1--* Message
+Message_Thread_Users        1--+ User
+Post                        1--* Comment
