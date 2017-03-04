@@ -9,7 +9,7 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     first_name {label: "varchar, not null"}
     last_name {label: "varchar, not null"}
     date_of_birth {label: "date"}
-    creation_date {label: "date"}
+    creation_time {label: "datetime"}
     last_login {label: "datetime"}
 
 [User] {bgcolor: "#daeada"}
@@ -18,9 +18,49 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 [Admin] {bgcolor: "#dbebdb"}
     *+admin_id {label: "varchar, not null"}
 
+[Post]
+    +id
+    *user_id
+    post_text
+    hashtags
+    *user_tags
+    creation_time
+    update_time
 
+[Comment]
+    +id
+    *user_id
+    comment_text
+    *user_tags
+    creation_time
+    update_time
+
+[Message]
+    +id
+    message_text
+    *thread_id
+    creation_time
+
+[Message_Thread]
+    +id
+    *message_users
+
+[Message_Thread_Users]
+    +*thread_id
+    +*user_id
+
+#[Page]
+
+
+#[Group]
 
 
 # Relationships
 Member      1--1 User
 Member      1--1 Admin
+User        *--* User {label: "friends"}
+User        1--* Post
+User        1--* Comment
+Message_Thread      1--* Message_Thread_Users
+Message_Thread      1--* Message
+Message_Thread_Users        1--* User
