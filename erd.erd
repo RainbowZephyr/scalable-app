@@ -3,7 +3,7 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 # Entities
 
 [Member] {bgcolor: "#d0e0d0"}
-    *member_id {label: "int, not null"}
+    +id {label: "int, not null"}
     email {label: "varchar, not null, unique"}
     password_hash {label: "varchar, not null"}
     first_name {label: "varchar, not null"}
@@ -13,69 +13,106 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     last_login {label: "datetime"}
 
 [User] {bgcolor: "#daeada"}
-    *+user_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
 
 [Admin] {bgcolor: "#dbebdb"}
-    *+admin_id {label: "int, not null"}
+    +*admin_id {label: "int, not null"}
 
 [Friends]
     +*user_1 {label: "int, not null"}
     +*user_2 {label: "int, not null"}
+    accepted {label: "boolean, not null"}
 
 [Blocks]
     +*user_1 {label: "int, not null"}
     +*user_2 {label: "int, not null"}
 
-[Post]
+[Post] {bgcolor: "#ffe5a3"}
     +id {label: "int, not null"}
     *user_id {label: "int, not null"}
     post_text {label: "varchar, not null"}
-    hashtags {label: "varchar"}
     creation_time {label: "datetime"}
     update_time {label: "datetime"}
 
-[Post_Tags]
+[Post_Tags] {bgcolor: "#ffe5a3"}
     +*post_id {label: "int, not null"}
     +*user_id {label: "int, not null"}
 
-[Post_Hashtags]
+[Post_Hashtags] {bgcolor: "#ffe5a3"}
     +*post_id {label: "int, not null"}
     +*user_id {label: "int, not null"}
     +hashtag {label: "varchar, not null"}
 
+[Post_Reactions] {bgcolor: "#ffe5a3"}
+    +*post_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+    reaction_type {label: "int, not null"}
 
-[Comment]
+[Comment] {bgcolor: "#fffa98"}
     +id {label: "int, not null"}
     *user_id {label: "int, not null"}
     comment_text {label: "varchar, not null"}
     creation_time {label: "datetime"}
     update_time {label: "datetime"}
 
-[Comment_Tags]
+[Comment_Tags] {bgcolor: "#fffa98"}
     +*comment_id {label: "int, not null"}
     +*user_id {label: "int, not null"}
 
-[Message]
+[Comment_Likes] {bgcolor: "#fffa98"}
+    +*comment_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+
+[Message_Thread] {bgcolor: "#a1ffe8"}
+    +id {label: "int, not null"}
+    created_at {label: "datetime, not null"}
+
+[Message] {bgcolor: "#a1ffe8"}
     +id {label: "int, not null"}
     *thread_id {label: "int, not null"}
     message_text {label: "varchar, not null"}
     creation_time {label: "datetime"}
 
-[Message_Thread]
-    +id {label: "int, not null"}
-    *message_users
-
-[Message_Thread_Users]
+[Message_Thread_Users] {bgcolor: "#a1ffe8"}
     +*thread_id {label: "int, not null"}
     +*user_id {label: "int, not null"}
 
-#[Page]
+[Event]
+    +id {label: "int, not null"}
+    title {label: "varchar, not null"}
+    description {label: "varchar, not null"}
+    start_date {label: "datetime"}
+    end_date {label: "datetime"}
+    *creator_id {label: "int, not null"}
+    created_at {label: "datetime, not null"}
+
+[Event_Subscribers]
+    +*event_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+    attending {label: "boolean, default NULL"}
+
+[Image]
+    +path {label: "varchar, not null"}
+    name {label: "varchar, not null"}
+
+[Saved_Posts]
+    +*post_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+
+[Group] {bgcolor: "#debdff"}
+    +id {label: "int, not null"}
+    name {label: "varchar, not null"}
+    description {label: "varchar, not null"}
+    *creator_id {label: "int, not null"}
+    created_at {label: "datetime, not null"}
+
+[Group_Members] {bgcolor: "#debdff"}
+    +*group_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+    admin {label: "boolean, not null"}
 
 
-#[Group]
-
-
-# Relationships
+#Relationships
 Member                      1--1 User
 Member                      1--1 Admin
 User                        *--* User {label: "friends"}
@@ -83,7 +120,6 @@ User                        *--* User {label: "friends"}
 User                        1--* Post
 Post                        1--* Post_Tags
 Post_Tags                   1--* User
-
 
 User                        1--* Comment
 Comment                     1--* Comment_Tags
@@ -99,3 +135,18 @@ User                        1--+ Post_Hashtags
 
 Friends                     *--* User
 Blocks                      *--* User
+
+User                        1--* Event
+Event_Subscribers           *--+ User
+
+Post                        +--* Post_Reactions
+User                        +--* Post_Reactions
+
+Comment                     +--* Comment_Likes
+User                        +--* Comment_Likes
+
+User                        +--* Saved_Posts
+Saved_Posts                 *--+ Post
+
+Group                       +--* Group_Members
+Group_Members               *--+ User

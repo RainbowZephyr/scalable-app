@@ -6,12 +6,12 @@ CREATE TABLE member (
     first_name varchar NOT NULL,
     last_name varchar NOT NULL,
     date_of_birth date,
-    creation_time datetime,
-    last_login datetime,
+    creation_time TIMESTAMP,
+    last_login TIMESTAMP
 );
 
-DROP TABLE IF EXISTS user CASCADE;
-CREATE TABLE user (
+DROP TABLE IF EXISTS users CASCADE;
+CREATE TABLE users (
     user_id int PRIMARY KEY,
     FOREIGN KEY(user_id) references member(id)
 );
@@ -46,8 +46,8 @@ CREATE TABLE post (
     id int PRIMARY KEY,
     user_id int,
     post_text varchar NOT NULL,
-    creation_time datetime,
-    update_time datetime,
+    creation_time TIMESTAMP,
+    update_time TIMESTAMP,
     FOREIGN KEY user_id references member(id)
 );
 
@@ -85,8 +85,8 @@ CREATE TABLE comment (
     id int PRIMARY KEY,
     user_id int,
     comment_text varchar,
-    creation_time datetime,
-    update_time datetime,
+    creation_time TIMESTAMP,
+    update_time TIMESTAMP,
     FOREIGN Key (user_id) references member(id)
 );
 
@@ -111,7 +111,7 @@ CREATE TABLE comment_likes (
 DROP TABLE IF EXISTS message_thread CASCADE;
 CREATE TABLE message_thread (
     id int PRIMARY KEY,
-    created_at datetime,
+    created_at TIMESTAMP,
 );
 
 DROP TABLE IF EXISTS message CASCADE;
@@ -119,7 +119,7 @@ CREATE TABLE message (
     id int PRIMARY KEY,
     thread_id int,
     message_text varchar,
-    creation_time datetime,
+    creation_time TIMESTAMP,
     FOREIGN Key (thread_id) references message_thread(id)
 );
 
@@ -137,10 +137,10 @@ CREATE TABLE event (
     id int PRIMARY KEY,
     title varchar,
     description varchar,
-    start_date datetime,
-    end_date datetime,
+    start_date TIMESTAMP,
+    end_date TIMESTAMP,
     creator_id int,
-    created_at datetime,
+    created_at TIMESTAMP,
     FOREIGN Key (creator_id) references member(id)
 );
 
@@ -175,7 +175,7 @@ CREATE TABLE group (
     name varchar,
     description varchar,
     creator_id int,
-    created_at datetime,
+    created_at TIMESTAMP,
 );
 
 DROP TABLE IF EXISTS group_members CASCADE;
