@@ -18,6 +18,14 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 [Admin] {bgcolor: "#dbebdb"}
     *+admin_id {label: "int, not null"}
 
+[Friends]
+    +*user_1 {label: "int, not null"}
+    +*user_2 {label: "int, not null"}
+
+[Blocks]
+    +*user_1 {label: "int, not null"}
+    +*user_2 {label: "int, not null"}
+
 [Post]
     +id {label: "int, not null"}
     *user_id {label: "int, not null"}
@@ -29,6 +37,12 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 [Post_Tags]
     +*post_id {label: "int, not null"}
     +*user_id {label: "int, not null"}
+
+[Post_Hashtags]
+    +*post_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+    +hashtag {label: "varchar, not null"}
+
 
 [Comment]
     +id {label: "int, not null"}
@@ -79,3 +93,9 @@ Message_Thread              1--+ Message_Thread_Users
 Message_Thread              1--* Message
 Message_Thread_Users        1--+ User
 Post                        1--* Comment
+
+Post                        1--* Post_Hashtags
+User                        1--+ Post_Hashtags
+
+Friends                     *--* User
+Blocks                      *--* User
