@@ -9,8 +9,8 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     first_name {label: "varchar, not null"}
     last_name {label: "varchar, not null"}
     date_of_birth {label: "date"}
-    creation_time {label: "datetime"}
-    last_login {label: "datetime"}
+    creation_time {label: "TIMESTAMP"}
+    last_login {label: "TIMESTAMP"}
 
 [User] {bgcolor: "#daeada"}
     +*user_id {label: "int, not null"}
@@ -29,10 +29,11 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 
 [Post] {bgcolor: "#ffe5a3"}
     +id {label: "int, not null"}
-    *user_id {label: "int, not null"}
+    *user1_id {label: "int, not null"}
+    *user2_id {label: "int, not null"}
     post_text {label: "varchar, not null"}
-    creation_time {label: "datetime"}
-    update_time {label: "datetime"}
+    creation_time {label: "TIMESTAMP"}
+    update_time {label: "TIMESTAMP"}
 
 [Post_Tags] {bgcolor: "#ffe5a3"}
     +*post_id {label: "int, not null"}
@@ -52,8 +53,8 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     +id {label: "int, not null"}
     *user_id {label: "int, not null"}
     comment_text {label: "varchar, not null"}
-    creation_time {label: "datetime"}
-    update_time {label: "datetime"}
+    creation_time {label: "TIMESTAMP"}
+    update_time {label: "TIMESTAMP"}
 
 [Comment_Tags] {bgcolor: "#fffa98"}
     +*comment_id {label: "int, not null"}
@@ -65,13 +66,13 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 
 [Message_Thread] {bgcolor: "#a1ffe8"}
     +id {label: "int, not null"}
-    created_at {label: "datetime, not null"}
+    created_at {label: "TIMESTAMP, not null"}
 
 [Message] {bgcolor: "#a1ffe8"}
     +id {label: "int, not null"}
     *thread_id {label: "int, not null"}
     message_text {label: "varchar, not null"}
-    creation_time {label: "datetime"}
+    creation_time {label: "TIMESTAMP"}
 
 [Message_Thread_Users] {bgcolor: "#a1ffe8"}
     +*thread_id {label: "int, not null"}
@@ -81,10 +82,10 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     +id {label: "int, not null"}
     title {label: "varchar, not null"}
     description {label: "varchar, not null"}
-    start_date {label: "datetime"}
-    end_date {label: "datetime"}
+    start_date {label: "TIMESTAMP"}
+    end_date {label: "TIMESTAMP"}
     *creator_id {label: "int, not null"}
-    created_at {label: "datetime, not null"}
+    created_at {label: "TIMESTAMP, not null"}
 
 [Event_Subscribers]
     +*event_id {label: "int, not null"}
@@ -92,19 +93,19 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     attending {label: "boolean, default NULL"}
 
 [Image]
-    +path {label: "varchar, not null"}
+    +image_path {label: "varchar, not null"}
     name {label: "varchar, not null"}
 
 [Saved_Posts]
     +*post_id {label: "int, not null"}
     +*user_id {label: "int, not null"}
 
-[Group] {bgcolor: "#debdff"}
+[Facebook_Group] {bgcolor: "#debdff"}
     +id {label: "int, not null"}
     name {label: "varchar, not null"}
     description {label: "varchar, not null"}
     *creator_id {label: "int, not null"}
-    created_at {label: "datetime, not null"}
+    created_at {label: "TIMESTAMP, not null"}
 
 [Group_Members] {bgcolor: "#debdff"}
     +*group_id {label: "int, not null"}
@@ -148,5 +149,5 @@ User                        +--* Comment_Likes
 User                        +--* Saved_Posts
 Saved_Posts                 *--+ Post
 
-Group                       +--* Group_Members
+Facebook_Group              +--* Group_Members
 Group_Members               *--+ User
