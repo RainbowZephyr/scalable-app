@@ -7,7 +7,7 @@ sub user_insertions is export {
     my @temp;
     my $c = 0;
     for @names -> $i {
-        @temp.push("INSERT INTO member VALUES(DEFAULT,$i\@gmail.com,1, $i,batee5, 1990-01-01, CURRENT_TIMESTAMP,CURRENT_TIMESTAMP;");
+        @temp.push("INSERT INTO member VALUES($c,'$i\@gmail.com','1', '$i','batee5', '1990-01-01', CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);");
         @temp.push("INSERT INTO users VALUES($c);");
         $c++;
     }
