@@ -33,12 +33,12 @@ BEGIN
 END; $$
 LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION add_post_group(groupID INTEGER, userID INTEGER)
+CREATE OR REPLACE FUNCTION add_post_group(groupID INTEGER, userID INTEGER, postTxt text)
 RETURNS BOOLEAN AS $$
 DECLARE postID INTEGER;
         posting_time CURRENT_TIMESTAMP;
 BEGIN
-      INSERT INTO group_posts(post_id, group_id, user_id, posted_at)
-                       VALUES(postID,  groupID,  userID,  posting_time)
+      INSERT INTO group_posts(post_id, group_id, user_id, post_text, posted_at)
+                       VALUES(postID,  groupID,  userID, postTxt, posting_time)
 END; $$
 LANGUAGE PLPGSQL;
