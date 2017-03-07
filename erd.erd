@@ -9,6 +9,8 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     first_name {label: "varchar, not null"}
     last_name {label: "varchar, not null"}
     date_of_birth {label: "date"}
+    *profile_picture {label: "varchar, not null"}
+    *cover_picture {label: "varchar, not null"}
     creation_time {label: "TIMESTAMP"}
     last_login {label: "TIMESTAMP"}
 
@@ -37,7 +39,8 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 
 [Post_Tags] {bgcolor: "#ffe5a3"}
     +*post_id {label: "int, not null"}
-    +*user_id {label: "int, not null"}
+    +*user1_id {label: "int, not null"}
+    +*user2_id {label: "int, not null"}
 
 [Post_Hashtags] {bgcolor: "#ffe5a3"}
     +*post_id {label: "int, not null"}
@@ -58,7 +61,8 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 
 [Comment_Tags] {bgcolor: "#fffa98"}
     +*comment_id {label: "int, not null"}
-    +*user_id {label: "int, not null"}
+    +*user1_id {label: "int, not null"}
+    +*user2_id {label: "int, not null"}
 
 [Comment_Likes] {bgcolor: "#fffa98"}
     +*comment_id {label: "int, not null"}
@@ -93,8 +97,8 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     attending {label: "boolean, default NULL"}
 
 [Image]
-    +image_path {label: "varchar, not null"}
-    name {label: "varchar, not null"}
+    +post_id {label: "int, not null"}
+    image_path {label: "varchar, not null"}
 
 [Saved_Posts]
     +*post_id {label: "int, not null"}
@@ -111,6 +115,64 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     +*group_id {label: "int, not null"}
     +*user_id {label: "int, not null"}
     admin {label: "boolean, not null"}
+
+[Group_Post] {bgcolor: "#debdff"}
+    +*group_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+    text {label: "boolean, not null"}
+    created_at {label: "TIMESTAMP, not null"}
+    updated_at {label: "TIMESTAMP, not null"}
+
+[Group_Post_Comments]
+    +*group_post_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+    text {label: "varchar, not null"}
+    created_at {label: "TIMESTAMP, not null"}
+    updated_at {label: "TIMESTAMP, not null"}
+
+[Follows]
+    +*user1_id {label: "int, not null"}
+    +*user2_id {label: "int, not null"}
+
+[Comment_Replies]
+    +*comment_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+    text {label: "varchar, not null"}
+    created_at {label: "TIMESTAMP, not null"}
+    updated_at {label: "TIMESTAMP, not null"}
+
+[Report_User]
+    +*user1_id {label: "int, not null"}
+    +*user2_id {label: "int, not null"}
+
+[Report_Post]
+    +*user_id {label: "int, not null"}
+    +*post_id {label: "int, not null"}
+
+[Report_Comment]
+    +*user_id {label: "int, not null"}
+    +*comment_id {label: "int, not null"}
+
+[Report_Group]
+    +*user_id {label: "int, not null"}
+    +*group_id {label: "int, not null"}
+
+[User_Album]
+    +*user_id {label: "int, not null"}
+    +*picture {label: "varchar, not null"}
+
+[Post_Images]
+    +*post_id {label: "int, not null"}
+    +*picture_id {label: "int, not null"}
+
+[Comment_Image]
+    +*comment_id {label: "int, not null"}
+    +*picture_id {label: "int, not null"}
+
+[Reply_Image]
+    +*reply_id {label: "int, not null"}
+    +*picture_id {label: "int, not null"}
+
 
 
 #Relationships
@@ -144,10 +206,32 @@ Post                        +--* Post_Reactions
 User                        +--* Post_Reactions
 
 Comment                     +--* Comment_Likes
-User                        +--* Comment_Likes
+Comment_Likes               *--? User
 
 User                        +--* Saved_Posts
 Saved_Posts                 *--+ Post
 
 Facebook_Group              +--* Group_Members
 Group_Members               *--+ User
+
+Facebook_Group              +--* Group_Post
+Group_Post                  *--+ User
+
+Group_Post                  +--* Group_Post_Comments
+Group_Post_Comments         *--+ User
+
+Member                      ?--1 Image
+Post_Images                 +--* Image
+Comment_Image               ?--1 Image
+Reply_Image                 ?--1 Image
+
+User                        +--* Report_User
+User                        +--* Report_Group
+User                        +--* Report_Comment
+User                        +--* Report_Post
+
+
+User                        +--* Follows
+Comment                     +--* Comment_Replies
+User                        ?--* User_Album
+User_Album                  *--+ Image
