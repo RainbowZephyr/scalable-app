@@ -33,7 +33,7 @@ for @postgres_conf -> $line {
     }
 }
 
-my @sql_files = ["schema.sql"];
+my @sql_files = ["schema.sql","users_insertions.sql","post_insertions.sql", "group_insertions.sql", "friends_insertions.sql", "message_insertions.sql"];
 
 if (($*KERNEL.name) === "win32") {
     my $databases = qqx/psql -l -U $username/;

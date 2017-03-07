@@ -6,7 +6,7 @@ CREATE TABLE member (
     first_name varchar NOT NULL,
     last_name varchar NOT NULL,
     date_of_birth date,
-    creation_time TIMESTAMP,
+    created_at TIMESTAMP,
     last_login TIMESTAMP
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE post (
     user1_id int,
     user2_id int,
     post_text varchar NOT NULL,
-    creation_time TIMESTAMP,
+    created_at TIMESTAMP,
     update_time TIMESTAMP,
     FOREIGN KEY (user1_id) references member(id),
     FOREIGN KEY (user2_id) references member(id)
@@ -89,7 +89,7 @@ CREATE TABLE comment (
     post_id int,
     user_id int,
     comment_text varchar,
-    creation_time TIMESTAMP,
+    created_at TIMESTAMP,
     update_time TIMESTAMP,
     FOREIGN Key (user_id) references member(id),
     FOREIGN Key (post_id) references post(id)
@@ -99,10 +99,12 @@ CREATE TABLE comment (
 DROP TABLE IF EXISTS comment_tags CASCADE;
 CREATE TABLE comment_tags (
     comment_id int,
-    user_id int,
-    PRIMARY KEY (comment_id, user_id),
+    user1_id int,
+    user2_id int,
+    PRIMARY KEY (comment_id, user1_id, user2_id),
     FOREIGN Key (comment_id) references comment(id),
-    FOREIGN Key (user_id) references member(id)
+    FOREIGN Key (user1_id) references member(id),
+    FOREIGN Key (user2_id) references member(id)
 );
 
 DROP TABLE IF EXISTS comment_likes CASCADE;
@@ -116,17 +118,19 @@ CREATE TABLE comment_likes (
 
 DROP TABLE IF EXISTS message_thread CASCADE;
 CREATE TABLE message_thread (
-    id int PRIMARY KEY,
+    id Serial PRIMARY KEY,
     created_at TIMESTAMP
 );
 
 DROP TABLE IF EXISTS message CASCADE;
 CREATE TABLE message (
-    id int PRIMARY KEY,
+    id SErial PRIMARY KEY,
     thread_id int,
+    user_id int,
     message_text varchar,
-    creation_time TIMESTAMP,
-    FOREIGN Key (thread_id) references message_thread(id)
+    created_at TIMESTAMP,
+    FOREIGN Key (thread_id) references message_thread(id),
+    FOREIGN Key (user_id) references member(id)
 );
 
 DROP TABLE IF EXISTS message_thread_users CASCADE;

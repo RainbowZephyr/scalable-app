@@ -11,7 +11,7 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     date_of_birth {label: "date"}
     *profile_picture {label: "varchar, not null"}
     *cover_picture {label: "varchar, not null"}
-    creation_time {label: "TIMESTAMP"}
+    created_at {label: "TIMESTAMP"}
     last_login {label: "TIMESTAMP"}
 
 [User] {bgcolor: "#daeada"}
@@ -34,7 +34,7 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     *user1_id {label: "int, not null"}
     *user2_id {label: "int, not null"}
     post_text {label: "varchar, not null"}
-    creation_time {label: "TIMESTAMP"}
+    created_at {label: "TIMESTAMP"}
     update_time {label: "TIMESTAMP"}
 
 [Post_Tags] {bgcolor: "#ffe5a3"}
@@ -57,7 +57,7 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     *post_id {label: "int, not null"}
     *user_id {label: "int, not null"}
     comment_text {label: "varchar, not null"}
-    creation_time {label: "TIMESTAMP"}
+    created_at {label: "TIMESTAMP"}
     update_time {label: "TIMESTAMP"}
 
 [Comment_Tags] {bgcolor: "#fffa98"}
@@ -76,8 +76,9 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 [Message] {bgcolor: "#a1ffe8"}
     +id {label: "int, not null"}
     *thread_id {label: "int, not null"}
+    *user_id {label: "int, not null"}
     message_text {label: "varchar, not null"}
-    creation_time {label: "TIMESTAMP"}
+    created_at {label: "TIMESTAMP"}
 
 [Message_Thread_Users] {bgcolor: "#a1ffe8"}
     +*thread_id {label: "int, not null"}
