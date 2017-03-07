@@ -54,6 +54,7 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 
 [Comment] {bgcolor: "#fffa98"}
     +id {label: "int, not null"}
+    *post_id {label: "int, not null"}
     *user_id {label: "int, not null"}
     comment_text {label: "varchar, not null"}
     creation_time {label: "TIMESTAMP"}

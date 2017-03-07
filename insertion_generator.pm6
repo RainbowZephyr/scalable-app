@@ -100,6 +100,3 @@ sub lists_insertions is export {
     }
     return @temp;
 }
-
-
-say user_insertions;

@@ -43,7 +43,7 @@ CREATE TABLE blocks (
 
 DROP TABLE IF EXISTS post CASCADE;
 CREATE TABLE post (
-    id int PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     user1_id int,
     user2_id int,
     post_text varchar NOT NULL,
@@ -86,11 +86,14 @@ CREATE TABLE post_reactions (
 DROP TABLE IF EXISTS comment CASCADE;
 CREATE TABLE comment (
     id int PRIMARY KEY,
+    post_id int,
     user_id int,
     comment_text varchar,
     creation_time TIMESTAMP,
     update_time TIMESTAMP,
-    FOREIGN Key (user_id) references member(id)
+    FOREIGN Key (user_id) references member(id),
+    FOREIGN Key (post_id) references post(id)
+
 );
 
 DROP TABLE IF EXISTS comment_tags CASCADE;
