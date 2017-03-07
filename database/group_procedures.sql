@@ -124,7 +124,7 @@ CREATE OR REPLACE FUNCTION delete_comment_post_group(commentID INTEGER,
                                                    userID INTEGER,
 RETURNS BOOLEAN AS $$
 BEGIN
-      DELETE FROM group_post
+      DELETE FROM group_post_comments
       where id = comment and post_id = postID and group_id = groupID and user_id = userID
 END; $$
 LANGUAGE PLPGSQL;
