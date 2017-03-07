@@ -190,3 +190,14 @@ CREATE TABLE group_members (
     FOREIGN Key (group_id) references facebook_group(id),
     FOREIGN Key (user_id) references member(id)
 );
+
+DROP TABLE IF EXISTS group_posts CASCADE;
+CREATE TABLE group_posts (
+    post_id int,
+    group_id int,
+    user_id int,
+    created_at TIMESTAMP,
+    PRIMARY KEY (post_id, group_id, user_id),
+    FOREIGN Key (group_id) references facebook_group(id),
+    FOREIGN Key (user_id) references member(id)
+);
