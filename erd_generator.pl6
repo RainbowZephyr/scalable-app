@@ -1,5 +1,5 @@
 my $erd = slurp "erd.erd";
-my $output = open "database/schema1.sql", :w;
+my $output = open "database/schema2.sql", :w;
 
 my @lines = $erd[0].split("\n");
 my $type;

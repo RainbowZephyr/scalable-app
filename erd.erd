@@ -97,7 +97,7 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     attending {label: "boolean, default NULL"}
 
 [Image]
-    +post_id {label: "int, not null"}
+    +id {label: "int, not null"}
     image_path {label: "varchar, not null"}
 
 [Saved_Posts]
@@ -117,15 +117,17 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     admin {label: "boolean, not null"}
 
 [Group_Post] {bgcolor: "#debdff"}
-    +*group_id {label: "int, not null"}
-    +*user_id {label: "int, not null"}
-    text {label: "boolean, not null"}
+    +id {label: "int, not null"}
+    *group_id {label: "int, not null"}
+    *user_id {label: "int, not null"}
+    text {label: "varchar"}
     created_at {label: "TIMESTAMP, not null"}
     updated_at {label: "TIMESTAMP, not null"}
 
 [Group_Post_Comments]
-    +*group_post_id {label: "int, not null"}
-    +*user_id {label: "int, not null"}
+    +id {label: "int, not null"}
+    *group_post_id {label: "int, not null"}
+    *user_id {label: "int, not null"}
     text {label: "varchar, not null"}
     created_at {label: "TIMESTAMP, not null"}
     updated_at {label: "TIMESTAMP, not null"}
@@ -135,8 +137,9 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
     +*user2_id {label: "int, not null"}
 
 [Comment_Replies]
-    +*comment_id {label: "int, not null"}
-    +*user_id {label: "int, not null"}
+    +id {label: "int, not null"}
+    *comment_id {label: "int, not null"}
+    *user_id {label: "int, not null"}
     text {label: "varchar, not null"}
     created_at {label: "TIMESTAMP, not null"}
     updated_at {label: "TIMESTAMP, not null"}
@@ -159,7 +162,7 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 
 [User_Album]
     +*user_id {label: "int, not null"}
-    +*picture {label: "varchar, not null"}
+    +*picture_id {label: "varchar, not null"}
 
 [Post_Images]
     +*post_id {label: "int, not null"}
