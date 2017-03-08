@@ -1,11 +1,11 @@
 {
-	session_id:"",
-	app_id:"",
-	receiving_app_id:"",
-	service_type: "send_message_request",
-	request_parameters{
-		sender_id:0,
-		receiver_id:0,
-		message_text:""
+	"session_id":"",
+	"app_id":"",
+	"receiving_app_id":"",
+	"service_type": "send_message_request",
+	"request_parameters":{
+		"sender_id":0,
+		"receiver_id":0,
+		"message_text":""
 	}
 }
