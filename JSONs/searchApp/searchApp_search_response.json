@@ -4,6 +4,8 @@
   "recieving_app_id": "",
   "response_status": "",
   "response_load": {
-    "userId": ""
+    [
+    "userId": "",
+    ]
   }
 }
