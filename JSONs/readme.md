@@ -17,4 +17,4 @@ the following conventions are used:
     But **static values** for a service are written.
   3. Filenames are written as follows `appName (camelCase) _ service _ request or response].json`. 
   Example: `exampleApp_service_to_be_offered_request.json` & `appName_service_to_be_offered_response.json` .
-  4. Files with `_` at the beginning, means that it should be available in all apps ex. `_service_request.json` .
+  4. Files in allApps folder begins with `_`. it means that they should be available in all apps ex. `_service_request.json` .
