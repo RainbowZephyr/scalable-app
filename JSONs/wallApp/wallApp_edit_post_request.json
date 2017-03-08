@@ -1,0 +1,10 @@
+{
+	session_id:"",
+	app_id:"",
+	receiving_app_id:"",
+	service_type: "edit_post_request",
+	request_parameters{
+		post_id: 0,
+		post_text:""
+	}
+}

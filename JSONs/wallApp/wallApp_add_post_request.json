@@ -1,0 +1,11 @@
+{
+	session_id:"",
+	app_id:"",
+	receiving_app_id:"",
+	service_type: "add_post_request",
+	request_parameters{
+		user1_id: 0,
+		user2_id: 0,
+		post_text:""
+	}
+}
