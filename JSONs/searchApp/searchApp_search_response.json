@@ -3,7 +3,8 @@
   "app_id": "",
   "recieving_app_id": "",
   "response_status": "",
-  "response_load": {
-    "userId": ""
-  }
+  "response_load": 
+    [
+      "0": { "userId" } // userId is just a placeholder for the actual id
+    ]
 }
