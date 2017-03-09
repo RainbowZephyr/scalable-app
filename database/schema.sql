@@ -6,8 +6,7 @@ CREATE TABLE member (
     first_name varchar NOT NULL,
     last_name varchar NOT NULL,
     date_of_birth date,
-    created_at TIMESTAMP,
-    last_login TIMESTAMP
+    created_at TIMESTAMP
 );
 
 DROP TABLE IF EXISTS users CASCADE;
@@ -20,6 +19,35 @@ DROP TABLE IF EXISTS admin CASCADE;
 CREATE TABLE admin (
     admin_id int PRIMARY KEY,
     FOREIGN KEY(admin_id) references member(id)
+);
+
+DROP TABLE IF EXISTS sessions CASCADE;
+CREATE TABLE IF NOT EXISTS sessions (
+    id                  serial PRIMARY KEY,
+    user_id             INT NOT NULL,
+    session_start       TIMESTAMP NOT NULL,
+    last_access         TIMESTAMP NOT NULL,
+	address     		VARCHAR,
+    FOREIGN KEY(user_id) REFERENCES member(ID)
+);
+
+DROP TABLE IF EXISTS logins CASCADE;
+CREATE TABLE IF NOT EXISTS logins (
+    id                  serial PRIMARY KEY,
+    user_id             INT NOT NULL,
+    last_login          TIMESTAMP NOT NULL,
+	address     		VARCHAR,
+    logout              BOOLEAN,    
+    FOREIGN KEY(user_id) REFERENCES member(id) 	
+);
+
+DROP TABLE IF EXISTS login_failures CASCADE;
+CREATE TABLE IF NOT EXISTS login_failures (
+	id     	        serial PRIMARY KEY, 
+    user_id          INT NOT NULL,    
+    login_attempt     TIMESTAMP NOT NULL,
+    address         VARCHAR,
+	FOREIGN KEY(userID) REFERENCES member(id) 
 );
 
 DROP TABLE IF EXISTS friends CASCADE;

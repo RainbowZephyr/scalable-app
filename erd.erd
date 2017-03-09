@@ -20,6 +20,26 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 [Admin] {bgcolor: "#dbebdb"}
     +*admin_id {label: "int, not null"}
 
+[Sessions]
+    +id {label: "serial, not null"}
+    *user_id {label: "int, not null"}
+    session_start {label: "TIMESTAMP, not null"}
+    last_access {label: "TIMESTAMP, not null"}
+	address  {label: "varchar"}
+    
+[Logins]
+    +id  {label: "serial, not null"}
+    *user_id {label: "int, not null"}
+    last_login {label: "TIMESTAMP, not null"}
+    address {label: "varchar"}
+    logout {label: "boolean, not null"}
+
+[Login_Failures]
+	+id  {label: "serial, not null"}
+    *user_id {label: "int, not null"}
+    access_time {label: "TIMESTAMP, not null"}
+    address {label: "varchar"}
+	
 [Friends]
     +*user_1 {label: "int, not null"}
     +*user_2 {label: "int, not null"}
@@ -241,3 +261,7 @@ User                        +--* Follows
 Comment                     +--* Comment_Replies
 User                        ?--* User_Album
 User_Album                  *--+ Image
+
+User                        1--* Logins
+User                        1--* Sessions
+User                        1--* Login_Failures
