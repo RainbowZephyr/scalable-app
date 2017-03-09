@@ -214,12 +214,14 @@ DROP TABLE IF EXISTS group_post_comments CASCADE;
 CREATE TABLE group_post_comments (
     id serial PRIMARY KEY,
     group_id int,
+    group_post_id int,
     user_id int,
     comment_text varchar,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
     FOREIGN Key (group_id) references facebook_group(id),
-    FOREIGN Key (user_id) references member(id)
+    FOREIGN Key (user_id) references member(id),
+    FOREIGN KEY (post_id) references group_post(id)
 );
 
 DROP TABLE IF EXISTS follows CASCADE;

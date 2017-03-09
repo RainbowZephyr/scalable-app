@@ -129,6 +129,7 @@ title {label: "Scalable App ERD (condensed)", size: "20"}
 [Group_Post_Comments]
     +id {label: "int, not null"}
     *group_post_id {label: "int, not null"}
+    *group_post_id {label: "int, not null"}
     *user_id {label: "int, not null"}
     text {label: "varchar, not null"}
     created_at {label: "TIMESTAMP, not null"}
