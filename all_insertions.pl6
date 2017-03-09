@@ -35,6 +35,8 @@ for @postgres_conf -> $line {
 
 my @sql_files = ["schema.sql","users_insertions.sql","post_insertions.sql", "group_insertions.sql", "friends_insertions.sql", "message_insertions.sql", "user_procs.sql"];
 
+my @procs = ["group_procedures.sql", "user_procs.sql"];
+
 if (($*KERNEL.name) === "win32") {
     my $databases = qqx/psql -l -U $username/;
     if $databases.contains($database) {
@@ -50,16 +52,30 @@ if (($*KERNEL.name) === "win32") {
     }
 
 } else {
-    my $databases = qx/psql -l/;
-    if $databases.contains($database) {
-        shell "psql -c \"drop schema public cascade\" $database $username";
-        shell "PGPASSWORD=$password psql -c \"create schema public\" $database $username ";
-    } else {
-        shell "psql -c \"create database $database owner $username\" postgres $username";
-    }
 
-    for @sql_files -> $file {
-        say "Inserting $file";
-        shell "PGPASSWORD=$password psql $database $username -f {$path}/database/$file";
+    if (@*ARGS > 0) {
+        given @*ARGS {
+            when "-p" {
+                say "Procs Only";
+                for @procs -> $file {
+                    say "Inserting $file";
+                    shell "PGPASSWORD=$password psql $database $username -f {$path}/database/$file";
+                }
+
+            }
+        }
+    } else {
+        my $databases = qx/psql -l/;
+        if $databases.contains($database) {
+            shell "psql -c \"drop schema public cascade\" $database $username";
+            shell "PGPASSWORD=$password psql -c \"create schema public\" $database $username ";
+        } else {
+            shell "psql -c \"create database $database owner $username\" postgres $username";
+        }
+
+        for @sql_files -> $file {
+            say "Inserting $file";
+            shell "PGPASSWORD=$password psql $database $username -f {$path}/database/$file";
+        }
     }
 }
