@@ -191,7 +191,7 @@ CREATE TABLE facebook_group (
 DROP TABLE IF EXISTS group_members CASCADE;
 CREATE TABLE group_members (
     group_id int,
-    user_id int,
+    user_id i,t,
     admin boolean,
     PRIMARY KEY (group_id, user_id),
     FOREIGN Key (group_id) references facebook_group(id),
