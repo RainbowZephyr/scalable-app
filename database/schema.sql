@@ -207,51 +207,6 @@ CREATE TABLE saved_posts (
   FOREIGN KEY (user_id) REFERENCES member (id)
 );
 
-DROP TABLE IF EXISTS facebook_group CASCADE;
-CREATE TABLE facebook_group (
-  id          INT PRIMARY KEY,
-  name        VARCHAR,
-  description VARCHAR,
-  creator_id  INT,
-  created_at  TIMESTAMP
-);
-
-DROP TABLE IF EXISTS group_members CASCADE;
-CREATE TABLE group_members (
-  group_id INT,
-  user_id  i,
-  t,
-  admin    BOOLEAN,
-  PRIMARY KEY (group_id, user_id),
-  FOREIGN KEY (group_id) REFERENCES facebook_group (id),
-  FOREIGN KEY (user_id) REFERENCES member (id)
-);
-
-DROP TABLE IF EXISTS group_post CASCADE;
-CREATE TABLE group_post (
-  id         SERIAL PRIMARY KEY,
-  group_id   INT,
-  user_id    INT,
-  post_text  VARCHAR,
-  created_at TIMESTAMP,
-  updated_at TIMESTAMP,
-  FOREIGN KEY (group_id) REFERENCES facebook_group (id),
-  FOREIGN KEY (user_id) REFERENCES member (id)
-);
-
-DROP TABLE IF EXISTS group_post_comments CASCADE;
-CREATE TABLE group_post_comments (
-  id            SERIAL PRIMARY KEY,
-  group_id      INT,
-  group_post_id INT,
-  user_id       INT,
-  comment_text  VARCHAR,
-  created_at    TIMESTAMP,
-  updated_at    TIMESTAMP,
-  FOREIGN KEY (group_id) REFERENCES facebook_group (id),
-  FOREIGN KEY (user_id) REFERENCES member (id),
-  FOREIGN KEY (post_id) REFERENCES group_post (id)
-);
 
 DROP TABLE IF EXISTS follows CASCADE;
 CREATE TABLE follows (
@@ -299,15 +254,6 @@ CREATE TABLE report_comment (
   PRIMARY KEY (user_id, comment_id),
   FOREIGN KEY (user_id) REFERENCES member (id),
   FOREIGN KEY (comment_id) REFERENCES comment (id)
-);
-
-DROP TABLE IF EXISTS report_group CASCADE;
-CREATE TABLE report_group (
-  user_id  INT,
-  group_id INT,
-  PRIMARY KEY (user_id, group_id),
-  FOREIGN KEY (user_id) REFERENCES member (id),
-  FOREIGN KEY (group_id) REFERENCES facebook_group (id)
 );
 
 DROP TABLE IF EXISTS user_album CASCADE;
