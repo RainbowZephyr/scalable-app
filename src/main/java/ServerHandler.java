@@ -38,23 +38,25 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         } finally {
             ReferenceCountUtil.release(msg);
         }
-
+        //{"session_id":"null", "app_id":"null", "receiving_app_id":"null", "service_type": "add_comment_request", "request_parameters":{"user_id":6, "post_id": 6, "comment_text":"yaaay!"}}
         ////////////// parse to json
-
+        System.out.println(json);
         JsonParserFactory factory = JsonParserFactory.getInstance();
         JSONParser parser = factory.newJsonParser();
         Map jsonData = parser.parseJson(json);
+        System.out.println(jsonData);
         /////////////
 
         String service_type = (String) jsonData.get("service_type");                     // get service type value
-        String request_parameters =  (String) jsonData.get("request_parameters");        // get request parameter value
-        Map json_request_parameters = parser.parseJson(request_parameters);              // parse request parameter to json
+        System.out.println("service type is " + service_type);
+        Map request_parameters = (Map) jsonData.get("request_parameters");        // get request parameter value
 
-        if(service_type == "add_comment_request"){   // if the coming command is the wallApp_add_comment_request
 
-            String user_id = (String) json_request_parameters.get("user_id");
-            String post_id = (String) json_request_parameters.get("post_id");
-            String comment_text = (String) json_request_parameters.get("comment_text");
+        if(service_type.equals("add_comment_request")){   // if the coming command is the wallApp_add_comment_request
+            System.out.println("Yoyoyo!");
+            String user_id = (String) request_parameters.get("user_id");
+            String post_id = (String) request_parameters.get("post_id");
+            String comment_text = (String) request_parameters.get("comment_text");
 
 
             MongoCollection<Document> coll = db.getCollection("addCommentCollection");
@@ -62,9 +64,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             document.put("user_id", user_id);
             document.put("post_id", post_id);
             document.put("comment_tex", comment_text);
+            System.out.println("Hii there!");
             coll.insertOne(document);
 
-            ////// create wallApp_comment_response json then         ctx.writeAndFlush(thisJson);
+            ctx.writeAndFlush(document);
+
+            //// create wallApp_comment_response json then         ctx.writeAndFlush(thisJson);
 
 
         }
