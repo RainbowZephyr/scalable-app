@@ -8,5 +8,24 @@
     <artifactId>scalable</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+<dependencies>
+    <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-all</artifactId>
+        <version>4.1.9.Final</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.accumulo/accumulo-core -->
+    <dependency>
+        <groupId>org.apache.accumulo</groupId>
+        <artifactId>accumulo-core</artifactId>
+        <version>1.8.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.jongo</groupId>
+        <artifactId>jongo</artifactId>
+        <version>1.3.0</version>
+    </dependency>
+</dependencies>
+
 
 </project>
