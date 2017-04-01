@@ -52,7 +52,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
         if(service_type == "add_comment_request"){   // if the coming command is the wallApp_add_comment_request
 
-            String user_id = (String) json_request_parameters.get("user_id");             
+            String user_id = (String) json_request_parameters.get("user_id");
             String post_id = (String) json_request_parameters.get("post_id");
             String comment_text = (String) json_request_parameters.get("comment_text");
 
