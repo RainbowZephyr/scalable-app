@@ -1,6 +1,7 @@
-package services;
+package command.commands;
 
-import services.Command;
+import command.Command;
+import services.Dispatcher;
 
 import java.util.Map;
 

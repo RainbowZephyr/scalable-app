@@ -1,12 +1,8 @@
 package services;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -14,94 +10,112 @@ import java.util.concurrent.*;
 /* Main Entry Class for Any Of the Independent Applications */
 
 import com.zaxxer.hikari.HikariDataSource;
+import command.Command;
+import command.CommandClassLoader;
 
 public class Dispatcher {
     private static Dispatcher instance = new Dispatcher();
     private Hashtable<String, Class<?>> _htblCommands;
     private ThreadPoolExecutor _threadPoolCmds;
-    private HikariDataSource  _postgresDataSource;
+    private HikariDataSource _postgresDataSource;
     private final int poolSize = 5;
     private final int postgresPoolSize = 5;
-    
-    private Dispatcher() {} // no one should be able to instantiate it
 
-    ThreadPoolExecutor get_threadPoolCmds() {
-        return _threadPoolCmds;
+    /**
+     * Dispatcher is a singleton and therefore its constructor's visibility
+     * should not be changed to anything other than private.
+     */
+    private Dispatcher() {
     }
 
     public static Dispatcher sharedInstance() {
         return instance;
-    } // only one instance available
+    }
+
+    public ThreadPoolExecutor get_threadPoolCmds() {
+        return _threadPoolCmds;
+    }
 
     /* Handles a request By calling the Appropriate Method (Class With Same Action)
      * Each Executed Command is handled in a separate Thread (thus the thread pool) */
     public void dispatchRequest(RequestHandle requestHandle,
-                                ServiceRequest serviceRequest )
+                                ServiceRequest serviceRequest)
             throws IllegalAccessException, InstantiationException {
-        Command	cmd;
-        String	strAction;
-        strAction = serviceRequest.getAction( );
+        Command cmd;
+        String strAction;
+        strAction = serviceRequest.getAction();
 
-        Class<?> innerClass = _htblCommands.get( strAction );
+        Class<?> innerClass = _htblCommands.get(strAction);
         cmd = (Command) innerClass.newInstance();
-        cmd.init(_postgresDataSource, requestHandle, serviceRequest );
-        _threadPoolCmds.execute( cmd );
+        cmd.init(_postgresDataSource, requestHandle, serviceRequest);
+        _threadPoolCmds.execute(cmd);
     }
 
     /* Instantiate Commands From The Configuration File & adds to a Hashtable */
-    public void loadCommands( ) throws IOException, ClassNotFoundException {
-        _htblCommands   = new Hashtable<String, Class<?>>();
+    public void loadCommands() throws IOException, ClassNotFoundException {
+        _htblCommands = new Hashtable<String, Class<?>>();
         Properties prop = new Properties();
-        InputStream in  = new FileInputStream("config/commands.properties");
-        prop.load( in );
-        in.close( );
-        Enumeration enumKeys = prop.propertyNames( );
-        String  strActionName,
+        InputStream in = new FileInputStream("config/commands.properties");
+        prop.load(in);
+        in.close();
+        Enumeration enumKeys = prop.propertyNames();
+        String strActionName,
                 strClassName;
 
-        while( enumKeys.hasMoreElements() ){
-            strActionName = (String)enumKeys.nextElement();
-            strClassName  = (String)prop.get(strActionName);
+        while (enumKeys.hasMoreElements()) {
+            strActionName = (String) enumKeys.nextElement();
+            strClassName = (String) prop.get(strActionName);
             Class<?> innerClass = Class.forName(strClassName);
             _htblCommands.put(strActionName, innerClass);
         }
     }
-    
-    /* Instantiate database Thread Pool */
-    protected void loadHikari( String strAddress, int nPort, 
-            String strDBName, 
-            String strUserName, String strPassword   ){
 
-		_postgresDataSource = new HikariDataSource();
-		_postgresDataSource.setJdbcUrl("jdbc:postgresql://" + strAddress + ":" + nPort + "/" + strDBName);
-		_postgresDataSource.setUsername(strUserName);
-		_postgresDataSource.setPassword(strPassword);
-		_postgresDataSource.setMaximumPoolSize(postgresPoolSize);
-	}
+    /* Instantiate database Thread Pool */
+    protected void loadHikari(String strAddress, int nPort,
+                              String strDBName,
+                              String strUserName, String strPassword) {
+
+        _postgresDataSource = new HikariDataSource();
+        _postgresDataSource.setJdbcUrl("jdbc:postgresql://" + strAddress + ":" + nPort + "/" + strDBName);
+        _postgresDataSource.setUsername(strUserName);
+        _postgresDataSource.setPassword(strPassword);
+        _postgresDataSource.setMaximumPoolSize(postgresPoolSize);
+    }
 
     /* Instantiate the Thread Pool */
-    void loadThreadPool(){
+    public void loadThreadPool() {
         _threadPoolCmds = new ThreadPoolExecutor(poolSize, poolSize, 0,
                 TimeUnit.NANOSECONDS,
                 new LinkedBlockingDeque<Runnable>());
     }
 
-    public void addCommand(String key, Class<?> value){
+    public void updateCommandsTable(String key, Class<?> value) {
         _htblCommands.put(key, value);
     }
 
-    public void updateCommand(String key, Class<?> value){
-        _htblCommands.put(key, value);
-    }
-
-    public void removeCommand(String key, Class<?> value){
+    public void removeCommand(String key, Class<?> value) {
         _htblCommands.remove(key);
     }
 
-    public void updateClass(String key, Class<?> value) throws ClassNotFoundException {
+    public void updateClass(Class<?> value) {
+        String commandName = "";
+        for (String key : _htblCommands.keySet()) {
+            Class<?> commandClass = _htblCommands.get(key);
+            if (commandClass.getName().equals(value)) {
+                commandName = key;
+                break;
+            }
+        }
+
+        if (commandName.length() > 0) {
+            _htblCommands.put(commandName, value);
+        }
     }
 
-    public void init(String postgresAddress, int postgresPort, String postgresDBName, String postgresUserName, String postgresPassword) throws Exception{
+    public void init(String postgresAddress, int postgresPort,
+                     String postgresDBName,
+                     String postgresUserName,
+                     String postgresPassword) throws Exception {
         loadThreadPool();
         loadCommands();
         loadHikari(postgresAddress, postgresPort, postgresDBName, postgresUserName, postgresPassword);

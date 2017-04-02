@@ -11,3 +11,4 @@ buildNumber.properties
 Postgres.conf
 .precomp/
 JSONs/
+.DS_Store

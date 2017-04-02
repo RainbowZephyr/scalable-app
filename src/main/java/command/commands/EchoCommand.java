@@ -1,14 +1,12 @@
-package services;
+package command.commands;
 
-import services.Command;
+import command.Command;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
-public class TestCommand extends Command {
+public class EchoCommand extends Command {
     public StringBuffer execute(Map<String, Object> mapUserData) throws Exception {
-        System.out.println("ReCompiled");
+        System.out.println("Recompiled");
         return new StringBuffer((String) mapUserData.get("echo"));
     }
 }
