@@ -1,17 +1,22 @@
 package services;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
+
+import com.zaxxer.hikari.HikariDataSource;
 
 
 abstract class Command implements Runnable{
 
     protected ServiceRequest _serviceRequest; // the formatted request
     private RequestHandle _serviceHandle; // handles the response for the user
-    // should have a data source to access the database
+    protected HikariDataSource _postgresDataSource;  //to get a postgres connection, call getPostgresConnection()
 
-    public void init(RequestHandle serviceHandle,
+    public void init(HikariDataSource postgresDataSource, RequestHandle serviceHandle,
                      ServiceRequest serviceRequest ){
+    	_postgresDataSource = postgresDataSource;
         _serviceRequest	= serviceRequest;
         _serviceHandle = serviceHandle;
     }
@@ -27,7 +32,7 @@ abstract class Command implements Runnable{
             System.err.println(exp.toString());
         }
     }
-
+    
     protected StringBuffer makeJSONResponseEnvelope(int nResponse,
                                                     StringBuffer strbufRequestData,
                                                     StringBuffer strbufResponseData){
@@ -85,6 +90,28 @@ abstract class Command implements Runnable{
         return strbufData;
     }
 
+    protected Connection getPostgresConnection() throws SQLException{
+    	Connection connection = null;
+    	try{
+    		connection =  _postgresDataSource.getConnection( );
+    	} catch(Exception e){
+    		 System.err.println( e.toString( ) );
+    	} finally{
+    		closeConnectionQuietly( connection );
+    	}
+    	return connection;
+    }
+    
+	protected void closeConnectionQuietly( Connection	connection ){
+		try{
+			if( connection != null )
+				connection.close( );
+		}
+		catch( Exception exp ){
+			// log this...
+			exp.printStackTrace( );
+		}
+	}
 
     public abstract StringBuffer execute(Map<String, Object> requestMapData ) throws Exception;
 }

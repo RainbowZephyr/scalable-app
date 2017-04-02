@@ -13,12 +13,16 @@ import java.util.Properties;
 import java.util.concurrent.*;
 /* Main Entry Class for Any Of the Independent Applications */
 
+import com.zaxxer.hikari.HikariDataSource;
+
 public class Dispatcher {
     private static Dispatcher instance = new Dispatcher();
     private Hashtable<String, Class<?>> _htblCommands;
     private ThreadPoolExecutor _threadPoolCmds;
+    private HikariDataSource  _postgresDataSource;
     private final int poolSize = 5;
-
+    private final int postgresPoolSize = 5;
+    
     private Dispatcher() {} // no one should be able to instantiate it
 
     ThreadPoolExecutor get_threadPoolCmds() {
@@ -40,11 +44,11 @@ public class Dispatcher {
 
         Class<?> innerClass = _htblCommands.get( strAction );
         cmd = (Command) innerClass.newInstance();
-        cmd.init( requestHandle, serviceRequest );
+        cmd.init(_postgresDataSource, requestHandle, serviceRequest );
         _threadPoolCmds.execute( cmd );
     }
 
-    /* Loads Commands From The Configuration File & adds to a Hashtable */
+    /* Instantiate Commands From The Configuration File & adds to a Hashtable */
     public void loadCommands( ) throws IOException, ClassNotFoundException {
         _htblCommands   = new Hashtable<String, Class<?>>();
         Properties prop = new Properties();
@@ -62,6 +66,18 @@ public class Dispatcher {
             _htblCommands.put(strActionName, innerClass);
         }
     }
+    
+    /* Instantiate database Thread Pool */
+    protected void loadHikari( String strAddress, int nPort, 
+            String strDBName, 
+            String strUserName, String strPassword   ){
+
+		_postgresDataSource = new HikariDataSource();
+		_postgresDataSource.setJdbcUrl("jdbc:postgresql://" + strAddress + ":" + nPort + "/" + strDBName);
+		_postgresDataSource.setUsername(strUserName);
+		_postgresDataSource.setPassword(strPassword);
+		_postgresDataSource.setMaximumPoolSize(postgresPoolSize);
+	}
 
     /* Instantiate the Thread Pool */
     void loadThreadPool(){
@@ -85,8 +101,9 @@ public class Dispatcher {
     public void updateClass(String key, Class<?> value) throws ClassNotFoundException {
     }
 
-    public void init() throws Exception{
+    public void init(String postgresAddress, int postgresPort, String postgresDBName, String postgresUserName, String postgresPassword) throws Exception{
         loadThreadPool();
         loadCommands();
+        loadHikari(postgresAddress, postgresPort, postgresDBName, postgresUserName, postgresPassword);
     }
 }

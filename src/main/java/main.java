@@ -15,11 +15,11 @@ public class main {
     private final static int REQUEST_PORT = 6001, SPECIAL_PORT = 6002;
     private final static String HOST = "127.0.0.1";
     public static void main(String [] args) throws Exception {
-
+    	
         String json = "{'echo':'sha8al'}";
         Gson gson = new Gson();
         Map<String, Object> map = gson.fromJson(json, Map.class);
-        Dispatcher.sharedInstance().init();
+        Dispatcher.sharedInstance().init("localhost", 5432, "thedatabase", "postgres", "thepassword");
 //        ServiceRequest serviceRequest = new ServiceRequest("echo", "sessionId", map);
 //        RequestHandle serviceHandle = new RequestHandle();
 //        Dispatcher.sharedInstance().dispatchRequest(serviceHandle, serviceRequest);
