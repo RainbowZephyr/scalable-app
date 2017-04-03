@@ -15,14 +15,14 @@ public class main {
     private final static int REQUEST_PORT = 6001, SPECIAL_PORT = 6002;
     private final static String HOST = "127.0.0.1";
     public static void main(String [] args) throws Exception {
-    	
+
         String json = "{'echo':'sha8al'}";
         Gson gson = new Gson();
         Map<String, Object> map = gson.fromJson(json, Map.class);
-        Dispatcher.sharedInstance().init("localhost", 5432, "thedatabase", "postgres", "thepassword");
-//        ServiceRequest serviceRequest = new ServiceRequest("echo", "sessionId", map);
-//        RequestHandle serviceHandle = new RequestHandle();
-//        Dispatcher.sharedInstance().dispatchRequest(serviceHandle, serviceRequest);
+        Dispatcher.sharedInstance().init();
+        ServiceRequest serviceRequest = new ServiceRequest("echo", "sessionId", map);
+        RequestHandle requestHandle = new RequestHandle();
+        Dispatcher.sharedInstance().dispatchRequest(requestHandle, serviceRequest);
         /* #1 run a netty server
            #2 keep polling for a message using the worker threads
            #3 on message Received assign to a thread

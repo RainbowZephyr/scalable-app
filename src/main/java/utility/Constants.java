@@ -1,5 +1,7 @@
 package utility;
 
+import java.util.Enumeration;
+
 public final class Constants {
     public static final String
             MAX_THREAD_COUNT = "max_thread_count",

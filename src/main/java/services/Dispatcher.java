@@ -3,23 +3,18 @@ package services;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.*;
 /* Main Entry Class for Any Of the Independent Applications */
 
-import com.zaxxer.hikari.HikariDataSource;
 import command.Command;
-import command.CommandClassLoader;
+import datastore.DataStoreConnectionFactory;
 
 public class Dispatcher {
     private static Dispatcher instance = new Dispatcher();
     private Hashtable<String, Class<?>> _htblCommands;
     private ThreadPoolExecutor _threadPoolCmds;
-    private HikariDataSource _postgresDataSource;
     private final int poolSize = 5;
-    private final int postgresPoolSize = 5;
 
     /**
      * Dispatcher is a singleton and therefore its constructor's visibility
@@ -40,14 +35,17 @@ public class Dispatcher {
      * Each Executed Command is handled in a separate Thread (thus the thread pool) */
     public void dispatchRequest(RequestHandle requestHandle,
                                 ServiceRequest serviceRequest)
-            throws IllegalAccessException, InstantiationException {
+            throws IllegalAccessException, InstantiationException, ExecutionException, InterruptedException {
         Command cmd;
         String strAction;
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(RequestHandle.class.getSimpleName(), requestHandle);
+        params.put(ServiceRequest.class.getSimpleName(), serviceRequest);
         strAction = serviceRequest.getAction();
 
         Class<?> innerClass = _htblCommands.get(strAction);
         cmd = (Command) innerClass.newInstance();
-        cmd.init(_postgresDataSource, requestHandle, serviceRequest);
+        cmd.init(params);
         _threadPoolCmds.execute(cmd);
     }
 
@@ -71,15 +69,22 @@ public class Dispatcher {
     }
 
     /* Instantiate database Thread Pool */
-    protected void loadHikari(String strAddress, int nPort,
-                              String strDBName,
-                              String strUserName, String strPassword) {
+    protected void loadDataStoreConnections() throws IOException, ClassNotFoundException {
+        Properties prop = new Properties();
+        InputStream in = new FileInputStream("config/data_store.properties");
+        prop.load(in);
+        in.close();
+        Enumeration enumKeys = prop.propertyNames();
+        String strClassKey,
+                strClassName;
 
-        _postgresDataSource = new HikariDataSource();
-        _postgresDataSource.setJdbcUrl("jdbc:postgresql://" + strAddress + ":" + nPort + "/" + strDBName);
-        _postgresDataSource.setUsername(strUserName);
-        _postgresDataSource.setPassword(strPassword);
-        _postgresDataSource.setMaximumPoolSize(postgresPoolSize);
+        while (enumKeys.hasMoreElements()) {
+            strClassKey = (String) enumKeys.nextElement();
+            strClassName = (String) prop.get(strClassKey);
+            Class<?> innerClass = Class.forName(strClassName);
+            DataStoreConnectionFactory.sharedInstance().
+                    registerDataStoreConnection(strClassKey, innerClass);
+        }
     }
 
     /* Instantiate the Thread Pool */
@@ -112,12 +117,9 @@ public class Dispatcher {
         }
     }
 
-    public void init(String postgresAddress, int postgresPort,
-                     String postgresDBName,
-                     String postgresUserName,
-                     String postgresPassword) throws Exception {
+    public void init() throws IOException, ClassNotFoundException {
         loadThreadPool();
         loadCommands();
-        loadHikari(postgresAddress, postgresPort, postgresDBName, postgresUserName, postgresPassword);
+        loadDataStoreConnections();
     }
 }

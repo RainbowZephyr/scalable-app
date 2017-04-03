@@ -7,9 +7,6 @@ import utility.Constants;
 
 import java.util.Map;
 
-/**
- * Created by Ahmed Abdelbadie on 4/2/17.
- */
 public class UpdateClassCommand extends Command {
     public StringBuffer execute(Map<String, Object> mapUserData) throws Exception {
         String className = (String) mapUserData.get(Constants.CLASS_NAME);
