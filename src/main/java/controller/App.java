@@ -6,16 +6,26 @@ public class App {
 	String ip;
 	int port;
 	int max_thread_count;
+	int max_db_count;
 	AppType appType;
-	public App(String name, int status, String ip, int port, int max_thread_count, AppType appType){
+	public App(String name, int status, String ip, int port, int max_thread_count, int max_db_count, AppType appType){
 		this.name = name;
 		this.status = status;
 		this.ip = ip;
 		this.port = port;
 		this.max_thread_count = max_thread_count;
+		this.max_db_count = max_db_count;
 		this.appType = appType;
 	}
 	
+	public int getMax_db_count() {
+		return max_db_count;
+	}
+
+	public void setMax_db_count(int max_db_count) {
+		this.max_db_count = max_db_count;
+	}
+
 	public String getName() {
 		return name;
 	}

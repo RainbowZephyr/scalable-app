@@ -22,21 +22,15 @@ public class Controller {
     private static ArrayList<App> apps = new ArrayList<App>();
     public static void main(String [] args) throws Exception {
 
+    	//turn config file into App instances
     	getAppsFromConf();
-//        String json = "{'echo':'sha8al'}";
-//        Gson gson = new Gson();
-//        Map<String, Object> map = gson.fromJson(json, Map.class);
-        Dispatcher.sharedInstance().init();
-//        ServiceRequest serviceRequest = new ServiceRequest("echo", "sessionId", map);
-//        RequestHandle serviceHandle = new RequestHandle();
-//        Dispatcher.sharedInstance().dispatchRequest(serviceHandle, serviceRequest);
+
         /* #1 run a netty server
            #2 keep polling for a message using the worker threads
            #3 on message Received assign to a thread
            #4
          */
 
-//        Dispatcher.sharedInstance().dispatchRequest(serviceHandle, serviceRequest);
         // should only call onMessage & process data through
         EventLoopGroup loadBossGroup = new NioEventLoopGroup(5);
         EventLoopGroup loadWorkerGroup = new NioEventLoopGroup();
@@ -44,13 +38,13 @@ public class Controller {
         EventLoopGroup adminWorkerGroup = new NioEventLoopGroup();
         try {
             BasicConfigurator.configure();
-//            // server instance to listen on normal requests Port
+            // server instance to listen on normal requests Port
             ServerBootstrap loadBalancerBootstrap = new ServerBootstrap();
             loadBalancerBootstrap.group(loadBossGroup, loadWorkerGroup);
             loadBalancerBootstrap.channel(NioServerSocketChannel.class);
             loadBalancerBootstrap.handler(new LoggingHandler(LogLevel.TRACE));
-//            // add the appropriate child handler
-            loadBalancerBootstrap.childHandler(new LoadBalancerUpdateHandler());
+            // add the appropriate child handler
+            loadBalancerBootstrap.childHandler(new LoadBalancerChannelInitializer());
             Channel requestsChannel = loadBalancerBootstrap.bind(HOST, LOAD_BALANCER_PORT).sync().channel();
 
             // server instance to listen on special requests Port
@@ -59,7 +53,7 @@ public class Controller {
             specialReqServerBootstrap.channel(NioServerSocketChannel.class);
             specialReqServerBootstrap.handler(new LoggingHandler(LogLevel.TRACE));
             // add the appropriate child handler
-            specialReqServerBootstrap.childHandler(new AdminCommandsServiceHandler());
+            specialReqServerBootstrap.childHandler(new AdminChannelInitializer());
             Channel specialRequestChannel = specialReqServerBootstrap.bind(HOST, ADMIN_PORT).sync().channel();
 
             System.err.println("Listening For LoadBalancer Updates on http" + "://127.0.0.1:" + LOAD_BALANCER_PORT + '/');
@@ -73,7 +67,9 @@ public class Controller {
         }
     }
     public static void getAppsFromConf(){
+    	//clear apps array
     	apps.clear();
+    	//read from config file to String
     	String res="";
     	try {
     	    BufferedReader in = new BufferedReader(new FileReader("./src/APP_CONFIG_FILE.config"));
@@ -87,17 +83,21 @@ public class Controller {
     	System.out.println(res);
     	String [] resArray = res.split("\n");
     	System.out.println(resArray.length);
+    	//turn each line in config file to instance of App class
     	for(int i = 0;i<resArray.length;i++){
     		String [] tempArray = resArray[i].split(" ");
-    		App app = new App(tempArray[0],
-    				Integer.parseInt(tempArray[1]),
-    				tempArray[2],
-    				Integer.parseInt(tempArray[3]),
-    				Integer.parseInt(tempArray[4]),
-    				AppType.valueOf(tempArray[0].replaceAll("\\d+.*", "")));
+    		App app = new App(tempArray[0], //name
+    				Integer.parseInt(tempArray[1]), //status
+    				tempArray[2], //ip
+    				Integer.parseInt(tempArray[3]),	//port
+    				Integer.parseInt(tempArray[4]),	//max_thread_count
+    				Integer.parseInt(tempArray[5]), //max_db_count
+    				AppType.valueOf(tempArray[0].replaceAll("\\d+.*", ""))); //type
     		apps.add(app);
     		
     	}
+    	//assign global variable (Apps.apps) to apps
+    	//we can now access apps anywhere in the code by calling Apps.apps
     	Apps.apps = apps;
     }
 

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Apps {
 	public static ArrayList<App> apps;
 	
+	//temporary way to send message over ip and port until we figure out if we need to use netty
 	public static String tcpSend(String ip, int port, int timeout, String content)
     {
         String ipaddress = ip;

@@ -1,7 +1,10 @@
 package services;
 
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelPromise;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.LineBasedFrameDecoder;
@@ -11,25 +14,22 @@ import io.netty.handler.codec.json.JsonObjectDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.util.CharsetUtil;
 
-public class LoadBalancerUpdateHandler extends ChannelInitializer<SocketChannel> {
+public class AdminChannelInitializer extends ChannelInitializer<SocketChannel> {
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline pipeLine = socketChannel.pipeline();
-        // should only include a pipeline that executes commands of the request
-//        pipeLine.addLast(RequestParser.class.getName(), new RequestParser());
-        System.out.println("Received something");
+        System.out.println("Received something at Admin port");
 //        pipeLine.addLast(LineBasedFrameDecoder.class.getName(),
 //                new LineBasedFrameDecoder(256));
 //
 //        pipeLine.addLast(StringDecoder.class.getName(),
 //                new StringDecoder(CharsetUtil.UTF_8));
-//
-//        pipeLine.addLast(ExecuteControllerRequest.class.getName(),
-//                new ExecuteControllerRequest()); // should add a class that extends SimpleChannelInboundHandler<Object>
-     // Provides support for http objects:
+
+        
+        // Provides support for http objects:
         pipeLine.addLast("codec", new HttpServerCodec());
         // Deals with fragmentation in http traffic: 
         pipeLine.addLast("aggregator", new HttpObjectAggregator(Short.MAX_VALUE));
 
-        pipeLine.addLast(AdminHandlerPipeline.class.getName(), new AdminHandlerPipeline());
+        pipeLine.addLast(AdminChannelHandler.class.getName(), new AdminChannelHandler());
     }
 }
