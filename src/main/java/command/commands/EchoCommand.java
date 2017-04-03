@@ -28,7 +28,7 @@ public class EchoCommand extends Command {
         parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
         connection.init(parameters);
         DatabaseThreadPool.getSharedInstance().execute(connection);
-        return new StringBuffer((String) mapUserData.get("echo"));
+        return new StringBuffer("");
     }
 
     @Override
