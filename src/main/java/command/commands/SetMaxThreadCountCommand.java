@@ -1,6 +1,8 @@
 package command.commands;
 
 import command.Command;
+import services.RequestHandle;
+import threads.CommandsThreadPool;
 import utility.Constants;
 import services.Dispatcher;
 
@@ -11,7 +13,9 @@ public class SetMaxThreadCountCommand extends Command {
     public StringBuffer execute(Map<String, Object> requestMapData) throws Exception {
         String obj = (String)requestMapData.get(Constants.MAX_THREAD_COUNT);
         int maxPoolSize = Integer.parseInt(obj);
-        Dispatcher.sharedInstance().get_threadPoolCmds().setCorePoolSize(maxPoolSize);
-        return null;
+        CommandsThreadPool.sharedInstance().getThreadPool().setCorePoolSize(maxPoolSize);
+        StringBuffer strBuffer = new StringBuffer();
+        strBuffer.append(CommandsThreadPool.sharedInstance().getThreadPool().getCorePoolSize());
+        return strBuffer;
     }
 }

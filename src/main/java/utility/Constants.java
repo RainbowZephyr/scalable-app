@@ -13,4 +13,5 @@ public final class Constants {
             RECEIVING_APP_ID_KEY="receiving_app_id",
             ACTION_NAME_KEY="service_type",
             REQUEST_PARAMETERS_KEY="request_parameters";
+    public final static int REQUEST_PORT = 6001, SPECIAL_PORT = 6002;
 }

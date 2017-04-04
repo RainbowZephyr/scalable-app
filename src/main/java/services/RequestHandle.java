@@ -15,7 +15,7 @@ public class RequestHandle {
             throw new MultipleResponseException();
         }
         this.stringBuffer = stringBuffer;
-        System.out.println(stringBuffer);
+        System.out.println("RESPONSE:" + stringBuffer);
         // some how send this to its destination (should be put in the corresponding queue)
         didSendMessage = true;
     }

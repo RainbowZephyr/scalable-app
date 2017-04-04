@@ -9,12 +9,11 @@ import java.util.concurrent.*;
 
 import command.Command;
 import datastore.DataStoreConnectionFactory;
+import threads.CommandsThreadPool;
 
 public class Dispatcher {
     private static Dispatcher instance = new Dispatcher();
-    private Hashtable<String, Class<?>> _htblCommands;
-    private ThreadPoolExecutor _threadPoolCmds;
-    private final int poolSize = 5;
+    private Hashtable<String, Class<?>> _htblCommands, _adminHtblCommands;
 
     /**
      * Dispatcher is a singleton and therefore its constructor's visibility
@@ -25,10 +24,6 @@ public class Dispatcher {
 
     public static Dispatcher sharedInstance() {
         return instance;
-    }
-
-    public ThreadPoolExecutor get_threadPoolCmds() {
-        return _threadPoolCmds;
     }
 
     /* Handles a request By calling the Appropriate Method (Class With Same Action)
@@ -46,14 +41,30 @@ public class Dispatcher {
         Class<?> innerClass = _htblCommands.get(strAction);
         cmd = (Command) innerClass.newInstance();
         cmd.init(params);
-        _threadPoolCmds.execute(cmd);
+        CommandsThreadPool.sharedInstance().getThreadPool().execute(cmd);
+    }
+
+    public void executeControllerCommand(RequestHandle requestHandle,
+                                ServiceRequest serviceRequest)
+            throws IllegalAccessException, InstantiationException, ExecutionException, InterruptedException {
+        Command cmd;
+        String strAction;
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(RequestHandle.class.getSimpleName(), requestHandle);
+        params.put(ServiceRequest.class.getSimpleName(), serviceRequest);
+        strAction = serviceRequest.getAction();
+        Class<?> innerClass = _adminHtblCommands.get(strAction);
+        cmd = (Command) innerClass.newInstance();
+        cmd.init(params);
+        Thread t = new Thread(cmd);
+        t.run();
     }
 
     /* Instantiate Commands From The Configuration File & adds to a Hashtable */
-    public void loadCommands() throws IOException, ClassNotFoundException {
-        _htblCommands = new Hashtable<String, Class<?>>();
+    public void loadCommands(Hashtable<String, Class<?>> hashtable, String path)
+            throws IOException, ClassNotFoundException {
         Properties prop = new Properties();
-        InputStream in = new FileInputStream("config/commands.properties");
+        InputStream in = new FileInputStream(path);
         prop.load(in);
         in.close();
         Enumeration enumKeys = prop.propertyNames();
@@ -64,7 +75,7 @@ public class Dispatcher {
             strActionName = (String) enumKeys.nextElement();
             strClassName = (String) prop.get(strActionName);
             Class<?> innerClass = Class.forName(strClassName);
-            _htblCommands.put(strActionName, innerClass);
+            hashtable.put(strActionName, innerClass);
         }
     }
 
@@ -87,11 +98,23 @@ public class Dispatcher {
         }
     }
 
-    /* Instantiate the Thread Pool */
-    public void loadThreadPool() {
-        _threadPoolCmds = new ThreadPoolExecutor(poolSize, poolSize, 0,
-                TimeUnit.NANOSECONDS,
-                new LinkedBlockingDeque<Runnable>());
+    /* Instantiate database Thread Pool */
+    protected void loadRequestServers() throws IOException, ClassNotFoundException {
+        Properties prop = new Properties();
+        InputStream in = new FileInputStream("config/request_servers.properties");
+        prop.load(in);
+        in.close();
+        Enumeration enumKeys = prop.propertyNames();
+        String strClassKey,
+                strClassName;
+
+        while (enumKeys.hasMoreElements()) {
+            strClassKey = (String) enumKeys.nextElement();
+            strClassName = (String) prop.get(strClassKey);
+            Class<?> innerClass = Class.forName(strClassName);
+            RequestServerFactory.sharedInstance().registerRequestServer(strClassKey,
+                    innerClass);
+        }
     }
 
     public void updateCommandsTable(String key, Class<?> value) {
@@ -118,8 +141,11 @@ public class Dispatcher {
     }
 
     public void init() throws IOException, ClassNotFoundException {
-        loadThreadPool();
-        loadCommands();
+        _htblCommands = new Hashtable<String, Class<?>>();
+        _adminHtblCommands = new Hashtable<String, Class<?>>();
+        loadCommands(_htblCommands, "config/commands.properties");
+        loadCommands(_adminHtblCommands, "config/admin_commands.properties");
         loadDataStoreConnections();
+        loadRequestServers();
     }
 }

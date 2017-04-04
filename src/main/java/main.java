@@ -9,60 +9,37 @@ import io.netty.handler.logging.LoggingHandler;
 import org.apache.log4j.BasicConfigurator;
 import services.*;
 
-import java.util.Map;
+import static utility.Constants.REQUEST_PORT;
+import static utility.Constants.SPECIAL_PORT;
 
 public class main {
-    private final static int REQUEST_PORT = 6001, SPECIAL_PORT = 6002;
+
     private final static String HOST = "127.0.0.1";
     public static void main(String [] args) throws Exception {
-
-        String json = "{'echo':'sha8al'}";
-        Gson gson = new Gson();
-        Map<String, Object> map = gson.fromJson(json, Map.class);
         Dispatcher.sharedInstance().init();
-        ServiceRequest serviceRequest = new ServiceRequest("echo", "sessionId", map);
-        RequestHandle requestHandle = new RequestHandle();
-        Dispatcher.sharedInstance().dispatchRequest(requestHandle, serviceRequest);
-        /* #1 run a netty server
-           #2 keep polling for a message using the worker threads
-           #3 on message Received assign to a thread
-           #4
-         */
-
-//        Dispatcher.sharedInstance().dispatchRequest(serviceHandle, serviceRequest);
         // should only call onMessage & process data through
-//        EventLoopGroup reqBossGroup = new NioEventLoopGroup(5);
-//        EventLoopGroup reqWorkerGroup = new NioEventLoopGroup();
-        EventLoopGroup specialBossGroup = new NioEventLoopGroup(5);
-        EventLoopGroup specialWorkerGroup = new NioEventLoopGroup();
+        EventLoopGroup reqBossGroup = new NioEventLoopGroup(5);
+        EventLoopGroup reqWorkerGroup = new NioEventLoopGroup();
         try {
             BasicConfigurator.configure();
-//            // server instance to listen on normal requests Port
-//            ServerBootstrap reqServerBootstrap = new ServerBootstrap();
-//            reqServerBootstrap.group(reqBossGroup, reqWorkerGroup);
-//            reqServerBootstrap.channel(NioServerSocketChannel.class);
-//            reqServerBootstrap.handler(new LoggingHandler(LogLevel.TRACE));
-////            // add the appropriate child handler
-//            reqServerBootstrap.childHandler(new ServiceInitializer());
-//            Channel requestsChannel = reqServerBootstrap.bind(HOST, REQUEST_PORT).sync().channel();
-
-            // server instance to listen on special requests Port
-            ServerBootstrap specialReqServerBootstrap = new ServerBootstrap();
-            specialReqServerBootstrap.group(specialBossGroup, specialWorkerGroup);
-            specialReqServerBootstrap.channel(NioServerSocketChannel.class);
-            specialReqServerBootstrap.handler(new LoggingHandler(LogLevel.TRACE));
+            // server instance to listen on normal requests Port
+            ServerBootstrap reqServerBootstrap = new ServerBootstrap();
+            reqServerBootstrap.group(reqBossGroup, reqWorkerGroup);
+            reqServerBootstrap.channel(NioServerSocketChannel.class);
+            reqServerBootstrap.handler(new LoggingHandler(LogLevel.TRACE));
             // add the appropriate child handler
-            specialReqServerBootstrap.childHandler(new SpecialCommandsServiceHandle());
-            Channel specialRequestChannel = specialReqServerBootstrap.bind(HOST, SPECIAL_PORT).sync().channel();
+            reqServerBootstrap.childHandler(new ServerInitializer());
+            // bind to normal request port
+            Channel requestsChannel = reqServerBootstrap.bind(HOST, REQUEST_PORT).sync().channel();
+            // bind to special request port
+            Channel specialRequestChannel = reqServerBootstrap.bind(HOST, SPECIAL_PORT).sync().channel();
 
-//            System.err.println("Listening For Requests on http" + "://127.0.0.1:" + REQUEST_PORT + '/');
+            System.err.println("Listening For Requests on http" + "://127.0.0.1:" + REQUEST_PORT + '/');
             System.err.println("Listening For Controller Requests on http" + "://127.0.0.1:" + SPECIAL_PORT + '/');
             specialRequestChannel.closeFuture().sync();
         }finally {
-//            reqBossGroup.shutdownGracefully();
-//            reqWorkerGroup.shutdownGracefully();
-            specialBossGroup.shutdownGracefully();
-            specialWorkerGroup.shutdownGracefully();
+            reqBossGroup.shutdownGracefully();
+            reqWorkerGroup.shutdownGracefully();
         }
     }
 
