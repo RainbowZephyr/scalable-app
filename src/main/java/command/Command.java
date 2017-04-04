@@ -3,7 +3,6 @@ package command;
 import services.RequestHandle;
 import services.ServiceRequest;
 
-import javax.xml.ws.Service;
 import java.util.Map;
 
 public abstract class Command implements Runnable {

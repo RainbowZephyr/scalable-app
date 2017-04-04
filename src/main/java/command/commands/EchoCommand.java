@@ -3,7 +3,6 @@ package command.commands;
 import command.Command;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
-import datastore.datastores.ConcreteDataStoreConnection;
 import services.RequestHandle;
 import threads.DatabaseThreadPool;
 
@@ -27,10 +26,16 @@ public class EchoCommand extends Command {
                 this.parameters.get(RequestHandle.class.getSimpleName());
         parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
         connection.init(parameters);
-        DatabaseThreadPool.getSharedInstance().execute(connection);
-        return new StringBuffer("");
+        DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
+        return null;
     }
 
+    /**
+     * this means that the current thread won't be responsible for the
+     * response but another thread (here the case is that database connection thread
+     * is the one responsible)
+     * @return
+     */
     @Override
     protected boolean shouldReturnResponse() {
         return false;

@@ -1,15 +1,26 @@
 package services;
 
+import command.Command;
+import connections.SocketConnectionFactory;
+import connections.SocketConnectionToController;
+import connections.Producer;
+import datastore.DataStoreConnectionFactory;
+import exceptions.MultipleResponseException;
+import threads.CommandsThreadPool;
+import utility.ResponseCodes;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.*;
-/* Main Entry Class for Any Of the Independent Applications */
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
 
-import command.Command;
-import datastore.DataStoreConnectionFactory;
-import threads.CommandsThreadPool;
+import static utility.Constants.APPLICATION_ID;
+import static utility.Constants.APP_ID_KEY;
+import static utility.Constants.RECEIVING_APP_ID_KEY;
+
+/* Main Entry Class for Any Of the Independent Applications */
 
 public class Dispatcher {
     private static Dispatcher instance = new Dispatcher();
@@ -30,7 +41,7 @@ public class Dispatcher {
      * Each Executed Command is handled in a separate Thread (thus the thread pool) */
     public void dispatchRequest(RequestHandle requestHandle,
                                 ServiceRequest serviceRequest)
-            throws IllegalAccessException, InstantiationException, ExecutionException, InterruptedException {
+            throws IllegalAccessException, InstantiationException, ExecutionException, InterruptedException, IOException, MultipleResponseException {
         Command cmd;
         String strAction;
         Map<String, Object> params = new HashMap<String, Object>();
@@ -39,14 +50,23 @@ public class Dispatcher {
         strAction = serviceRequest.getAction();
 
         Class<?> innerClass = _htblCommands.get(strAction);
-        cmd = (Command) innerClass.newInstance();
-        cmd.init(params);
-        CommandsThreadPool.sharedInstance().getThreadPool().execute(cmd);
+        if(innerClass != null) {
+            cmd = (Command) innerClass.newInstance();
+            cmd.init(params);
+            CommandsThreadPool.sharedInstance().getThreadPool().execute(cmd);
+        }else{
+            Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
+            response.addToResponse(APP_ID_KEY, APPLICATION_ID);
+            response.addToResponse(RECEIVING_APP_ID_KEY, "Controller");
+            requestHandle.send(response.toJson()); // output to the queue
+        }
     }
 
     public void executeControllerCommand(RequestHandle requestHandle,
                                 ServiceRequest serviceRequest)
-            throws IllegalAccessException, InstantiationException, ExecutionException, InterruptedException {
+            throws IllegalAccessException,
+            ExecutionException, InterruptedException, InstantiationException,
+            IOException, MultipleResponseException {
         Command cmd;
         String strAction;
         Map<String, Object> params = new HashMap<String, Object>();
@@ -54,10 +74,18 @@ public class Dispatcher {
         params.put(ServiceRequest.class.getSimpleName(), serviceRequest);
         strAction = serviceRequest.getAction();
         Class<?> innerClass = _adminHtblCommands.get(strAction);
-        cmd = (Command) innerClass.newInstance();
-        cmd.init(params);
-        Thread t = new Thread(cmd);
-        t.run();
+        if(innerClass != null){
+            cmd = (Command) innerClass.newInstance();
+            cmd.init(params);
+            Thread t = new Thread(cmd);
+            t.run();
+        }else{
+            Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
+            response.addToResponse("app_id", APPLICATION_ID);
+            response.addToResponse("recieving_app_id", "Controller");
+            requestHandle.send(response.toJson()); // output to the queue
+        }
+
     }
 
     /* Instantiate Commands From The Configuration File & adds to a Hashtable */
@@ -98,31 +126,22 @@ public class Dispatcher {
         }
     }
 
-    /* Instantiate database Thread Pool */
-    protected void loadRequestServers() throws IOException, ClassNotFoundException {
-        Properties prop = new Properties();
-        InputStream in = new FileInputStream("config/request_servers.properties");
-        prop.load(in);
-        in.close();
-        Enumeration enumKeys = prop.propertyNames();
-        String strClassKey,
-                strClassName;
-
-        while (enumKeys.hasMoreElements()) {
-            strClassKey = (String) enumKeys.nextElement();
-            strClassName = (String) prop.get(strClassKey);
-            Class<?> innerClass = Class.forName(strClassName);
-            RequestServerFactory.sharedInstance().registerRequestServer(strClassKey,
-                    innerClass);
+    public void updateCommandsTable(String key, Class<?> value,
+                                    boolean adminCommand) {
+        if(adminCommand) {
+            _adminHtblCommands.put(key, value);
+        }else{
+            _htblCommands.put(key, value);
         }
     }
 
-    public void updateCommandsTable(String key, Class<?> value) {
-        _htblCommands.put(key, value);
-    }
-
-    public void removeCommand(String key, Class<?> value) {
-        _htblCommands.remove(key);
+    public void removeCommand(String key,
+                              boolean adminCommand) {
+        if(adminCommand) {
+            _adminHtblCommands.remove(key);
+        }else{
+            _htblCommands.remove(key);
+        }
     }
 
     public void updateClass(Class<?> value) {
@@ -146,6 +165,17 @@ public class Dispatcher {
         loadCommands(_htblCommands, "config/commands.properties");
         loadCommands(_adminHtblCommands, "config/admin_commands.properties");
         loadDataStoreConnections();
-        loadRequestServers();
+        loadConnections();
+    }
+
+    private void loadConnections() {
+        SocketConnectionFactory.sharedInstance().registerConnection(
+                SocketConnectionToController.class.getSimpleName(),
+                SocketConnectionToController.sharedInstance());
+
+        SocketConnectionFactory.sharedInstance().registerConnection(
+                Producer.class.getSimpleName(),
+                Producer.sharedInstance()
+        );
     }
 }

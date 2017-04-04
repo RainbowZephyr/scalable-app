@@ -1,20 +1,32 @@
 package utility;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class ResponseCodes {
 
-    protected static final Map<String,String>   _mapCodes;
+    public static final Map<String,String> _mapCodes;
+    public static final String
+            STATUS_OK = "200",
+            STATUS_CREATED = "201",
+            STATUS_BAD_REQUEST="400",
+            STATUS_NOT_FOUND="404",
+            STATUS_INTERNAL_SERVER_ERROR="500",
+            STATUS_NOT_IMPLEMENTED="501",
+            STATUS_SERVICE_UNAVAILABLE="503";
     
     static{
         _mapCodes = new HashMap<String, String>();
         String[][] pairs = {
         
-            {"0","cheer up. you are good :)"},
-            {"-1","false"},
-            
+            {STATUS_OK,"OK"},
+            {STATUS_CREATED,"Created"},
+            {STATUS_BAD_REQUEST,"Bad Request"},
+            {STATUS_NOT_FOUND, "Not Found"},
+            {STATUS_INTERNAL_SERVER_ERROR, "Internal Server Error"},
+            {STATUS_NOT_IMPLEMENTED, "Not Implemented"},
+            {STATUS_SERVICE_UNAVAILABLE, "Service Unavailable"}
 
         };
         for (String[] pair : pairs) {
@@ -23,6 +35,6 @@ public class ResponseCodes {
     }
        
     public static String getMessage( String strCode ){
-        return (String)_mapCodes.get( strCode );   
+        return _mapCodes.get( strCode );
     }
 }

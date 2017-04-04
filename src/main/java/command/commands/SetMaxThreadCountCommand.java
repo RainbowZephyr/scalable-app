@@ -1,21 +1,27 @@
 package command.commands;
 
 import command.Command;
-import services.RequestHandle;
+import services.Response;
 import threads.CommandsThreadPool;
 import utility.Constants;
-import services.Dispatcher;
+import utility.ResponseCodes;
 
 import java.util.Map;
 
 public class SetMaxThreadCountCommand extends Command {
 
-    public StringBuffer execute(Map<String, Object> requestMapData) throws Exception {
+    public StringBuffer execute(Map<String, Object> requestMapData) {
         String obj = (String)requestMapData.get(Constants.MAX_THREAD_COUNT);
+        // get parameter
         int maxPoolSize = Integer.parseInt(obj);
-        CommandsThreadPool.sharedInstance().getThreadPool().setCorePoolSize(maxPoolSize);
-        StringBuffer strBuffer = new StringBuffer();
-        strBuffer.append(CommandsThreadPool.sharedInstance().getThreadPool().getCorePoolSize());
-        return strBuffer;
+        // set size
+        CommandsThreadPool.sharedInstance().setMaxThreadPoolSize(maxPoolSize);
+        //make sure it's correct
+        int result = CommandsThreadPool.sharedInstance().getThreadPool().getCorePoolSize();
+        // construct response
+        Response response = new Response(ResponseCodes.STATUS_OK);
+        response.addToResponse("thread_count", result);
+
+        return response.toJson();
     }
 }

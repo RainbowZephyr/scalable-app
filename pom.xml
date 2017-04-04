@@ -9,14 +9,14 @@
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
-        <!-- Kafka Client -->
+        <!-- RabbitMQ Client -->
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>0.10.2.0</version>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>4.1.0</version>
         </dependency>
 
-        <!--Server Library-->
+        <!-- Netty Server Library -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
@@ -43,6 +43,13 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.8.0</version>
+        </dependency>
+
+        <!-- Used for SerializationUtils -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
         </dependency>
 
 
