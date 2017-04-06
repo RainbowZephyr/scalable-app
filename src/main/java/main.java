@@ -1,9 +1,17 @@
-/**
- * Created by ahmed on 3/2/17.
- */
+import connections.SocketConnectionToController;
+import connections.Producer;
+import connections.QueueConsumer;
+import services.Dispatcher;
+
 public class main {
-    public static void main(String[] args) {
-        System.out.println("hey");
+
+    public static void main(String [] args) throws Exception {
+        Dispatcher.sharedInstance().init();
+        QueueConsumer.sharedInstance().init();
+        Thread consumerListeningThread = new Thread(QueueConsumer.sharedInstance());
+        consumerListeningThread.start();
+        Producer.sharedInstance().init();
+        SocketConnectionToController.sharedInstance().init();
     }
 
 }
