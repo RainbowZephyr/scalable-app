@@ -21,8 +21,7 @@ public class CommandClassLoader extends ClassLoader {
      * Loads the class from the file system. The class file should be located in
      * the file system. The name should be relative to get the file location
      *
-     * @param name
-     *            Fully Classified name of class, for example com.journaldev.Foo
+     * @param name Fully Classified name of class, for example com.journaldev.Foo
      */
     private Class<?> getClass(String name) throws ClassNotFoundException {
         String file = name.replace('.', File.separatorChar) + ".class";
@@ -47,9 +46,7 @@ public class CommandClassLoader extends ClassLoader {
      * com.journaldev package, we will use this class loader or else delegate the
      * request to parent class loader.
      *
-     *
-     * @param name
-     *            Full class name
+     * @param name Full class name
      */
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
@@ -64,11 +61,9 @@ public class CommandClassLoader extends ClassLoader {
      * accessible as a resource and make sure that its not in Classpath to avoid
      * any confusion.
      *
-     * @param name
-     *            File name
+     * @param name File name
      * @return Byte array read from the file
-     * @throws IOException
-     *             if any exception comes in reading the file
+     * @throws IOException if any exception comes in reading the file
      */
     private byte[] loadClassFileData(String name) throws IOException {
         InputStream stream = getClass().getClassLoader().getResourceAsStream(

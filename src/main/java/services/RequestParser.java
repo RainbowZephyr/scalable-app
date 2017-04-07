@@ -1,20 +1,16 @@
 package services;
 
+import com.google.gson.Gson;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.channel.SimpleChannelInboundHandler;
 
-import java.util.List;
+import java.util.Map;
 
-public class RequestParser extends MessageToMessageDecoder<Object> {
+public class RequestParser extends SimpleChannelInboundHandler<String> {
 
-    private ServiceRequest parseToRequest(Object o){
-        return null;
-    }
-
-    protected void decode(ChannelHandlerContext ctx, Object o, List<Object> list) throws Exception {
-
-        // to be implemented
-
-        list.add(parseToRequest(o));
+    protected void channelRead0(ChannelHandlerContext ctx, String jsonStr) throws Exception {
+        Gson gson = new Gson();
+        Map<String, Object> map = gson.fromJson(jsonStr, Map.class);
+        super.channelRead(ctx, map);
     }
 }

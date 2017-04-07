@@ -1,18 +1,26 @@
 package command.commands;
 
 import command.Command;
+import services.Response;
+import threads.DatabaseThreadPool;
 import utility.Constants;
+import utility.ResponseCodes;
 
 import java.util.Map;
 
-/**
- * Created by abdoo on 4/1/17.
- */
 public class SetMaxDbConnectionsCountCommand extends Command {
+
     public StringBuffer execute(Map<String, Object> requestMapData) throws Exception {
-        String obj = (String)requestMapData.get(Constants.MAX_DB_CONNECTIONS_COUNT);
+        String obj = (String) requestMapData.get(Constants.MAX_DB_CONNECTIONS_COUNT);
+        // get parameter
         int maxDbConnectionsCount = Integer.parseInt(obj);
-        // should set it somehow
-        return null;
+        // set size
+        DatabaseThreadPool.sharedInstance().setMaxThreadPoolSize(maxDbConnectionsCount);
+        // make sure it's set
+        int result = DatabaseThreadPool.sharedInstance().getThreadPool().getCorePoolSize();
+        // construct response
+        Response response = new Response(ResponseCodes.STATUS_OK);
+        response.addToResponse("thread_count", result);
+        return response.toJson();
     }
 }
