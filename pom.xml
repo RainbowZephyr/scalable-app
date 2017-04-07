@@ -45,6 +45,14 @@
             <version>2.6</version>
         </dependency>
 
+        <!-- Apache Common IO -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+
     </dependencies>
 
 </project>

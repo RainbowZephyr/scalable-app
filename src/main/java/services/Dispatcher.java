@@ -6,7 +6,7 @@ import connections.SocketConnectionFactory;
 import connections.SocketConnectionToController;
 import datastore.DataStoreConnectionFactory;
 import exceptions.MultipleResponseException;
-import threads.CommandsThreadPool;
+import thread_pools.CommandsThreadPool;
 import utility.ResponseCodes;
 
 import java.io.FileInputStream;
@@ -38,7 +38,9 @@ public class Dispatcher {
      * Each Executed Command is handled in a separate Thread (thus the thread pool) */
     public void dispatchRequest(RequestHandle requestHandle,
                                 ServiceRequest serviceRequest)
-            throws IllegalAccessException, InstantiationException, ExecutionException, InterruptedException, IOException, MultipleResponseException {
+            throws IllegalAccessException,
+            InstantiationException, ExecutionException,
+            InterruptedException, IOException, MultipleResponseException {
         Command cmd;
         String strAction;
         Map<String, Object> params = new HashMap<String, Object>();
@@ -50,6 +52,8 @@ public class Dispatcher {
         if (innerClass != null) {
             cmd = (Command) innerClass.newInstance();
             cmd.init(params);
+            System.out.println("Dispatcher Caller THREAD ID: " +Thread.currentThread().getId());
+
             CommandsThreadPool.sharedInstance().getThreadPool().execute(cmd);
         } else {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
