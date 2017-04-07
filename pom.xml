@@ -52,6 +52,14 @@
             <version>2.6</version>
         </dependency>
 
+        <!-- FOR TESTING ONLY (Used to construct HTTP RESPONSES) -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.3</version>
+        </dependency>
+
+
 
     </dependencies>
 

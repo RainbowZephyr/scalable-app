@@ -1,9 +1,9 @@
 package services;
 
 import command.Command;
+import connections.Producer;
 import connections.SocketConnectionFactory;
 import connections.SocketConnectionToController;
-import connections.Producer;
 import datastore.DataStoreConnectionFactory;
 import exceptions.MultipleResponseException;
 import threads.CommandsThreadPool;
@@ -14,11 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.RejectedExecutionException;
 
-import static utility.Constants.APPLICATION_ID;
-import static utility.Constants.APP_ID_KEY;
-import static utility.Constants.RECEIVING_APP_ID_KEY;
+import static utility.Constants.*;
 
 /* Main Entry Class for Any Of the Independent Applications */
 

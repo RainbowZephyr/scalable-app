@@ -1,17 +1,15 @@
 import com.google.gson.Gson;
 import com.rabbitmq.client.*;
+import com.rabbitmq.client.AMQP.BasicProperties.Builder;
 import org.apache.commons.lang.SerializationUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-/**
- * TESTING CLASS FOR SERVICES
- */
-public class TestServices {
+public class TestApplicationCommands {
     private static String MQ_SERVER_ADDRESS="127.0.0.1";
     private static int MQ_SERVER_PORT=5672; // default port(change from rabbitMq config file 8albn fi /etc/rabbitMQ/config
     private static Channel channel;
@@ -19,27 +17,40 @@ public class TestServices {
     private static String SERVICES_QUEUE_NAME = "app_consumer_queue";
     private static String SERVICES_RESPONSE_QUEUE = "app_producer_queue";
     private static String JSON_MESSAGE="application/json";
-    private static AMQP.BasicProperties.Builder basicProperties;
+    private static Builder basicProperties;
 
-    public static void main(String [] args) throws IOException, TimeoutException {
-        // create a publisher & send serialized jsons
-        TestServices testServices = new TestServices();
-        org.apache.log4j.BasicConfigurator.configure();
 
-        testServices.initProducer();
-        testServices.initConsumer();
 
-        Gson gson = new Gson();
-        Map<String, Object> jsonRequest = new HashMap<String, Object>();
-        jsonRequest.put("session_id", "sessionId");
-        jsonRequest.put("app_id", "appId");
-        jsonRequest.put("recieving_app_id", "someId");
-        jsonRequest.put("service_type", "echo");
-        Map<String, Object> jsonParams = new HashMap<String, Object>();
-        jsonRequest.put("request_parameters", jsonParams);
 
-        testServices.publishMessage(gson.toJson(jsonRequest));
+    public static void main(String[]args) throws IOException, TimeoutException {
+        TestApplicationCommands testAppCmds = new TestApplicationCommands();
+        testAppCmds.initProducer();
+        testAppCmds.initConsumer();
+
+
+        System.out.println("Paste in your formatted JSON & press Enter(Return) twice...");
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        StringBuffer toBeSentData = new StringBuffer();
+        for (;;) {
+            String line = in.readLine();
+            if (line == null) {
+                break;
+            }
+
+            if(line.isEmpty()){
+                toBeSentData.append("\n");
+                testAppCmds.publishMessage( toBeSentData.toString() );
+                toBeSentData.setLength(0);
+                System.out.println("Request Added To Queue: "+ SERVICES_QUEUE_NAME);
+            }
+            // Sends the received line to the server.
+            toBeSentData.append(line);
+        }
     }
+
+
+
+    //  ------------------------MQ SERVER CONNECTION --------------------------
 
     public void publishMessage(Serializable object) throws IOException {
         channel.basicPublish("",SERVICES_QUEUE_NAME, basicProperties.build(),

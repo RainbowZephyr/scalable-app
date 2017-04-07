@@ -25,15 +25,15 @@ public class RequestHandle {
             throw new MultipleResponseException();
         }
         this.stringBuffer = stringBuffer;
-        String result = constructJSON(stringBuffer);
         // get some factory and send message with result
-        SocketConnectionFactory.sharedInstance().getConnection(connectionId).sendMessage(result);
+        SocketConnectionFactory.sharedInstance().getConnection(connectionId)
+                .sendMessage(stringBuffer.toString());
         // some how send this to its destination (should be put in the corresponding queue)
         didSendMessage = true;
     }
 
     public String constructJSON(StringBuffer stringBuffer){
-        return new Gson().toJson(stringBuffer);
+        return new Gson().toJson(stringBuffer.toString());
     }
 
     public StringBuffer getStringBuffer() {
