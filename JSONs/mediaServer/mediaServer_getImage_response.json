@@ -1,10 +1,10 @@
-﻿{	
-	"session_id":"",
-	"app_id": "" ,
-	"recieving_app_id": "",
-       "response_status": "", 
-       "response_load": {
-			"imageData":"",
-	   } 
+﻿{
+  "session_id": "",
+  "app_id": "",
+  "recieving_app_id": "",
+  "response_status": "",
+  "response_load": {
+    "imageData": "",
+  }
 }
 

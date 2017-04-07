@@ -3,6 +3,8 @@
   "recieving_app_id": "",
   "service_type": "add_command",
   "request_parameters": {
-    "command": ""
+    "command": "",
+    "is_admin_command": "boolean",
+    "class_name": ""
   }
 }

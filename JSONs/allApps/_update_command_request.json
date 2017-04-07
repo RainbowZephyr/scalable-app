@@ -4,6 +4,7 @@
   "service_type": "update_command",
   "request_parameters": {
     "command": "",
-    "updated_command": ""
+    "is_admin_command": "boolean",
+    "class_name": ""
   }
 }
