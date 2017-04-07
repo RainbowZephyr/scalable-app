@@ -11,16 +11,19 @@ public class DatabaseThreadPool {
             new ThreadPoolExecutor(10, 10, 0,
                     TimeUnit.NANOSECONDS,
                     new LinkedBlockingDeque<Runnable>());
-    public static DatabaseThreadPool sharedInstance(){
+
+    private DatabaseThreadPool() {
+    }
+
+    public static DatabaseThreadPool sharedInstance() {
         return instance;
     }
-    private DatabaseThreadPool(){};
 
     public ThreadPoolExecutor getThreadPool() {
         return threadPool;
     }
 
-    public void setMaxThreadPoolSize(int size){
+    public void setMaxThreadPoolSize(int size) {
         getThreadPool().setCorePoolSize(size);
     }
 }

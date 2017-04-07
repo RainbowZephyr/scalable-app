@@ -17,6 +17,7 @@ public class RequestHandle {
 
     /**
      * IMPORTANT: THIS METHOD EXECUTES ONLY ONCE (RESTRICTION ON PUTTING ON QUEUE)
+     *
      * @param stringBuffer
      */
     public synchronized void send(StringBuffer stringBuffer)
@@ -32,7 +33,7 @@ public class RequestHandle {
         didSendMessage = true;
     }
 
-    public String constructJSON(StringBuffer stringBuffer){
+    public String constructJSON(StringBuffer stringBuffer) {
         return new Gson().toJson(stringBuffer.toString());
     }
 

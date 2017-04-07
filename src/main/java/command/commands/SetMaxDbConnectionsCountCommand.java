@@ -11,7 +11,7 @@ import java.util.Map;
 public class SetMaxDbConnectionsCountCommand extends Command {
 
     public StringBuffer execute(Map<String, Object> requestMapData) throws Exception {
-        String obj = (String)requestMapData.get(Constants.MAX_DB_CONNECTIONS_COUNT);
+        String obj = (String) requestMapData.get(Constants.MAX_DB_CONNECTIONS_COUNT);
         // get parameter
         int maxDbConnectionsCount = Integer.parseInt(obj);
         // set size

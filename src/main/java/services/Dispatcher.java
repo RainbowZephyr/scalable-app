@@ -47,11 +47,11 @@ public class Dispatcher {
         strAction = serviceRequest.getAction();
 
         Class<?> innerClass = _htblCommands.get(strAction);
-        if(innerClass != null) {
+        if (innerClass != null) {
             cmd = (Command) innerClass.newInstance();
             cmd.init(params);
             CommandsThreadPool.sharedInstance().getThreadPool().execute(cmd);
-        }else{
+        } else {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
             response.addToResponse(APP_ID_KEY, APPLICATION_ID);
             response.addToResponse(RECEIVING_APP_ID_KEY, "Controller");
@@ -60,7 +60,7 @@ public class Dispatcher {
     }
 
     public void executeControllerCommand(RequestHandle requestHandle,
-                                ServiceRequest serviceRequest)
+                                         ServiceRequest serviceRequest)
             throws IllegalAccessException,
             ExecutionException, InterruptedException, InstantiationException,
             IOException, MultipleResponseException {
@@ -71,12 +71,12 @@ public class Dispatcher {
         params.put(ServiceRequest.class.getSimpleName(), serviceRequest);
         strAction = serviceRequest.getAction();
         Class<?> innerClass = _adminHtblCommands.get(strAction);
-        if(innerClass != null){
+        if (innerClass != null) {
             cmd = (Command) innerClass.newInstance();
             cmd.init(params);
             Thread t = new Thread(cmd);
             t.run();
-        }else{
+        } else {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
             response.addToResponse("app_id", APPLICATION_ID);
             response.addToResponse("recieving_app_id", "Controller");
@@ -125,18 +125,18 @@ public class Dispatcher {
 
     public void updateCommandsTable(String key, Class<?> value,
                                     boolean adminCommand) {
-        if(adminCommand) {
+        if (adminCommand) {
             _adminHtblCommands.put(key, value);
-        }else{
+        } else {
             _htblCommands.put(key, value);
         }
     }
 
     public void removeCommand(String key,
                               boolean adminCommand) {
-        if(adminCommand) {
+        if (adminCommand) {
             _adminHtblCommands.remove(key);
-        }else{
+        } else {
             _htblCommands.remove(key);
         }
     }

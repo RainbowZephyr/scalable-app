@@ -16,7 +16,7 @@ public class TestControllerCommands {
     final static String CONTROLLER_HOST = "127.0.0.1";
     final static int CONTROLLER_PORT = 6002;
 
-    public static void main(String[]args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         bootNettyClient(CONTROLLER_HOST, CONTROLLER_PORT);
     }
 
@@ -48,22 +48,21 @@ public class TestControllerCommands {
             System.out.println("Paste in your formatted JSON & press Enter(Return) twice...");
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             StringBuffer toBeSentData = new StringBuffer();
-            for (;;) {
+            for (; ; ) {
                 String line = in.readLine();
                 if (line == null) {
                     break;
                 }
 
-                if(line.isEmpty()){
+                if (line.isEmpty()) {
                     toBeSentData.append("\n");
-                    lastWriteFuture = channel.writeAndFlush( toBeSentData.toString() );
+                    lastWriteFuture = channel.writeAndFlush(toBeSentData.toString());
                     toBeSentData.setLength(0);
                     System.out.println("SENT COMMAND TO CONTROLLER.");
                 }
                 // Sends the received line to the server.
                 toBeSentData.append(line);
             }
-
 
 
             // Wait until the connection is closed.
@@ -78,7 +77,7 @@ public class TestControllerCommands {
     static class ApplicationResponseHandler extends ChannelInboundHandlerAdapter {
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
-            System.out.println("APPLICATION RESPONDED WITH: \n"+ msg);
+            System.out.println("APPLICATION RESPONDED WITH: \n" + msg);
         }
 
         @Override

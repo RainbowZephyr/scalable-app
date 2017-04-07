@@ -11,7 +11,7 @@ import java.util.Map;
 public class SetMaxThreadCountCommand extends Command {
 
     public StringBuffer execute(Map<String, Object> requestMapData) {
-        String obj = (String)requestMapData.get(Constants.MAX_THREAD_COUNT);
+        String obj = (String) requestMapData.get(Constants.MAX_THREAD_COUNT);
         // get parameter
         int maxPoolSize = Integer.parseInt(obj);
         // set size

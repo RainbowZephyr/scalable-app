@@ -15,15 +15,26 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * The producer endpoint that writes to the queue.
- * @author syntx
  *
+ * @author syntx
  */
 public class Producer implements SocketConnection {
 
     final private static Producer instance = new Producer();
     private AMQP.BasicProperties.Builder basicProperties;
     private String PRODUCER_QUEUE_NAME, CONSUMER_QUEUE_NAME,
-            JSON_MESSAGE="application/json";
+            JSON_MESSAGE = "application/json";
+    private String MQ_SERVER_ADDRESS = "127.0.0.1";
+    private int MQ_SERVER_PORT = 5672; // default port(change from rabbitMq config file 8albn fi /etc/rabbitMQ/config
+    private Channel channel;
+    private Connection connection;
+
+    private Producer() {
+    }
+
+    public static Producer sharedInstance() {
+        return instance;
+    }
 
     public String getMQ_SERVER_ADDRESS() {
         return MQ_SERVER_ADDRESS;
@@ -55,17 +66,6 @@ public class Producer implements SocketConnection {
 
     public void setConnection(Connection connection) {
         this.connection = connection;
-    }
-
-    private String MQ_SERVER_ADDRESS="127.0.0.1";
-    private int MQ_SERVER_PORT=5672; // default port(change from rabbitMq config file 8albn fi /etc/rabbitMQ/config
-    private Channel channel;
-    private Connection connection;
-
-    private Producer() {}
-
-    public static Producer sharedInstance(){
-        return instance;
     }
 
     public void init() throws IOException, TimeoutException {
@@ -105,7 +105,7 @@ public class Producer implements SocketConnection {
     }
 
     public void sendMessage(String repsonse) throws IOException {
-        channel.basicPublish("",PRODUCER_QUEUE_NAME, basicProperties.build(),
+        channel.basicPublish("", PRODUCER_QUEUE_NAME, basicProperties.build(),
                 SerializationUtils.serialize(repsonse.toString()));
     }
 }

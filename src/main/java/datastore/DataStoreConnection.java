@@ -4,8 +4,9 @@ import services.RequestHandle;
 
 import java.util.Map;
 
-public abstract class DataStoreConnection implements Runnable{
+public abstract class DataStoreConnection implements Runnable {
     Map<String, Object> parameters;
+
     /**
      * This method is used to perform any action on the data store itself.
      * For example, if connecting to the data store, first handle that in the
@@ -14,11 +15,12 @@ public abstract class DataStoreConnection implements Runnable{
      * Since that runs in a seperate thread, make sure to handle everything in the execute
      * for example if handling multiple Queries, first connect to the DB then execute the queries
      * Simply put, pass everything needed to perform a specific action on the data store.
+     *
      * @param parameters Data required to execute an action.
      */
     public abstract StringBuffer execute(Map<String, Object> parameters) throws Exception;
 
-    final public void run(){
+    final public void run() {
         try {
             StringBuffer strBuffer = execute(parameters);
             RequestHandle requestHandle = (RequestHandle)
@@ -29,7 +31,7 @@ public abstract class DataStoreConnection implements Runnable{
         }
     }
 
-    public void init(Map<String, Object> parameters){
+    public void init(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
 }

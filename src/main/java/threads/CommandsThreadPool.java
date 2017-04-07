@@ -5,18 +5,21 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class CommandsThreadPool {
-    private final int DEFAULT_POOL_SIZE = 10;
-    private int poolSize = DEFAULT_POOL_SIZE;
     private static CommandsThreadPool instance =
             new CommandsThreadPool();
+    private final int DEFAULT_POOL_SIZE = 10;
+    private int poolSize = DEFAULT_POOL_SIZE;
     private ThreadPoolExecutor threadPool =
             new ThreadPoolExecutor(DEFAULT_POOL_SIZE, DEFAULT_POOL_SIZE, 0,
                     TimeUnit.NANOSECONDS,
                     new LinkedBlockingDeque<Runnable>());
-    public static CommandsThreadPool sharedInstance(){
+
+    private CommandsThreadPool() {
+    }
+
+    public static CommandsThreadPool sharedInstance() {
         return instance;
     }
-    private CommandsThreadPool(){};
 
     public ThreadPoolExecutor getThreadPool() {
         return threadPool;
@@ -31,7 +34,7 @@ public class CommandsThreadPool {
                 threadPool.getQueue());
     }
 
-    public void setMaxThreadPoolSize(int size){
+    public void setMaxThreadPoolSize(int size) {
         poolSize = size;
         getThreadPool().setCorePoolSize(poolSize);
     }

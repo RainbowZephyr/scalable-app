@@ -8,8 +8,8 @@ import utility.Constants;
 import java.util.Map;
 
 
-public class AdminRequestServer extends SimpleChannelInboundHandler<Map<String,Object>> {
-    protected void channelRead0(ChannelHandlerContext ctx, Map<String,Object> request) throws Exception {
+public class AdminRequestServer extends SimpleChannelInboundHandler<Map<String, Object>> {
+    protected void channelRead0(ChannelHandlerContext ctx, Map<String, Object> request) throws Exception {
         ServiceRequest serviceRequest = constructReq(request);
         Dispatcher.sharedInstance().executeControllerCommand(
                 new RequestHandle(SocketConnectionToController.class.getSimpleName())

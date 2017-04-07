@@ -10,19 +10,17 @@ import java.io.Serializable;
 import java.util.concurrent.TimeoutException;
 
 public class TestApplicationCommands {
-    private static String MQ_SERVER_ADDRESS="127.0.0.1";
-    private static int MQ_SERVER_PORT=5672; // default port(change from rabbitMq config file 8albn fi /etc/rabbitMQ/config
+    private static String MQ_SERVER_ADDRESS = "127.0.0.1";
+    private static int MQ_SERVER_PORT = 5672; // default port(change from rabbitMq config file 8albn fi /etc/rabbitMQ/config
     private static Channel channel;
     private static Connection connection;
     private static String SERVICES_QUEUE_NAME = "app_consumer_queue";
     private static String SERVICES_RESPONSE_QUEUE = "app_producer_queue";
-    private static String JSON_MESSAGE="application/json";
+    private static String JSON_MESSAGE = "application/json";
     private static Builder basicProperties;
 
 
-
-
-    public static void main(String[]args) throws IOException, TimeoutException {
+    public static void main(String[] args) throws IOException, TimeoutException {
         TestApplicationCommands testAppCmds = new TestApplicationCommands();
         testAppCmds.initProducer();
         testAppCmds.initConsumer();
@@ -31,17 +29,17 @@ public class TestApplicationCommands {
         System.out.println("Paste in your formatted JSON & press Enter(Return) twice...");
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         StringBuffer toBeSentData = new StringBuffer();
-        for (;;) {
+        for (; ; ) {
             String line = in.readLine();
             if (line == null) {
                 break;
             }
 
-            if(line.isEmpty()){
+            if (line.isEmpty()) {
                 toBeSentData.append("\n");
-                testAppCmds.publishMessage( toBeSentData.toString() );
+                testAppCmds.publishMessage(toBeSentData.toString());
                 toBeSentData.setLength(0);
-                System.out.println("Request Added To Queue: "+ SERVICES_QUEUE_NAME);
+                System.out.println("Request Added To Queue: " + SERVICES_QUEUE_NAME);
             }
             // Sends the received line to the server.
             toBeSentData.append(line);
@@ -49,11 +47,10 @@ public class TestApplicationCommands {
     }
 
 
-
     //  ------------------------MQ SERVER CONNECTION --------------------------
 
     public void publishMessage(Serializable object) throws IOException {
-        channel.basicPublish("",SERVICES_QUEUE_NAME, basicProperties.build(),
+        channel.basicPublish("", SERVICES_QUEUE_NAME, basicProperties.build(),
                 SerializationUtils.serialize(object));
     }
 
@@ -96,6 +93,9 @@ public class TestApplicationCommands {
         private Channel channel;
         private Connection connection;
 
+        public MyConsumer() {
+        }
+
         public void setQUEUE_NAME(String QUEUE_NAME) {
             this.QUEUE_NAME = QUEUE_NAME;
         }
@@ -107,8 +107,6 @@ public class TestApplicationCommands {
         public void setMQ_SERVER_PORT(int MQ_SERVER_PORT) {
             this.MQ_SERVER_PORT = MQ_SERVER_PORT;
         }
-
-        public MyConsumer(){}
 
         public void init() throws IOException, TimeoutException {
             //Create a connection factory
@@ -128,7 +126,7 @@ public class TestApplicationCommands {
         public void run() {
             try {
                 boolean autoAck = true;
-                channel.basicConsume(QUEUE_NAME, autoAck,this);
+                channel.basicConsume(QUEUE_NAME, autoAck, this);
                 System.out.println("Listening @ : " + QUEUE_NAME);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -146,7 +144,7 @@ public class TestApplicationCommands {
          */
         public void handleDelivery(String consumerTag, Envelope env,
                                    AMQP.BasicProperties props, byte[] body) throws IOException {
-            String jsonStr = (String)SerializationUtils.deserialize(body);
+            String jsonStr = (String) SerializationUtils.deserialize(body);
 
             // parse JSONString
             Gson gson = new Gson();
@@ -155,9 +153,16 @@ public class TestApplicationCommands {
             // Construct Service Request
         }
 
-        public void handleCancel(String consumerTag) {}
-        public void handleCancelOk(String consumerTag) {}
-        public void handleRecoverOk(String consumerTag) {}
-        public void handleShutdownSignal(String consumerTag, ShutdownSignalException arg1) {}
+        public void handleCancel(String consumerTag) {
+        }
+
+        public void handleCancelOk(String consumerTag) {
+        }
+
+        public void handleRecoverOk(String consumerTag) {
+        }
+
+        public void handleShutdownSignal(String consumerTag, ShutdownSignalException arg1) {
+        }
     }
 }

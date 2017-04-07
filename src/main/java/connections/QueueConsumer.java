@@ -22,10 +22,10 @@ import static utility.Constants.*;
 
 /**
  * The class consumes messages off of the queue. Runnable to listen on port (on its own thread)
- * @author syntx
  *
+ * @author syntx
  */
-public class QueueConsumer implements Runnable, Consumer{
+public class QueueConsumer implements Runnable, Consumer {
     private static QueueConsumer instance = new QueueConsumer();
     // default vlaues
     private String QUEUE_NAME;
@@ -33,6 +33,13 @@ public class QueueConsumer implements Runnable, Consumer{
     private int MQ_SERVER_PORT; // default port(change from rabbitMq config file 8albn fi /etc/rabbitMQ/config
     private Channel channel;
     private Connection connection;
+
+    private QueueConsumer() {
+    }
+
+    public static QueueConsumer sharedInstance() {
+        return instance;
+    }
 
     public String getQUEUE_NAME() {
         return QUEUE_NAME;
@@ -74,11 +81,6 @@ public class QueueConsumer implements Runnable, Consumer{
         this.connection = connection;
     }
 
-    private QueueConsumer(){}
-    public static QueueConsumer sharedInstance(){
-        return instance;
-    }
-
     public void init() throws IOException, TimeoutException {
         //Create a connection factory
         ConnectionFactory factory = new ConnectionFactory();
@@ -109,7 +111,7 @@ public class QueueConsumer implements Runnable, Consumer{
     public void run() {
         try {
             boolean autoAck = true;
-            channel.basicConsume(QUEUE_NAME, autoAck,this);
+            channel.basicConsume(QUEUE_NAME, autoAck, this);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -126,7 +128,7 @@ public class QueueConsumer implements Runnable, Consumer{
      */
     public void handleDelivery(String consumerTag, Envelope env,
                                BasicProperties props, byte[] body) throws IOException {
-        String jsonStr = (String)SerializationUtils.deserialize(body);
+        String jsonStr = (String) SerializationUtils.deserialize(body);
 
         // parse JSONString
         Gson gson = new Gson();
@@ -161,8 +163,15 @@ public class QueueConsumer implements Runnable, Consumer{
         return new ServiceRequest(strAction, sessionId, requestParams);
     }
 
-    public void handleCancel(String consumerTag) {}
-    public void handleCancelOk(String consumerTag) {}
-    public void handleRecoverOk(String consumerTag) {}
-    public void handleShutdownSignal(String consumerTag, ShutdownSignalException arg1) {}
+    public void handleCancel(String consumerTag) {
+    }
+
+    public void handleCancelOk(String consumerTag) {
+    }
+
+    public void handleRecoverOk(String consumerTag) {
+    }
+
+    public void handleShutdownSignal(String consumerTag, ShutdownSignalException arg1) {
+    }
 }

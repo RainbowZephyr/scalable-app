@@ -12,6 +12,7 @@ import java.util.Map;
 public class EchoCommand extends Command {
     /**
      * TEST COMMAND CLASS
+     *
      * @param mapUserData
      * @return
      * @throws Exception
@@ -34,6 +35,7 @@ public class EchoCommand extends Command {
      * this means that the current thread won't be responsible for the
      * response but another thread (here the case is that database connection thread
      * is the one responsible)
+     *
      * @return
      */
     @Override
