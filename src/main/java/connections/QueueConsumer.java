@@ -134,6 +134,7 @@ public class QueueConsumer implements Runnable, Consumer {
         // parse JSONString
         Gson gson = new Gson();
         Map<String, Object> map = gson.fromJson(jsonStr, Map.class);
+
         long deliveryTag = env.getDeliveryTag();
         // Construct Service Request
         ServiceRequest serviceRequest = constructReq(map);
@@ -178,7 +179,6 @@ public class QueueConsumer implements Runnable, Consumer {
             channel.basicNack(deliveryTag, false, true);
         }
     }
-
     public void handleCancel(String consumerTag) {
     }
 

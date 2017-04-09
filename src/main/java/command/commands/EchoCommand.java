@@ -29,7 +29,7 @@ public class EchoCommand extends Command {
         connection.init(parameters);
         DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
 //        Thread.sleep(5000);
-        return new StringBuffer("echo execute");
+        return null;
     }
 
     /**

@@ -19,6 +19,7 @@ public class BlockingThreadPool extends ThreadPoolExecutor{
         initRejectedExecutionHandler();
     }
 
+    private RejectedExecutionHandler rejectedExecutionHandler;
 
     /**
      * initializes a policy to handle the rejected tasks.
@@ -48,32 +49,8 @@ public class BlockingThreadPool extends ThreadPoolExecutor{
                     // Task got accepted!
                     break;
                 }
-
-            }
             }
         };
         setRejectedExecutionHandler(rejectedExecutionHandler);
     }
-
-    /**
-     * Called when a task is rejected.
-     * @param r - task to be executed
-     * @return whether or not to keep trying submitting the task
-     */
-    protected boolean sendMessageAck(Runnable r)
-    {
-
-        return true;
-    }
-
-    /**
-     * Called when the rejected task is finally accepted.
-     * @param r - Task
-     */
-    protected void taskAccepted(Runnable r)
-    {
-
-    }
-
-
 }

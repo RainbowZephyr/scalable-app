@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 public class CommandsThreadPool{
     private static CommandsThreadPool instance =
             new CommandsThreadPool();
-    private final int DEFAULT_POOL_SIZE = 2;
+    private final int DEFAULT_POOL_SIZE = 10;
     private long retryEvery = 1;
     private TimeUnit retryEveryTimeUnit = TimeUnit.SECONDS;
     private int poolSize = DEFAULT_POOL_SIZE;
