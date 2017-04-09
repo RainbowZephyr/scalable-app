@@ -1,6 +1,6 @@
 package thread_pools;
 
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -18,9 +18,7 @@ public class DatabaseThreadPool {
                     DEFAULT_POOL_SIZE,
                     0,
                     TimeUnit.NANOSECONDS,
-                    retryEvery,
-                    retryEveryTimeUnit,
-                    new LinkedBlockingDeque<Runnable>());
+                    new SynchronousQueue<Runnable>());
 
     private DatabaseThreadPool() {
     }
@@ -35,15 +33,5 @@ public class DatabaseThreadPool {
 
     public void setMaxThreadPoolSize(int size) {
         getThreadPool().setCorePoolSize(size);
-    }
-
-    /**
-     * set
-     * @param retryEvery - units of timeUnit to wait till resubmitting a task
-     * @param timeUnit - TimeUnit (nano, milliseconds, seconds)
-     */
-    public void setRetryEvery(long retryEvery, TimeUnit timeUnit){
-        this.retryEvery = retryEvery;
-        this.retryEveryTimeUnit = timeUnit;
     }
 }

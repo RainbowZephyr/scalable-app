@@ -52,8 +52,6 @@ public class Dispatcher {
         if (innerClass != null) {
             cmd = (Command) innerClass.newInstance();
             cmd.init(params);
-            System.out.println("Dispatcher Caller THREAD ID: " +Thread.currentThread().getId());
-
             CommandsThreadPool.sharedInstance().getThreadPool().execute(cmd);
         } else {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
