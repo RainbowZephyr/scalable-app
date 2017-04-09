@@ -1,5 +1,5 @@
 package controller;
 
 public enum AppType {
-	search,wall,user,media,message
+	search, wall, user, media, message
 }
