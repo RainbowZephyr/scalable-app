@@ -9,18 +9,18 @@ public abstract class Command implements Runnable {
 
     protected Map<String, Object> parameters;
 
-    protected boolean shouldReturnResponse(){
+    protected boolean shouldReturnResponse() {
         return true;
     }
 
     final public void run() {
-            ServiceRequest serviceRequest = (ServiceRequest)
-                    parameters.get(ServiceRequest.class.getSimpleName());
-            RequestHandle requestHandle = (RequestHandle)
-                    parameters.get(RequestHandle.class.getSimpleName());
+        ServiceRequest serviceRequest = (ServiceRequest)
+                parameters.get(ServiceRequest.class.getSimpleName());
+        RequestHandle requestHandle = (RequestHandle)
+                parameters.get(RequestHandle.class.getSimpleName());
         try {
             StringBuffer strbufResponse = execute(serviceRequest.getData());
-            if(shouldReturnResponse()) {
+            if (shouldReturnResponse()) {
                 // send response to the queue
                 requestHandle.send(strbufResponse);
             }
@@ -29,8 +29,9 @@ public abstract class Command implements Runnable {
         }
     }
 
-    final public void init(Map<String, Object> parameters){
+    final public void init(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
+
     protected abstract StringBuffer execute(Map<String, Object> requestMapData) throws Exception;
 }

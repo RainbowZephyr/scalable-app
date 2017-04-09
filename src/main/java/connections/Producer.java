@@ -9,29 +9,31 @@ import org.apache.commons.lang.SerializationUtils;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
 
 /**
  * The producer endpoint that writes to the queue.
- * @author syntx
  *
+ * @author syntx
  */
 public class Producer implements SocketConnection {
 
     final private static Producer instance = new Producer();
     private AMQP.BasicProperties.Builder basicProperties;
-    private String QUEUE_NAME, JSON_MESSAGE="application/json";
+    private String PRODUCER_QUEUE_NAME, CONSUMER_QUEUE_NAME,
+            JSON_MESSAGE = "application/json";
+    private String MQ_SERVER_ADDRESS = "127.0.0.1";
+    private int MQ_SERVER_PORT = 5672; // default port(change from rabbitMq config file 8albn fi /etc/rabbitMQ/config
+    private Channel channel;
+    private Connection connection;
 
-    public String getQUEUE_NAME() {
-        return QUEUE_NAME;
+    private Producer() {
     }
 
-    public void setQUEUE_NAME(String QUEUE_NAME) {
-        this.QUEUE_NAME = QUEUE_NAME;
+    public static Producer sharedInstance() {
+        return instance;
     }
 
     public String getMQ_SERVER_ADDRESS() {
@@ -66,17 +68,6 @@ public class Producer implements SocketConnection {
         this.connection = connection;
     }
 
-    private String MQ_SERVER_ADDRESS="127.0.0.1";
-    private int MQ_SERVER_PORT=5672; // default port(change from rabbitMq config file 8albn fi /etc/rabbitMQ/config
-    private Channel channel;
-    private Connection connection;
-
-    private Producer() {}
-
-    public static Producer sharedInstance(){
-        return instance;
-    }
-
     public void init() throws IOException, TimeoutException {
         //Create a connection factory
         ConnectionFactory factory = new ConnectionFactory();
@@ -93,7 +84,9 @@ public class Producer implements SocketConnection {
 
         //declaring a queue for this channel. If queue does not exist,
         //it will be created on the server.
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        channel.queueDeclare(PRODUCER_QUEUE_NAME, false, false, false, null);
+        channel.queueDeclare(CONSUMER_QUEUE_NAME, false, false, false, null);
+
         basicProperties = new AMQP.BasicProperties.Builder();
         basicProperties.contentType(JSON_MESSAGE);
     }
@@ -103,15 +96,16 @@ public class Producer implements SocketConnection {
         InputStream in = new FileInputStream("config/message_queues.properties");
         prop.load(in);
         in.close();
-        Enumeration enumKeys = prop.propertyNames();
         MQ_SERVER_ADDRESS = prop.getProperty(this.getClass().getSimpleName() + "_HOST");
         MQ_SERVER_PORT = Integer.parseInt(
                 prop.getProperty(this.getClass().getSimpleName() + "_PORT"));
-        QUEUE_NAME = prop.getProperty(this.getClass().getSimpleName() + "_QUEUE");
+        PRODUCER_QUEUE_NAME = prop.getProperty(this.getClass().getSimpleName() + "_QUEUE");
+        CONSUMER_QUEUE_NAME = prop.getProperty(QueueConsumer.sharedInstance().getClass()
+                .getSimpleName() + "_QUEUE");
     }
 
-    public void sendMessage(Serializable object) throws IOException {
-        channel.basicPublish("",QUEUE_NAME, basicProperties.build(),
-                SerializationUtils.serialize(object));
+    public void sendMessage(String repsonse) throws IOException {
+        channel.basicPublish("", PRODUCER_QUEUE_NAME, basicProperties.build(),
+                SerializationUtils.serialize(repsonse.toString()));
     }
 }

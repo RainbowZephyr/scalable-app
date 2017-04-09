@@ -4,6 +4,7 @@ package datastore.datastores;
 import datastore.DataStoreConnection;
 
 import java.util.Map;
+
 /* This is an example class (you should create a similar one to this if your application uses
 * SQL Database Connection OR NoSQL Database Connection
 * THIS IS MAINLY FOR DECOUPLING , Don't Forget to add its name to the config/data_store.properties

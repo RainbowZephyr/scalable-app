@@ -19,10 +19,10 @@ public class UpdateCommand extends Command {
 
         Class<?> innerClass = Class.forName(commandClassName);
         Response response;
-        if(innerClass != null){
+        if (innerClass != null) {
             Dispatcher.sharedInstance().updateCommandsTable(commandKey, innerClass, adminCommand);
             response = new Response(ResponseCodes.STATUS_OK);
-        }else{
+        } else {
             response = new Response(ResponseCodes.STATUS_BAD_REQUEST);
         }
         return response.toJson();

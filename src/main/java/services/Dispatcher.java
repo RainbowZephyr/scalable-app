@@ -1,12 +1,12 @@
 package services;
 
 import command.Command;
+import connections.Producer;
 import connections.SocketConnectionFactory;
 import connections.SocketConnectionToController;
-import connections.Producer;
 import datastore.DataStoreConnectionFactory;
 import exceptions.MultipleResponseException;
-import threads.CommandsThreadPool;
+import thread_pools.CommandsThreadPool;
 import utility.ResponseCodes;
 
 import java.io.FileInputStream;
@@ -14,11 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.RejectedExecutionException;
 
-import static utility.Constants.APPLICATION_ID;
-import static utility.Constants.APP_ID_KEY;
-import static utility.Constants.RECEIVING_APP_ID_KEY;
+import static utility.Constants.*;
 
 /* Main Entry Class for Any Of the Independent Applications */
 
@@ -41,7 +38,9 @@ public class Dispatcher {
      * Each Executed Command is handled in a separate Thread (thus the thread pool) */
     public void dispatchRequest(RequestHandle requestHandle,
                                 ServiceRequest serviceRequest)
-            throws IllegalAccessException, InstantiationException, ExecutionException, InterruptedException, IOException, MultipleResponseException {
+            throws IllegalAccessException,
+            InstantiationException, ExecutionException,
+            InterruptedException, IOException, MultipleResponseException {
         Command cmd;
         String strAction;
         Map<String, Object> params = new HashMap<String, Object>();
@@ -50,11 +49,13 @@ public class Dispatcher {
         strAction = serviceRequest.getAction();
 
         Class<?> innerClass = _htblCommands.get(strAction);
-        if(innerClass != null) {
+        if (innerClass != null) {
             cmd = (Command) innerClass.newInstance();
             cmd.init(params);
+            System.out.println("Dispatcher Caller THREAD ID: " +Thread.currentThread().getId());
+
             CommandsThreadPool.sharedInstance().getThreadPool().execute(cmd);
-        }else{
+        } else {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
             response.addToResponse(APP_ID_KEY, APPLICATION_ID);
             response.addToResponse(RECEIVING_APP_ID_KEY, "Controller");
@@ -63,7 +64,7 @@ public class Dispatcher {
     }
 
     public void executeControllerCommand(RequestHandle requestHandle,
-                                ServiceRequest serviceRequest)
+                                         ServiceRequest serviceRequest)
             throws IllegalAccessException,
             ExecutionException, InterruptedException, InstantiationException,
             IOException, MultipleResponseException {
@@ -74,12 +75,12 @@ public class Dispatcher {
         params.put(ServiceRequest.class.getSimpleName(), serviceRequest);
         strAction = serviceRequest.getAction();
         Class<?> innerClass = _adminHtblCommands.get(strAction);
-        if(innerClass != null){
+        if (innerClass != null) {
             cmd = (Command) innerClass.newInstance();
             cmd.init(params);
             Thread t = new Thread(cmd);
             t.run();
-        }else{
+        } else {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
             response.addToResponse("app_id", APPLICATION_ID);
             response.addToResponse("recieving_app_id", "Controller");
@@ -128,18 +129,18 @@ public class Dispatcher {
 
     public void updateCommandsTable(String key, Class<?> value,
                                     boolean adminCommand) {
-        if(adminCommand) {
+        if (adminCommand) {
             _adminHtblCommands.put(key, value);
-        }else{
+        } else {
             _htblCommands.put(key, value);
         }
     }
 
     public void removeCommand(String key,
                               boolean adminCommand) {
-        if(adminCommand) {
+        if (adminCommand) {
             _adminHtblCommands.remove(key);
-        }else{
+        } else {
             _htblCommands.remove(key);
         }
     }

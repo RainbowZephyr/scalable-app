@@ -1,10 +1,10 @@
 ﻿{
-	"session_id":"",
-	"app_id": "" ,
-	"recieving_app_id": "",
-       "service_type":"logIn",
-	"request_parameters": {
-       	"userName":"",
-       	"passWord":"",
-        }
+  "session_id": "",
+  "app_id": "",
+  "recieving_app_id": "",
+  "service_type": "logIn",
+  "request_parameters": {
+    "userName": "",
+    "passWord": "",
+  }
 }	
