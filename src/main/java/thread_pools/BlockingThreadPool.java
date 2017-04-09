@@ -8,13 +8,13 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class BlockingThreadPool extends ThreadPoolExecutor{
+public class BlockingThreadPool extends ThreadPoolExecutor {
 
     BlockingThreadPool(int corePoolSize,
-                              int maximumPoolSize,
-                              long keepAliveTime,
-                              TimeUnit unit,
-                              BlockingQueue<Runnable> workQueue) {
+                       int maximumPoolSize,
+                       long keepAliveTime,
+                       TimeUnit unit,
+                       BlockingQueue<Runnable> workQueue) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
         initRejectedExecutionHandler();
     }
@@ -26,28 +26,28 @@ public class BlockingThreadPool extends ThreadPoolExecutor{
      * Here mainly it keeps indefinitely trying to assign a task
      * till a number of retries (total rejection) or acceptance
      */
-    private void initRejectedExecutionHandler(){
+    private void initRejectedExecutionHandler() {
         RejectedExecutionHandler rejectedExecutionHandler = new RejectedExecutionHandler() {
             public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
 
-            // Try indefinitely to add the task to the queue
-            while (true){
-                // if thread pool is down (reject)
-                if(executor.isShutdown()){
-                    try {
-                    synchronized (QueueConsumerListenerThread.sharedInstance()){
-                        QueueConsumerListenerThread.sharedInstance().wait();
+                // Try indefinitely to add the task to the queue
+                while (true) {
+                    // if thread pool is down (reject)
+                    if (executor.isShutdown()) {
+                        try {
+                            synchronized (QueueConsumerListenerThread.sharedInstance()) {
+                                QueueConsumerListenerThread.sharedInstance().wait();
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        throw new CannotAcceptRequestException();
                     }
-                    throw new CannotAcceptRequestException();
-                }
-                if (executor.getActiveCount() < executor.getCorePoolSize())
-                {
-                    executor.execute(r);
-                    // Task got accepted!
-                    break;
+                    if (executor.getActiveCount() < executor.getCorePoolSize()) {
+                        executor.execute(r);
+                        // Task got accepted!
+                        break;
+                    }
                 }
             }
         };

@@ -138,7 +138,7 @@ public class QueueConsumer implements Runnable, Consumer {
         long deliveryTag = env.getDeliveryTag();
         // Construct Service Request
         ServiceRequest serviceRequest = constructReq(map);
-        serviceRequest.getData().put(DELIVERY_TAG_KEY, deliveryTag);
+        
         try {
             Dispatcher.sharedInstance().dispatchRequest(new RequestHandle(
                     Producer.class.getSimpleName()), serviceRequest);
