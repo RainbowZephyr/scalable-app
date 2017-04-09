@@ -3,6 +3,7 @@ package connections;
 import com.google.gson.Gson;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
+import exceptions.CannotAcceptRequestException;
 import exceptions.MultipleResponseException;
 import org.apache.commons.lang.SerializationUtils;
 import services.Dispatcher;
@@ -110,7 +111,7 @@ public class QueueConsumer implements Runnable, Consumer {
 
     public void run() {
         try {
-            boolean autoAck = true;
+            boolean autoAck = false;
             channel.basicConsume(QUEUE_NAME, autoAck, this);
         } catch (IOException e) {
             e.printStackTrace();
@@ -124,7 +125,7 @@ public class QueueConsumer implements Runnable, Consumer {
     }
 
     /**
-     * Called when new message is available.
+     * Called when new message is available. ( a request is ack only if it can be executed).
      */
     public void handleDelivery(String consumerTag, Envelope env,
                                BasicProperties props, byte[] body) throws IOException {
@@ -133,12 +134,17 @@ public class QueueConsumer implements Runnable, Consumer {
         // parse JSONString
         Gson gson = new Gson();
         Map<String, Object> map = gson.fromJson(jsonStr, Map.class);
+        long deliveryTag = env.getDeliveryTag();
         // Construct Service Request
         ServiceRequest serviceRequest = constructReq(map);
+        serviceRequest.getData().put(DELIVERY_TAG_KEY, deliveryTag);
         try {
             Dispatcher.sharedInstance().dispatchRequest(new RequestHandle(
                     Producer.class.getSimpleName()), serviceRequest);
-        } catch (IllegalAccessException e) {
+        } catch (CannotAcceptRequestException e) {
+            sendAck(deliveryTag, false);
+            QueueConsumerListenerThread.sharedInstance().start(); // restarting the app
+        }catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -150,6 +156,8 @@ public class QueueConsumer implements Runnable, Consumer {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            sendAck(deliveryTag, true);
         }
     }
 
@@ -161,6 +169,14 @@ public class QueueConsumer implements Runnable, Consumer {
         Map<String, Object> requestParams = (Map<String, Object>)
                 request.get(REQUEST_PARAMETERS_KEY);
         return new ServiceRequest(strAction, sessionId, requestParams);
+    }
+
+    public void sendAck(long deliveryTag, boolean ack) throws IOException {
+        if(ack){
+            channel.basicAck(deliveryTag, false);
+        }else{
+            channel.basicNack(deliveryTag, false, true);
+        }
     }
 
     public void handleCancel(String consumerTag) {

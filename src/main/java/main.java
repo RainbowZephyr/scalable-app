@@ -1,5 +1,6 @@
 import connections.Producer;
 import connections.QueueConsumer;
+import connections.QueueConsumerListenerThread;
 import connections.SocketConnectionToController;
 import services.Dispatcher;
 
@@ -10,8 +11,7 @@ public class main {
         Dispatcher.sharedInstance().init();
         Producer.sharedInstance().init(); // this initializes both listening QUEUE & Producer QUEUE
         QueueConsumer.sharedInstance().init();
-        Thread consumerListeningThread = new Thread(QueueConsumer.sharedInstance());
-        consumerListeningThread.start();
+        QueueConsumerListenerThread.sharedInstance().start();
         SocketConnectionToController.sharedInstance().init();
     }
 

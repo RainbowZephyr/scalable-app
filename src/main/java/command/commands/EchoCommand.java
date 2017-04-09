@@ -4,7 +4,7 @@ import command.Command;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
 import services.RequestHandle;
-import threads.DatabaseThreadPool;
+import thread_pools.DatabaseThreadPool;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,8 @@ public class EchoCommand extends Command {
         parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
         connection.init(parameters);
         DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
-        return null;
+//        Thread.sleep(5000);
+        return new StringBuffer("echo execute");
     }
 
     /**
