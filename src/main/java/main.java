@@ -24,8 +24,7 @@ public class main {
 //        ServiceRequest serviceRequest = new ServiceRequest("echo", "sessionId", map);
 //        RequestHandle serviceHandle = new RequestHandle();
 //        Dispatcher.sharedInstance().dispatchRequest(serviceHandle, serviceRequest);
-        /* #1 run a netty server
-           #2 keep polling for a message using the worker threads
+        /* #1 run a netty server           #2 keep polling for a message using the worker threads
            #3 on message Received assign to a thread
            #4
          */
