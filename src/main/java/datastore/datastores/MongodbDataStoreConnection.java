@@ -1,28 +1,29 @@
 package datastore.datastores;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import datastore.DataStoreConnection;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import utility.ResponseCodes;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.JsonArray;
-import com.mongodb.BasicDBObject;
-import com.mongodb.client.FindIterable;
-import org.bson.Document;
-import org.bson.types.ObjectId;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-
-import static com.mongodb.client.model.Filters.*;
-
-import datastore.DataStoreConnection;
-import utility.ResponseCodes;
+import static com.mongodb.client.model.Filters.eq;
 
 public class MongodbDataStoreConnection extends DataStoreConnection {
+    private MongoClient mongoClient;
+
+
+    /*
     private MongoClient mongoClient;
     private static MongoClientURI mongoClientURI;
 
@@ -43,9 +44,13 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     public static boolean isMongoClientURISet() {
         return mongoClientURI != null;
     }
+    */
 
     @Override
     public StringBuffer execute(Map<String, Object> parameters) throws Exception {
+
+        mongoClient = new MongoClient((MongoClientURI) parameters.get("mongoClientURI"));
+
         String action = (String) parameters.get("action");
 //		switch(action){
 //		case "createMessagesThread":
@@ -59,7 +64,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         } else if (action.equals("searchForUser")) {
             String nameQuery = (String) parameters.get("nameQuery");
             return searchForUser(nameQuery);
-        } else if (action.equals("createMessagesThread")) {
+        } else if (action.equals("searchForUsersAndThreads")) {
             String nameQuery = (String) parameters.get("nameQuery");
             return searchForUsersAndThreads(nameQuery);
         }
