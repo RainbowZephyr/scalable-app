@@ -8,7 +8,6 @@
     <artifactId>scalable</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-
 <dependencies>
     <dependency>
         <groupId>io.netty</groupId>
@@ -16,16 +15,26 @@
         <version>4.1.9.Final</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.accumulo/accumulo-core -->
-    <dependency>
-        <groupId>org.apache.accumulo</groupId>
-        <artifactId>accumulo-core</artifactId>
-        <version>1.8.1</version>
-    </dependency>
-    <dependency>
+     <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongo-java-driver</artifactId>
         <version>3.4.2</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+    <dependency>
+        <groupId>redis.clients</groupId>
+        <artifactId>jedis</artifactId>
+        <version>2.9.0</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
+    <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>1.13</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.tukaani/xz -->
+
+
 </dependencies>
 
 
