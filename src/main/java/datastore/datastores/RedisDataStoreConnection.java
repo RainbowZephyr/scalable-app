@@ -57,8 +57,8 @@ public class RedisDataStoreConnection extends  DataStoreConnection{
 	}
 	
 	private StringBuffer getUserIdFromSessionId(String sessionId){
-		String userId = jedis.get(sessionId);
 		if(jedis.exists(sessionId)){
+			String userId = jedis.get(sessionId);
 			JsonObject response = new JsonObject();
 			response.addProperty("responseCode", ResponseCodes.STATUS_OK);
 			response.addProperty("hasKey", true);
