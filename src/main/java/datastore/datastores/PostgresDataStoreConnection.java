@@ -120,10 +120,6 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			
 				json.addProperty("status", ResponseCodes.STATUS_OK);
 				if (result.next()) {
-					//connect with shared cache
-					//generate string 
-					//key, value
-					//generated session, user id 
 				String id = result.getString("member_id");
 				json.addProperty("loginStatus", "Success");
 				json.addProperty("id", id);
@@ -152,7 +148,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 		ResultSet result;
 		try {
-			result = con.executeQuery("SELECT *");
+			result = con.executeQuery("INSERT INTO `member`(id,email,password_hash,first_name,last_name,date_of_birth,created_at) VALUES ('?','"+email+"','"+hashedPassword+"',"+firstName+",'"+lastName+",'"+ dateOfBirth+",'"+ createdAt+"')");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -192,7 +188,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 		ResultSet result;
 		try {
-			result = con.executeQuery("SELECT *");
+			result = con.executeQuery("SELECT * FROM member WHERE  id  = "
+					+ userID);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

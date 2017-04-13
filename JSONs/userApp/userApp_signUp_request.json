@@ -1,4 +1,4 @@
-﻿{
+﻿ï»¿{
   "session_id": "",
   "app_id": "",
   "recieving_app_id": "",
@@ -6,10 +6,11 @@
   "request_parameters": {
     "passWord": "",
     "email": "",
-    "phoneNumber": "",
     "firstName": "",
     "lastName": "",
-    "age": "",
-    "gender": "",
+    "dateOfBirth": "",
+    "createdAt": "",
+    
+    
   }
-}	
+} 
