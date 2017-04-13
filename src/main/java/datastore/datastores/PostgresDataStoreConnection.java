@@ -136,7 +136,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 
 	}
 
-	private StringBuffer signupUser(String username, String hashedPassword,
+	private StringBuffer signupUser(String email, String hashedPassword,
 			String phoneNumber, String firstName, String lastName, String age,
 			String gender) {
 		Statement con = null;
