@@ -136,9 +136,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 
 	}
 
-	private StringBuffer signupUser(String email, String hashedPassword,
-			String phoneNumber, String firstName, String lastName, String age,
-			String gender) {
+	private StringBuffer signupUser(String email,String hashedPassword ,String firstName, String lastName,Date dateOfBirth, Timestamp createdAt) {
 		Statement con = null;
 		try {
 			con = db.createStatement();
