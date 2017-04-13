@@ -4,6 +4,6 @@
   "recieving_app_id": "",
   "service_type": "declineFriendRequest",
   "request_parameters": {
-    "friendUserName": "",
+    "friendEmail": "",
   }
 }	

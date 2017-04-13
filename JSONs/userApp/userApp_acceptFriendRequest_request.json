@@ -4,6 +4,6 @@
   "recieving_app_id": "",
   "service_type": "acceptFriendRequest",
   "request_parameters": {
-    "friendUserName": "",
+    "friendEmail": "",
   }
 }	
