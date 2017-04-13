@@ -8,7 +8,9 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import org.apache.log4j.BasicConfigurator;
-import services.*;
+
+import channels.*;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

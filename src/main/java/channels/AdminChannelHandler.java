@@ -1,4 +1,4 @@
-package services;
+package channels;
 
 import com.google.gson.Gson;
 import controller.AppType;
