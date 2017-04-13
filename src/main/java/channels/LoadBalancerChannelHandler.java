@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import controller.ControllerHelper;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -39,6 +40,7 @@ public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<Full
 				jsonMessage = "{ \"session_id\": \"\"," + " \"app_id\": \"controller\"," + " \"recieving_app_id\": \""
 						+ app_id + "\"," + " \"service_type\": \"freeze\"," + " \"request_parameters\": {}}";
 				ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage);
+				ControllerHelper.sharedInstance().getAppByName(app_id).setStatus(0);
 				// send freeze
 				System.out.println("FREEZE APP: " + app_id);
 			} else {
@@ -49,37 +51,51 @@ public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<Full
 					// send continue request to continuedApp
 					jsonMessage = "{ \"session_id\": \"\", \"app_id\": \"controller\", \"recieving_app_id\": \""
 							+ continuedAppName + "\", \"service_type\": \"continue\", \"request_parameters\": {}}";
-					ControllerHelper.sharedInstance().getChannels().get(continuedAppName).writeAndFlush(jsonMessage);
-					System.out.println("CONTINUE APP: " + continuedAppName);
+					Channel tempChannel = ControllerHelper.sharedInstance().getChannels().get(continuedAppName);
+					if(tempChannel != null){
+						tempChannel.writeAndFlush(jsonMessage);
+						ControllerHelper.sharedInstance().getAppByName(continuedAppName).setStatus(1);
+						System.out.println("CONTINUE APP: " + continuedAppName);
+					}else{
+						System.out.println("SHOULD CONTINUE APP BUT NO FROZEN APPS FOUND");
+					}
+					
 				} else {
 					if (max_thread_count == requests_per_second / 2) {
 						// DO NOTHING
 					} else {
+						//CHANGE THREAD COUNT AND DB CONNECTIONS
 						int newThreadCount = 0;
 						if (max_thread_count > requests_per_second / 2) {
-							 newThreadCount = ((requests_per_second / 2)
+							newThreadCount = ((requests_per_second / 2)
 									+ (max_thread_count - (requests_per_second / 2)) / 2);
 							System.out.println("DECREASE THREAD COUNT(" + max_thread_count + ") TO BE " + newThreadCount
 									+ " APP: " + app_id);
 						} else {
-							newThreadCount = ((requests_per_second / 2) - ((requests_per_second / 2) - max_thread_count) / 2);
+							newThreadCount = ((requests_per_second / 2)
+									- ((requests_per_second / 2) - max_thread_count) / 2);
 							System.out.println("INCREASE THREAD COUNT(" + max_thread_count + ") TO BE "
 									+ ((requests_per_second / 2) - ((requests_per_second / 2) - max_thread_count) / 2)
 									+ " APP: " + app_id);
 						}
-						jsonMessage = "{" + "\"app_id\": \"controller\"," + "\"recieving_app_id\": \"" + app_id
-								+ "\"," + "\"service_type\": \"set_max_thread_count\","
-								+ "\"request_parameters\": {\"count\": " + newThreadCount + "}}";
+						jsonMessage = "{" + "\"app_id\": \"controller\"," + "\"recieving_app_id\": \"" + app_id + "\","
+								+ "\"service_type\": \"set_max_thread_count\"," + "\"request_parameters\": {\"count\": "
+								+ newThreadCount + "}}";
 						ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage);
-						jsonMessage = "{" + "\"app_id\": \"controller\"," + "\"recieving_app_id\": \"" + app_id
-								+ "\"," + "\"service_type\": \"set_max_db_connections_count\","
+						ControllerHelper.sharedInstance().getAppByName(app_id).setMax_thread_count(newThreadCount);
+
+						jsonMessage = "{" + "\"app_id\": \"controller\"," + "\"recieving_app_id\": \"" + app_id + "\","
+								+ "\"service_type\": \"set_max_db_connections_count\","
 								+ "\"request_parameters\": {\"count\": " + (newThreadCount / 2) + "}}";
 						ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage);
+						ControllerHelper.sharedInstance().getAppByName(app_id).setMax_db_count(newThreadCount / 2);
 
 					}
 				}
 			}
 		}
+		
+		ControllerHelper.sharedInstance().updateConfFromApps();
 		channelHandlerContext.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK))
 				.addListener(ChannelFutureListener.CLOSE);
 		channelHandlerContext.flush();

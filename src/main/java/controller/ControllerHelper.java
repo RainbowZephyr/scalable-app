@@ -1,7 +1,8 @@
 package controller;
 
-
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -24,7 +25,7 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 public class ControllerHelper {
-	
+
 	private static ControllerHelper instance = new ControllerHelper();
 	private static ArrayList<App> apps = new ArrayList<App>();
 	private static ChannelGroup channelGroupWall = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
@@ -33,14 +34,13 @@ public class ControllerHelper {
 	private static ChannelGroup channelGroupMessage = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 	private static ChannelGroup channelGroupSearch = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 	private static HashMap<String, Channel> channels = new HashMap<String, Channel>();
-	
-	private ControllerHelper(){
-	}
-	
-	public static ControllerHelper sharedInstance(){
-		return instance;
+
+	private ControllerHelper() {
 	}
 
+	public static ControllerHelper sharedInstance() {
+		return instance;
+	}
 
 	public ArrayList<App> getApps() {
 		return apps;
@@ -125,6 +125,25 @@ public class ControllerHelper {
 			return apps.get(temp).getName();
 		else
 			return "";
+	}
+
+	public void updateConfFromApps() {
+		String newConf = "";
+		ArrayList<App> tempApps = ControllerHelper.sharedInstance().getApps();
+		for (int i = 0; i < tempApps.size(); i++) {
+			newConf += tempApps.get(i).getName() + " " + tempApps.get(i).getStatus() + " " + tempApps.get(i).getIp()
+					+ " " + tempApps.get(i).getPort() + " " + tempApps.get(i).getMax_thread_count() + " "
+					+ tempApps.get(i).getMax_db_count() + "\n";
+		}
+		try {
+			PrintWriter pw = new PrintWriter("./config/APP_CONFIG_FILE.config");
+			pw.print(newConf);
+			pw.close();
+			pw = null;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static void bootNettyClient(String host, int port, String app_id) throws InterruptedException, IOException {
