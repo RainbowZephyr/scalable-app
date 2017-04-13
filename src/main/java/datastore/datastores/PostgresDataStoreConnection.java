@@ -120,6 +120,10 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			
 				json.addProperty("status", ResponseCodes.STATUS_OK);
 				if (result.next()) {
+					//connect with shared cache
+					//generate string 
+					//key, value
+					//generated session, user id 
 				String id = result.getString("member_id");
 				json.addProperty("loginStatus", "Success");
 				json.addProperty("id", id);
