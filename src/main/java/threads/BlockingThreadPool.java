@@ -1,4 +1,4 @@
-package thread_pools;
+package threads;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;

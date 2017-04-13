@@ -6,7 +6,7 @@ import connections.SocketConnectionFactory;
 import connections.SocketConnectionToController;
 import datastore.DataStoreConnectionFactory;
 import exceptions.MultipleResponseException;
-import thread_pools.CommandsThreadPool;
+import threads.CommandsThreadPool;
 import utility.ResponseCodes;
 
 import java.io.FileInputStream;

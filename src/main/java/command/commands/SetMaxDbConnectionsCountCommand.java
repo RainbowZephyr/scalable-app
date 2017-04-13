@@ -2,7 +2,7 @@ package command.commands;
 
 import command.Command;
 import services.Response;
-import thread_pools.DatabaseThreadPool;
+import threads.DatabaseThreadPool;
 import utility.Constants;
 import utility.ResponseCodes;
 
