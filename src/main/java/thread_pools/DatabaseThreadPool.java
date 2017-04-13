@@ -1,12 +1,12 @@
-package threads;
+package thread_pools;
 
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class CommandsThreadPool{
-    private static CommandsThreadPool instance =
-            new CommandsThreadPool();
+public class DatabaseThreadPool {
+    private static DatabaseThreadPool instance =
+            new DatabaseThreadPool();
     private final int DEFAULT_POOL_SIZE = 10;
     private long retryEvery = 1;
     private TimeUnit retryEveryTimeUnit = TimeUnit.SECONDS;
@@ -22,10 +22,10 @@ public class CommandsThreadPool{
                     retryEveryTimeUnit,
                     new LinkedBlockingDeque<Runnable>());
 
-    private CommandsThreadPool() {
+    private DatabaseThreadPool() {
     }
 
-    public static CommandsThreadPool sharedInstance() {
+    public static DatabaseThreadPool sharedInstance() {
         return instance;
     }
 
@@ -33,20 +33,8 @@ public class CommandsThreadPool{
         return threadPool;
     }
 
-    /* Instantiate the Thread Pool */
-    public void reloadThreadPool() {
-        threadPool = new BlockingThreadPool(poolSize,
-                poolSize,
-                threadPool.getKeepAliveTime(TimeUnit.NANOSECONDS),
-                TimeUnit.NANOSECONDS,
-                retryEvery,
-                retryEveryTimeUnit,
-                threadPool.getQueue());
-    }
-
     public void setMaxThreadPoolSize(int size) {
-        poolSize = size;
-        getThreadPool().setCorePoolSize(poolSize);
+        getThreadPool().setCorePoolSize(size);
     }
 
     /**
