@@ -93,6 +93,9 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			return acceptFriend (friendEmail);
 		}
 		
+		if(action == "logOut_request"){
+			return logoutUser ();
+		}
 		
 		return null;
 	}
@@ -260,6 +263,25 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		json.addProperty("status", ResponseCodes.STATUS_OK);
 		return new StringBuffer(json.toString());
 	}
-	
+
+	private StringBuffer logoutUser(){
+		Statement con = null;
+		try {
+			con = db.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ResultSet result;
+		try {
+			result = con.executeQuery("SELECT *");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JsonObject json = new JsonObject(); 
+		json.addProperty("status", ResponseCodes.STATUS_OK);
+		return new StringBuffer(json.toString());
+	}
 	
 }
