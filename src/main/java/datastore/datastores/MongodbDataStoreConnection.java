@@ -216,7 +216,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     	
     	response.add("RetrieveMessages", jsonArray);
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
     
     public StringBuffer AddUserToThread(String threadId, String userId){
