@@ -41,16 +41,15 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		if (action == "signupUser") {
 			String email = (String) parameters.get("email");
 			String hashedPassword = (String) parameters.get("passWord");
-			String phoneNumber = (String) parameters.get("phoneNumber");
 			String firstName = (String) parameters.get("firstName");
 			String lastName = (String) parameters.get("lastName");
-			String age = (String) parameters.get("age");
-			String gender = (String) parameters.get("gender");
+			Date dateOfBirth = (Date) parameters.get("dateOfBirth");
+			Timestamp createdAt = (Timestamp) parameters.get("createdAt");
 
-			return signupUser(email, hashedPassword, phoneNumber, firstName,
-					lastName, age, gender);
+			return signupUser(email, hashedPassword, firstName, lastName,
+					dateOfBirth, createdAt);
 		}
-
+		
 		if (action == "removeFriend") {
 			String friendEmail = (String) parameters.get("friendEmail");
 
