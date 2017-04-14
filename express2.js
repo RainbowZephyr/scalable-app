@@ -1,8 +1,9 @@
 var express = require('express')
 var app = express()
+var timeInMs = Date.now();
 
 app.get('/', function (req, res) {
-    res.send('Hello World!')
+    res.send('Date in Ms'+Date.now())
     console.log("Received on 4000")
 })
 
