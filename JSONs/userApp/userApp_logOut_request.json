@@ -3,5 +3,7 @@
   "app_id": "",
   "recieving_app_id": "",
   "service_type": "logOut",
-  "request_parameters": {}
+  "request_parameters": {
+   "sessionID": "",
+  }
 }	

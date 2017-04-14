@@ -84,10 +84,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			Date dateOfBirth = (Date) parameters.get("dateOfBirth");
 			Timestamp createdAt = (Timestamp) parameters.get("createdAt");
 
-			editProfile( email, hashedPassword,
-					 newPassword,  firstName,newFirstName,
-					 lastName,  newLastName,  dateOfBirth,
-					 createdAt);
+			editProfile(email, hashedPassword, newPassword, firstName,
+					newFirstName, lastName, newLastName, dateOfBirth, createdAt);
 
 		}
 
@@ -113,7 +111,9 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 
 		if (action == "logOut_request") {
-			return logoutUser();
+
+			int sessionID = (Integer) parameters.get("sessionID");
+			return logoutUser(sessionID);
 		}
 
 		return null;
@@ -346,7 +346,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		return new StringBuffer(json.toString());
 	}
 
-	private StringBuffer logoutUser() {
+	private StringBuffer logoutUser(int sessionID)
+			throws InstantiationException, IllegalAccessException {
 		Statement con = null;
 		try {
 			con = db.createStatement();
@@ -354,13 +355,21 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		ResultSet result;
-		try {
-			result = con.executeQuery("DELETE from ");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
+				.getDataStoreConnection("Redis_datastore_connection");
+		DataStoreConnection connection = (DataStoreConnection) connectionClass
+				.newInstance();
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("action", "removeSession");
+		// add to hashmap, randomly generated string as a key, and value
+		// the member id.
+		parameters.put("sessionId", sessionID);
+
+		RequestHandle requestHandle = (RequestHandle) this.parameters
+				.get(RequestHandle.class.getSimpleName());
+		parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
+		connection.init(parameters);
+		DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
 		JsonObject json = new JsonObject();
 		json.addProperty("status", ResponseCodes.STATUS_OK);
 		return new StringBuffer(json.toString());
