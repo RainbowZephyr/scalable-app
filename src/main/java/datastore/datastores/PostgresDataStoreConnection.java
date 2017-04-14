@@ -131,7 +131,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 
 			json.addProperty("status", ResponseCodes.STATUS_OK);
 			if (result.next()) {
-				String id = result.getString("member_id");
+				String id = result.getString("id");
 				// generate a random string (session)
 				String session = nextSessionId();
 				// connect to shared cache.
@@ -144,7 +144,9 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 				parameters.put("action", "addSession");
 				// add to hashmap, randomly generated string as a key, and value
 				// the member id.
-				parameters.put(session, id);
+				parameters.put("sessionId", session);
+				parameters.put("userId", id);
+
 				RequestHandle requestHandle = (RequestHandle) this.parameters
 						.get(RequestHandle.class.getSimpleName());
 				parameters.put(RequestHandle.class.getSimpleName(),
