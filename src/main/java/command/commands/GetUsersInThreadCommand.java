@@ -30,4 +30,9 @@ public class GetUsersInThreadCommand extends Command
 		return null;
 	}
 
+	@Override
+    protected boolean shouldReturnResponse() {
+        return false;
+    }
+
 }
