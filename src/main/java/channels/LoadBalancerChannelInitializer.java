@@ -20,7 +20,6 @@ public class LoadBalancerChannelInitializer extends ChannelInitializer<SocketCha
 		pipeLine.addLast("codec", new HttpServerCodec());
 		// Deals with fragmentation in http traffic:
 		pipeLine.addLast("aggregator", new HttpObjectAggregator(Short.MAX_VALUE));
-
 		pipeLine.addLast(LoadBalancerChannelHandler.class.getName(), new LoadBalancerChannelHandler());
 	}
 }
