@@ -27,7 +27,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     @Override
     public StringBuffer execute(Map<String, Object> parameters) throws Exception {
 
-        mongoClient = new MongoClient((MongoClientURI) parameters.get("mongoClientURI"));
+        mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
 
         String action = (String) parameters.get("action");
 //		switch(action){
