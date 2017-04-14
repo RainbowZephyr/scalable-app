@@ -105,8 +105,8 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         }
         response.add("ThreadNames", jsonArray);
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
-
-        return new StringBuffer(response.getAsString());
+        String s = response.toString();
+        return new StringBuffer(s);
     }
     
 	private StringBuffer createMessagesThread(String threadName, String userId) {
@@ -232,6 +232,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     }
 
     private MongoDatabase getMessagingAppDB() {
+
         return mongoClient.getDatabase(getConfigProperty("messages_database_name"));
     }
 
