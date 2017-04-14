@@ -1,8 +1,11 @@
 package command.commands;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import command.Command;
+import datastore.DataStoreConnection;
+import datastore.DataStoreConnectionFactory;
 import datastore.datastores.MongoDBStoreConnection;
 
 public class AddPostCommand extends Command {
@@ -12,12 +15,19 @@ public class AddPostCommand extends Command {
 		
 		// Add DB options if required
 		
-		
+//
+//		requestMapData.put("action", "post");
+//		requestMapData.put("collection_name", "posts");
+//
+//		MongoDBStoreConnection DBConnection = new MongoDBStoreConnection();
+//		DBConnection.execute(requestMapData);
+
+		Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
+				.getDataStoreConnection("mongo_db_data_store_connection");
+		DataStoreConnection connection = (DataStoreConnection) connectionClass.newInstance();
 		requestMapData.put("action", "post");
 		requestMapData.put("collection_name", "posts");
-		
-		MongoDBStoreConnection DBConnection = new MongoDBStoreConnection();
-		DBConnection.execute(requestMapData);
+		connection.execute(requestMapData);
 		
 		
 		
