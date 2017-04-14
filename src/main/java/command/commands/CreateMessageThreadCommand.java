@@ -1,4 +1,7 @@
-package command.MessagesAppCommands;
+package command.commands;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import command.Command;
 import datastore.DataStoreConnection;
@@ -6,10 +9,7 @@ import datastore.DataStoreConnectionFactory;
 import services.RequestHandle;
 import thread_pools.DatabaseThreadPool;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class SearchForThreadsCommand extends Command{
+public class CreateMessageThreadCommand extends Command{
 
 	@Override
 	protected StringBuffer execute(Map<String, Object> requestMapData) throws Exception {
@@ -17,8 +17,9 @@ public class SearchForThreadsCommand extends Command{
                 .getDataStoreConnection("mongodb_data_store_connection");
         DataStoreConnection connection = (DataStoreConnection) connectionClass.newInstance();
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("action", "searchForThreads");
-        parameters.put("nameQuery", (String) requestMapData.get("nameQuery"));
+        parameters.put("action", "createMessagesThread");
+        parameters.put("userId", (String) requestMapData.get("userId"));
+        parameters.put("threadName", (String) requestMapData.get("threadName"));
         RequestHandle requestHandle = (RequestHandle)
                 this.parameters.get(RequestHandle.class.getSimpleName());
         parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
@@ -29,7 +30,7 @@ public class SearchForThreadsCommand extends Command{
 	
     @Override
     protected boolean shouldReturnResponse() {
-        return true;
+        return false;
     }
 	
 }

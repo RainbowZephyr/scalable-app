@@ -1,4 +1,4 @@
-package command.MessagesAppCommands;
+package command.commands;
 
 import java.util.HashMap;
 import java.util.Map;
