@@ -15,6 +15,7 @@ import org.bson.types.ObjectId;
 import utility.ResponseCodes;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Date;
@@ -28,6 +29,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class MongodbDataStoreConnection extends DataStoreConnection {
     private MongoClient mongoClient;
+    private static Properties properties;
 
     @Override
     public StringBuffer execute(Map<String, Object> parameters) throws Exception {
@@ -242,23 +244,21 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     }
     
     private String getConfigProperty(String key){
-    	Properties prop = new Properties();
-    	InputStream input = null;
+    	if(properties == null){
+	    	properties = new Properties();
+	    	InputStream input = null;
+	    	try {
+				input = new FileInputStream("config/mongodb.properties");
+				// load a properties file
+		    	properties.load(input);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-    	try {
-
-    		input = new FileInputStream("config/mongodb.properties");
-
-    		// load a properties file
-    		prop.load(input);
-
-    		// get the property value and print it out
-    		return prop.getProperty(key);
-
-    	} catch (IOException ex) {
-    		ex.printStackTrace();
     	}
-    	return null;
+    	// get the property value and print it out
+		return properties.getProperty(key);
     }
 
 }
