@@ -88,7 +88,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         }
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("responseCode", ResponseCodes.STATUS_SERVICE_UNAVAILABLE);
-        return new StringBuffer(jsonObject.getAsString());
+        return new StringBuffer(jsonObject.toString());
     }
 
     private StringBuffer searchForThreads(String nameQuery) {
@@ -130,7 +130,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
 		JsonObject response = new JsonObject();
 		response.addProperty("responseCode", ResponseCodes.STATUS_OK); // TODO need a known key follow
 		response.addProperty("threadId", messageThreadId.toString());
-		return new StringBuffer(response.getAsString());
+		return new StringBuffer(response.toString());
 	}
     
     public StringBuffer sendTextMessage(String threadId, String userId, String messageBody){
@@ -147,7 +147,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     	messageThreadCollection.updateOne(eq("_id",messageThreadId),new Document("$set", thread));
     	JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
     
     public StringBuffer sendImageMessage(String threadId, String userId, String messageBody, String imageUrl){
@@ -168,7 +168,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     	messageThreadCollection.updateOne(eq("_id",messageThreadId),new Document("$set", thread));
     	JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
 
     public StringBuffer getUsersInThread(String threadId) {
@@ -186,7 +186,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         response.add("GetUsersInThread", jsonArray);
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
 
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
 
     public StringBuffer removeUserFromThread(String threadId, String userId) {
@@ -200,7 +200,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
 
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
     public StringBuffer RetrieveMessages(String threadId, Date startDate, Date endDate){
     	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
@@ -216,7 +216,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     	
     	response.add("RetrieveMessages", jsonArray);
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
     
     public StringBuffer AddUserToThread(String threadId, String userId){
@@ -228,7 +228,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         
         JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
 
     private MongoDatabase getMessagingAppDB() {
