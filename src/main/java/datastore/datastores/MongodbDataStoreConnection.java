@@ -173,14 +173,14 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
 
     public StringBuffer getUsersInThread(String threadId) {
         BasicDBObject inQuery = new BasicDBObject();
-        inQuery.put("threadId", threadId);
+        inQuery.put("_id", new ObjectId(threadId));
         FindIterable<Document> findIterable = getMessageThreadsCollection().find(inQuery);
 
         JsonObject response = new JsonObject();
         JsonArray jsonArray = new JsonArray();
 
         for (Document document : findIterable) {
-            jsonArray.add(document.getString("userName"));
+            jsonArray.add(document.getString("userId"));
         }
 
         response.add("GetUsersInThread", jsonArray);
@@ -191,10 +191,10 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
 
     public StringBuffer removeUserFromThread(String threadId, String userId) {
         BasicDBObject removeQuery = new BasicDBObject();
-        removeQuery.put("threadId", threadId);
+        removeQuery.put("_id", new ObjectId(threadId));
         removeQuery.put("userId", userId);
 
-        DBCollection db = (DBCollection) getMessagingAppDB();
+        DBCollection db = (DBCollection) getMessageThreadsCollection();
         db.remove(removeQuery);
 
         JsonObject response = new JsonObject();
@@ -202,6 +202,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
 
         return new StringBuffer(response.getAsString());
     }
+    
     public StringBuffer RetrieveMessages(String threadId, Date startDate, Date endDate){
     	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
     	BasicDBObject query = new BasicDBObject("startDate", new BasicDBObject("$lt", endDate));
