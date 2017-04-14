@@ -1,0 +1,3 @@
+{"id":4240,"label":"vertex","outE":{"friend":[{"id":"odxci-39s-t1-36g","inV":4120}]},"properties":{"userId":[{"id":"sy-39s-1l1","value":716284862545507296}],"username":[{"id":"176-39s-2dh","value":"badie"}]}}
+{"id":4120,"label":"vertex","inE":{"friend":[{"id":"odxce-38w-t1-36g","outV":4208},{"id":"odxci-39s-t1-36g","outV":4240}]},"properties":{"userId":[{"id":"sj-36g-1l1","value":716284862545507295}],"username":[{"id":"16r-36g-2dh","value":"mohamed"}]}}
+{"id":4208,"label":"vertex","outE":{"friend":[{"id":"odxce-38w-t1-36g","inV":4120}]},"properties":{"userId":[{"id":"su-38w-1l1","value":716284862545507294}],"username":[{"id":"172-38w-2dh","value":"ahmed"}]}}
