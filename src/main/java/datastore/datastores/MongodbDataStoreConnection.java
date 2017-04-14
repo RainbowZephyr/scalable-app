@@ -84,7 +84,9 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         	String imageUrl = (String) parameters.get("imageUrl");
         	return sendImageMessage(threadId, userId, messageBody, imageUrl);
         }
-        return null;
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("responseCode", ResponseCodes.STATUS_SERVICE_UNAVAILABLE);
+        return new StringBuffer(jsonObject.getAsString());
     }
 
     private StringBuffer searchForUsersAndThreads(String nameQuery) {
@@ -130,43 +132,42 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         return new StringBuffer(response.getAsString());
     }
 
-    private StringBuffer createMessagesThread(String threadName, String userId) {
-        ObjectId messageThreadId = new ObjectId();
-        Document messagesThread = new Document("_id", messageThreadId);
-        messagesThread.append("threadName", threadName);
-        messagesThread.append("users", Arrays.asList(userId));
-        getMessageThreadsCollection().insertOne(messagesThread);
+	private StringBuffer createMessagesThread(String threadName, String userId) {
+		ObjectId messageThreadId = new ObjectId();
+		Document messagesThread = new Document("_id", messageThreadId);
+		messagesThread.append("threadName", threadName);
+		messagesThread.append("users", Arrays.asList(userId));
+		messagesThread.append("messages", Arrays.asList());
+		getMessageThreadsCollection().insertOne(messagesThread);
 
-        Document userObject = getUsersCollection().find(eq("userId", userId)).first();
-        if (userObject == null) {
-            userObject = new Document("id", userId);
-            userObject.append("threads", Arrays.asList(messageThreadId));
-            getUsersCollection().insertOne(userObject);
-        } else {
-            List<String> threadsList = (List<String>) userObject.get("threads");
-            threadsList.add(messageThreadId.toString());
-            getUsersCollection().updateOne(eq("userId", userId), new Document("$set", userObject));
-        }
-        JsonObject response = new JsonObject();
-        response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
-        response.addProperty("threadId", messageThreadId.toString());
-        return new StringBuffer(response.getAsString());
-    }
+		Document userObject = getUsersCollection().find(eq("userId", userId)).first();
+		if (userObject == null) {
+			userObject = new Document("userId", userId);
+			userObject.append("threads", Arrays.asList(messageThreadId));
+			getUsersCollection().insertOne(userObject);
+		} else {
+			List<ObjectId> threadsList = (List<ObjectId>) userObject.get("threads");
+			threadsList.add(messageThreadId);
+			getUsersCollection().updateOne(eq("userId", userId), new Document("$set", userObject));
+		}
+		JsonObject response = new JsonObject();
+		response.addProperty("responseCode", ResponseCodes.STATUS_OK); // TODO need a known key follow
+		response.addProperty("threadId", messageThreadId.toString());
+		return new StringBuffer(response.getAsString());
+	}
     
     public StringBuffer sendTextMessage(String threadId, String userId, String messageBody){
     	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
-    	Document thread = messageThreadCollection.find(eq("_id",threadId)).first();
+    	ObjectId messageThreadId = new ObjectId(threadId);
+    	Document thread = messageThreadCollection.find(eq("_id",messageThreadId)).first();
     	List<Document> messages = (List<Document>) thread.get("messages");
-    	if(messages == null){
-    		messages = new LinkedList<>();
-    	}
     	Document message = new Document("body",messageBody);
     	message.append("userId", userId);
     	message.append("timestamp", System.currentTimeMillis()+"");
     	message.append("type", "text");
     	messages.add(message);
     	thread.append("messages", messages);
-    	messageThreadCollection.updateOne(eq("_id",threadId),new Document("$set", thread));
+    	messageThreadCollection.updateOne(eq("_id",messageThreadId),new Document("$set", thread));
     	JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
         return new StringBuffer(response.getAsString());
@@ -174,7 +175,8 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     
     public StringBuffer sendImageMessage(String threadId, String userId, String messageBody, String imageUrl){
     	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
-    	Document thread = messageThreadCollection.find(eq("_id",threadId)).first();
+    	ObjectId messageThreadId = new ObjectId(threadId);
+    	Document thread = messageThreadCollection.find(eq("_id",messageThreadId)).first();
     	List<Document> messages = (List<Document>) thread.get("messages");
     	if(messages == null){
     		messages = new LinkedList<>();
@@ -186,7 +188,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     	message.append("type", "image");
     	messages.add(message);
     	thread.append("messages", messages);
-    	messageThreadCollection.updateOne(eq("_id",threadId),new Document("$set", thread));
+    	messageThreadCollection.updateOne(eq("_id",messageThreadId),new Document("$set", thread));
     	JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
         return new StringBuffer(response.getAsString());

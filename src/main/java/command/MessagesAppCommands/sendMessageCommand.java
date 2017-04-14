@@ -19,7 +19,7 @@ public class sendMessageCommand extends Command {
 		
         String userId = (String) requestMapData.get("fromUserId");
         String messageBody= (String) requestMapData.get("messageBody");
-        Object imageFile = requestMapData.get("imageFile");
+        String imageUrl = (String) requestMapData.get("imageUrl");
        	String threadId = (String) requestMapData.get("threadId");
        	
        	if(userId == null || messageBody == null || threadId == null){
@@ -38,7 +38,7 @@ public class sendMessageCommand extends Command {
         parameters.put("messageBody", messageBody);
         parameters.put("threadId", threadId);
         
-        if(imageFile == null){
+        if(imageUrl == null){
         	parameters.put("action", "sendTextMessage");
             RequestHandle requestHandle = (RequestHandle)
                     this.parameters.get(RequestHandle.class.getSimpleName());
@@ -47,10 +47,20 @@ public class sendMessageCommand extends Command {
             DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);	
         }
         else{
-        
+        	parameters.put("action", "sendImageMessage");
+        	parameters.put("imageUrl", imageUrl);
+            RequestHandle requestHandle = (RequestHandle)
+                    this.parameters.get(RequestHandle.class.getSimpleName());
+            parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
+            connection.init(parameters);
+            DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);	
         }
         return null;
 	}
+	
+    protected boolean shouldReturnResponse() {
+        return false;
+    }
 	
 
 }
