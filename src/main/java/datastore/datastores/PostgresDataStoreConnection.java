@@ -1,18 +1,29 @@
 package datastore.datastores;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.awt.List;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.sql.*;
 
+import services.RequestHandle;
+import thread_pools.DatabaseThreadPool;
 import utility.ResponseCodes;
 
 import com.google.gson.JsonObject;
 
 import datastore.DataStoreConnection;
+import datastore.DataStoreConnectionFactory;
 
 public class PostgresDataStoreConnection extends DataStoreConnection {
 
 	Connection db;
+	private SecureRandom random = new SecureRandom();
+
+	public String nextSessionId() {
+		return new BigInteger(130, random).toString(32);
+	}
 
 	public void init(Map<String, Object> parameters) {
 		String url = (String) parameters.get("databaseURL");
@@ -49,7 +60,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			return signupUser(email, hashedPassword, firstName, lastName,
 					dateOfBirth, createdAt);
 		}
-		
+
 		if (action == "removeFriend") {
 			String friendEmail = (String) parameters.get("friendEmail");
 
@@ -101,7 +112,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		return null;
 	}
 
-	private StringBuffer loginUser(String email, String hashedPassword) {
+	private StringBuffer loginUser(String email, String hashedPassword)
+			throws InstantiationException, IllegalAccessException {
 		Statement con = null;
 		JsonObject json = new JsonObject();
 
@@ -116,15 +128,37 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			result = con.executeQuery("SELECT * FROM member WHERE email = "
 					+ email + "AND password_hash = " + hashedPassword);
 			result.beforeFirst();
-			
-				json.addProperty("status", ResponseCodes.STATUS_OK);
-				if (result.next()) {
-				String id = result.getString("member_id");
-				json.addProperty("loginStatus", "Success");
-				json.addProperty("id", id);
 
-			}
-			else {
+			json.addProperty("status", ResponseCodes.STATUS_OK);
+			if (result.next()) {
+				String id = result.getString("member_id");
+				// generate a random string (session)
+				String session = nextSessionId();
+				// connect to shared cache.
+				Class<?> connectionClass = DataStoreConnectionFactory
+						.sharedInstance().getDataStoreConnection(
+								"Redis_datastore_connection");
+				DataStoreConnection connection = (DataStoreConnection) connectionClass
+						.newInstance();
+				Map<String, Object> parameters = new HashMap<String, Object>();
+				parameters.put("action", "addSession");
+				// add to hashmap, randomly generated string as a key, and value
+				// the member id.
+				parameters.put(session, id);
+				RequestHandle requestHandle = (RequestHandle) this.parameters
+						.get(RequestHandle.class.getSimpleName());
+				parameters.put(RequestHandle.class.getSimpleName(),
+						requestHandle);
+				connection.init(parameters);
+				DatabaseThreadPool.sharedInstance().getThreadPool()
+						.execute(connection);
+
+				json.addProperty("loginStatus", "Success");
+				json.addProperty("userId", id);
+				json.addProperty("sessionId",session);
+
+
+			} else {
 				json.addProperty("loginStatus", "Failed");
 			}
 		} catch (SQLException e) {
@@ -135,7 +169,9 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 
 	}
 
-	private StringBuffer signupUser(String email,String hashedPassword ,String firstName, String lastName,Date dateOfBirth, Timestamp createdAt) {
+	private StringBuffer signupUser(String email, String hashedPassword,
+			String firstName, String lastName, Date dateOfBirth,
+			Timestamp createdAt) {
 		Statement con = null;
 		try {
 			con = db.createStatement();
@@ -145,7 +181,19 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 		ResultSet result;
 		try {
-			result = con.executeQuery("INSERT INTO `member`(id,email,password_hash,first_name,last_name,date_of_birth,created_at) VALUES ('?','"+email+"','"+hashedPassword+"',"+firstName+",'"+lastName+",'"+ dateOfBirth+",'"+ createdAt+"')");
+			result = con
+					.executeQuery("INSERT INTO `member`(id,email,password_hash,first_name,last_name,date_of_birth,created_at) VALUES ('?','"
+							+ email
+							+ "','"
+							+ hashedPassword
+							+ "',"
+							+ firstName
+							+ ",'"
+							+ lastName
+							+ ",'"
+							+ dateOfBirth
+							+ ",'"
+							+ createdAt + "')");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

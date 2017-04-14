@@ -5,7 +5,7 @@ import services.RequestHandle;
 import java.util.Map;
 
 public abstract class DataStoreConnection implements Runnable {
-    Map<String, Object> parameters;
+    protected Map<String, Object> parameters;
 
     /**
      * This method is used to perform any action on the data store itself.
