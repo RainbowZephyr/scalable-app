@@ -131,7 +131,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 
 			json.addProperty("status", ResponseCodes.STATUS_OK);
 			if (result.next()) {
-				String id = result.getString("id");
+				int id = result.getInt("id");
 				// generate a random string (session)
 				String session = nextSessionId();
 				// connect to shared cache.
