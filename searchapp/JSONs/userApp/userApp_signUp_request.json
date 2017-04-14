@@ -1,0 +1,16 @@
+﻿{
+  "session_id": "",
+  "app_id": "",
+  "recieving_app_id": "",
+  "service_type": "signUp",
+  "request_parameters": {
+    "userName": "",
+    "passWord": "",
+    "email": "",
+    "phoneNumber": "",
+    "firstName": "",
+    "lastName": "",
+    "age": "",
+    "gender": "",
+  }
+}	

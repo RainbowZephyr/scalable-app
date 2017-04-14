@@ -1,0 +1,9 @@
+{
+  "session_id": "",
+  "app_id": "",
+  "receiving_app_id": "",
+  "service_type": "delete_post_request",
+  "request_parameters": {
+    "post_id": 0
+  }
+}

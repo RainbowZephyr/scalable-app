@@ -1,0 +1,21 @@
+{
+"content":
+	[
+		{
+			"app_id":"wall1",
+			"requests_per_second":"9"
+		},
+		{
+			"app_id":"search3",
+			"requests_per_second":"35"
+		},
+		{
+			"app_id":"media2",
+			"requests_per_second":"20"
+		},
+		{
+			"app_id":"user2",
+			"requests_per_second":"15"
+		}
+	]
+}

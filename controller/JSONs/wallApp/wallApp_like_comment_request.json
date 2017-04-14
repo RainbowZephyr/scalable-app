@@ -1,0 +1,10 @@
+{
+	"session_id":"",
+	"app_id":"",
+	"receiving_app_id":"",
+	"service_type": "like_comment_request",
+	"request_parameters":{
+		"user_id":0,
+		"comment_id":0
+	}
+}
