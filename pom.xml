@@ -52,6 +52,24 @@
             <version>2.5</version>
         </dependency>
 
+        <!--TITAN -->
+        <dependency>
+            <groupId>com.thinkaurelius.titan</groupId>
+            <artifactId>titan-core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.thinkaurelius.titan</groupId>
+            <artifactId>titan-es</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.thinkaurelius.titan</groupId>
+            <artifactId>titan-cassandra</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
     </dependencies>
 
