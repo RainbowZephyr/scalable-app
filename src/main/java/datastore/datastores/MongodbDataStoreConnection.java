@@ -14,10 +14,14 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import utility.ResponseCodes;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -27,7 +31,9 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     @Override
     public StringBuffer execute(Map<String, Object> parameters) throws Exception {
 
-        mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+    	String host = getConfigProperty("host");
+    	int port = Integer.parseInt(getConfigProperty("port"));
+        mongoClient = new MongoClient(host, port);
 
         String action = (String) parameters.get("action");
 //		switch(action){
@@ -184,15 +190,35 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     }
 
     private MongoDatabase getMessagingAppDB() {
-        return mongoClient.getDatabase("bleh");  // TODO needs to be changed to the database name
+        return mongoClient.getDatabase(getConfigProperty("messages_database_name"));
     }
 
     private MongoCollection<Document> getMessageThreadsCollection() {
-        return getMessagingAppDB().getCollection("bleh"); // TODO needs to be changed to the messaging thread collection name
+        return getMessagingAppDB().getCollection(getConfigProperty("messageThreads_table"));
     }
 
     private MongoCollection<Document> getUsersCollection() {
-        return getMessagingAppDB().getCollection("bleh1"); // TODO needs to be changed to the users collection name
+        return getMessagingAppDB().getCollection(getConfigProperty("users_table"));
+    }
+    
+    private String getConfigProperty(String key){
+    	Properties prop = new Properties();
+    	InputStream input = null;
+
+    	try {
+
+    		input = new FileInputStream("config/mongodb.properties");
+
+    		// load a properties file
+    		prop.load(input);
+
+    		// get the property value and print it out
+    		return prop.getProperty(key);
+
+    	} catch (IOException ex) {
+    		ex.printStackTrace();
+    	}
+    	return null;
     }
 
 }
