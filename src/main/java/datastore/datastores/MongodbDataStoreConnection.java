@@ -192,6 +192,26 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         return new StringBuffer(response.getAsString());
     }
 
+    public StringBuffer getUsersInThread(String threadId)
+    {
+    	BasicDBObject inQuery = new BasicDBObject();
+    	inQuery.put("threadId", threadId);
+    	FindIterable<Document> findIterable = getUsersCollection().find(inQuery);
+    	
+    	JsonObject response = new JsonObject();
+        JsonArray jsonArray = new JsonArray();
+        
+        for (Document document : findIterable) {
+            jsonArray.add(document.getString("userName"));
+        }
+    	
+        response.add("GetUsersInThread", jsonArray);
+        response.addProperty("responseCode", ResponseCodes.STATUS_OK);
+
+        return new StringBuffer(response.getAsString());
+        
+    }
+
     private MongoDatabase getMessagingAppDB() {
         return mongoClient.getDatabase("bleh");  // TODO needs to be changed to the database name
     }
