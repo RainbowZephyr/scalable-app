@@ -32,6 +32,7 @@ public abstract class DataStoreConnection implements Runnable {
     }
 
     final public void init(Map<String, Object> parameters) {
+
         this.parameters = parameters;
     }
 }
