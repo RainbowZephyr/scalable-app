@@ -4,24 +4,11 @@
   "recieving_app_id": "",
   "response_status": "",
   "response_load": {
-    "userName": "",
     "email": "",
-    "phoneNumber": "",
     "firstName": "",
     "lastName": "",
-    "age": "",
-    "gender": "",
-    "friends": [
-      {
-        "userName": "",
-        "email": "",
-        "phoneNumber": "",
-        "firstName": "",
-        "lastName": "",
-        "age": "",
-        "gender": ""
-      }
-    ],
+    "dateOfBirth": "",
+    
   }
 }
 

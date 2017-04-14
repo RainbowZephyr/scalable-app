@@ -233,6 +233,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 	}
 
 	private StringBuffer getUser(int userID) {
+		JsonObject json = new JsonObject();
 		Statement con = null;
 		try {
 			con = db.createStatement();
@@ -244,12 +245,26 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		try {
 			result = con.executeQuery("SELECT * FROM member WHERE  id  = "
 					+ userID);
+			result.beforeFirst();
+
+			if (result.next()) {
+				String email = result.getString("email");
+				String firstName = result.getString("first_name");
+				String lastName = result.getString("last_name");
+				String dateOfBirth = result.getString("date_of_birth");
+				json.addProperty("status", ResponseCodes.STATUS_OK);
+				json.addProperty("email", email);
+				json.addProperty("firstName", firstName);
+				json.addProperty("lastName", lastName);
+				json.addProperty("dateOfBirth", dateOfBirth);
+
+			}
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		JsonObject json = new JsonObject();
-		json.addProperty("status", ResponseCodes.STATUS_OK);
+
 		return new StringBuffer(json.toString());
 	}
 
