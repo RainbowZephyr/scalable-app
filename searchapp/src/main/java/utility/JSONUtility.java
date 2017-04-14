@@ -26,7 +26,7 @@ public class JSONUtility {
             strbufJSON.append("\"sessionID\":\"" + requestSessionID + "\",");
 
         strbufJSON.append("\"StatusID\":\"" + nResponse + "\",");
-        strStatusMsg = ResponseCodes.getMessage(Integer.toString(nResponse));
+        strStatusMsg = (String) ResponseCodes.getMessage(Integer.toString(nResponse));
         strbufJSON.append("\"StatusMsg\":\"" + strStatusMsg + "\",");
 
         if (strbufRequestData != null)

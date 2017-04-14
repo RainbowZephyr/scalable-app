@@ -3,6 +3,7 @@ package command;
 import services.RequestHandle;
 import services.ServiceRequest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Command implements Runnable {
@@ -18,8 +19,10 @@ public abstract class Command implements Runnable {
                 parameters.get(ServiceRequest.class.getSimpleName());
         RequestHandle requestHandle = (RequestHandle)
                 parameters.get(RequestHandle.class.getSimpleName());
+        Map<String, Object> requestMapData = serviceRequest.getData();
+        requestMapData.put(RequestHandle.class.getSimpleName(), requestHandle);
         try {
-            StringBuffer strbufResponse = execute(serviceRequest.getData());
+            StringBuffer strbufResponse = execute(requestMapData);
             if (shouldReturnResponse()) {
                 // send response to the queue
                 requestHandle.send(strbufResponse);
