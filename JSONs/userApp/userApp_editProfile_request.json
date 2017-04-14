@@ -4,8 +4,8 @@
   "recieving_app_id": "",
   "service_type": "editProfile",
   "request_parameters": {
-    "oldpassWord": "",
-    "newpassWord": "",
+    "oldpassword": "",
+    "newpassword": "",
     "email": "",
     "firstName": "",
     "newfirstName": "",

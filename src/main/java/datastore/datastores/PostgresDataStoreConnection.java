@@ -51,7 +51,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 
 		if (action == "signupUser") {
 			String email = (String) parameters.get("email");
-			String hashedPassword = (String) parameters.get("passWord");
+			String hashedPassword = (String) parameters.get("password");
 			String firstName = (String) parameters.get("firstName");
 			String lastName = (String) parameters.get("lastName");
 			Date dateOfBirth = (Date) parameters.get("dateOfBirth");
@@ -75,8 +75,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 		if (action == "editProfile") {
 			String email = (String) parameters.get("email");
-			String hashedPassword = (String) parameters.get("passWord");
-			String newPassword = (String) parameters.get("newpassWord");
+			String hashedPassword = (String) parameters.get("password");
+			String newPassword = (String) parameters.get("newpassword");
 			String firstName = (String) parameters.get("firstName");
 			String newFirstName = (String) parameters.get("newfirstName");
 			String lastName = (String) parameters.get("lastName");

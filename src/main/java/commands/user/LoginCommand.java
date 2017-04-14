@@ -16,7 +16,7 @@ public class LoginCommand extends Command {
 			throws Exception {
 
 		String email = (String)requestMapData.get("email");
-		String password = (String)requestMapData.get("passWord");
+		String password = (String)requestMapData.get("password");
 		Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
 		.getDataStoreConnection("Postgresql_database_connection");
 		DataStoreConnection connection = (DataStoreConnection) connectionClass.newInstance();
