@@ -144,7 +144,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 				// connect to shared cache.
 				Class<?> connectionClass = DataStoreConnectionFactory
 						.sharedInstance().getDataStoreConnection(
-								"Redis_datastore_connection");
+								"redis_data_store_connection");
 				DataStoreConnection connection = (DataStoreConnection) connectionClass
 						.newInstance();
 				Map<String, Object> parameters = new HashMap<String, Object>();
@@ -356,7 +356,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
-				.getDataStoreConnection("Redis_datastore_connection");
+				.getDataStoreConnection("redis_data_store_connection");
 		DataStoreConnection connection = (DataStoreConnection) connectionClass
 				.newInstance();
 		Map<String, Object> parameters = new HashMap<String, Object>();
