@@ -129,8 +129,8 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
 		}
 		JsonObject response = new JsonObject();
 		response.addProperty("responseCode", ResponseCodes.STATUS_OK); // TODO need a known key follow
-		response.addProperty("threadId", messageThreadId.toString());
-		return new StringBuffer(response.getAsString());
+		response.addProperty("threadId", messageThreadId.toHexString());
+		return new StringBuffer(response.toString());
 	}
     
     public StringBuffer sendTextMessage(String threadId, String userId, String messageBody){
@@ -147,7 +147,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     	messageThreadCollection.updateOne(eq("_id",messageThreadId),new Document("$set", thread));
     	JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
     
     public StringBuffer sendImageMessage(String threadId, String userId, String messageBody, String imageUrl){
@@ -168,7 +168,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     	messageThreadCollection.updateOne(eq("_id",messageThreadId),new Document("$set", thread));
     	JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
 
     public StringBuffer getUsersInThread(String threadId) {
