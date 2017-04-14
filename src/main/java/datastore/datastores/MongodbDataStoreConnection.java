@@ -73,7 +73,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         if (action.equals("removeUserFromThread")) {
             String threadId = parameters.get("threadId").toString();
             String userId = parameters.get("userId").toString();
-            removeUserFromThread(threadId, userId);
+            return removeUserFromThread(threadId, userId);
         }
         if(action.equals("RetrieveMessage")){
         	String threadId = (String) parameters.get("threadId");
@@ -88,7 +88,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         }
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("responseCode", ResponseCodes.STATUS_SERVICE_UNAVAILABLE);
-        return new StringBuffer(jsonObject.getAsString());
+        return new StringBuffer(jsonObject.toString());
     }
 
     private StringBuffer searchForThreads(String nameQuery) {
@@ -172,35 +172,34 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     }
 
     public StringBuffer getUsersInThread(String threadId) {
-        BasicDBObject inQuery = new BasicDBObject();
-        inQuery.put("_id", new ObjectId(threadId));
-        FindIterable<Document> findIterable = getMessageThreadsCollection().find(inQuery);
-
-        JsonObject response = new JsonObject();
+    	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
+    	Document thread = messageThreadCollection.find(eq("_id",new ObjectId(threadId))).first();
+    	List<String> users = (List<String>) thread.get("users");
+   
+    	JsonObject response = new JsonObject();
         JsonArray jsonArray = new JsonArray();
-
-        for (Document document : findIterable) {
-            jsonArray.add(document.getString("userId"));
-        }
-
-        response.add("GetUsersInThread", jsonArray);
+    	
+    	for (String user : users)
+		{
+    		jsonArray.add(user.toString());
+		}
+    	response.add("usersInThread", jsonArray);
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
-
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
 
+
     public StringBuffer removeUserFromThread(String threadId, String userId) {
-        BasicDBObject removeQuery = new BasicDBObject();
-        removeQuery.put("_id", new ObjectId(threadId));
-        removeQuery.put("userId", userId);
-
-        DBCollection db = (DBCollection) getMessageThreadsCollection();
-        db.remove(removeQuery);
-
+    	ObjectId messageThreadId = new ObjectId(threadId);
+    	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
+    	Document thread = messageThreadCollection.find(eq("_id",messageThreadId)).first();
+    	List<String> users = (List<String>) thread.get("users");
+    	
+    	users.remove(userId);
+    	messageThreadCollection.updateOne(eq("_id",messageThreadId),new Document("$set", thread));
         JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
-
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
     
     public StringBuffer RetrieveMessages(String threadId, Date startDate, Date endDate){
@@ -221,15 +220,17 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     }
     
     public StringBuffer AddUserToThread(String threadId, String userId){
+    	ObjectId messageThreadId = new ObjectId(threadId);
     	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
-    	Document thread = messageThreadCollection.find(eq("_id",threadId)).first(); 
+    	Document thread = messageThreadCollection.find(eq("_id",messageThreadId)).first(); 
         
         List<String> users = (List<String>) thread.get("users");
         users.add(userId.toString());
         
+        messageThreadCollection.updateOne(eq("_id",messageThreadId),new Document("$set", thread));
         JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
 
     private MongoDatabase getMessagingAppDB() {

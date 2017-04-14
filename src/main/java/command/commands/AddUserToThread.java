@@ -24,7 +24,7 @@ public class AddUserToThread extends Command  {
         
         parameters.put("action", "AddUserToThread");
         parameters.put("userId", (String) requestMapData.get("userId"));
-        parameters.put("threadName", (String) requestMapData.get("threadName"));
+        parameters.put("threadId", (String) requestMapData.get("threadId"));
         
 		RequestHandle requestHandle = (RequestHandle)
                 this.parameters.get(RequestHandle.class.getSimpleName());
@@ -34,6 +34,11 @@ public class AddUserToThread extends Command  {
 		
 		return null;
 	}
+	
+    @Override
+    protected boolean shouldReturnResponse() {
+        return false;
+    }
 
 }
 
