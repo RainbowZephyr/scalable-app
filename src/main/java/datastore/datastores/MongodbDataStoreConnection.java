@@ -73,7 +73,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         if (action.equals("removeUserFromThread")) {
             String threadId = parameters.get("threadId").toString();
             String userId = parameters.get("userId").toString();
-            removeUserFromThread(threadId, userId);
+            return removeUserFromThread(threadId, userId);
         }
         if(action.equals("RetrieveMessage")){
         	String threadId = (String) parameters.get("threadId");
@@ -172,35 +172,33 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     }
 
     public StringBuffer getUsersInThread(String threadId) {
-        BasicDBObject inQuery = new BasicDBObject();
-        inQuery.put("_id", new ObjectId(threadId));
-        FindIterable<Document> findIterable = getMessageThreadsCollection().find(inQuery);
-
+        MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
+        Document thread = messageThreadCollection.find(eq("_id",new ObjectId(threadId))).first();
+        List<String> users = (List<String>) thread.get("users");
+        
         JsonObject response = new JsonObject();
         JsonArray jsonArray = new JsonArray();
-
-        for (Document document : findIterable) {
-            jsonArray.add(document.getString("userId"));
+        
+        for (String user : users)
+        {
+            jsonArray.add(user.toString());
         }
-
-        response.add("GetUsersInThread", jsonArray);
+        response.add("usersInThread", jsonArray);
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
-
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
 
     public StringBuffer removeUserFromThread(String threadId, String userId) {
-        BasicDBObject removeQuery = new BasicDBObject();
-        removeQuery.put("_id", new ObjectId(threadId));
-        removeQuery.put("userId", userId);
-
-        DBCollection db = (DBCollection) getMessageThreadsCollection();
-        db.remove(removeQuery);
-
+        ObjectId messageThreadId = new ObjectId(threadId);
+        MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
+        Document thread = messageThreadCollection.find(eq("_id",messageThreadId)).first();
+        List<String> users = (List<String>) thread.get("users");
+        
+        users.remove(userId);
+        messageThreadCollection.updateOne(eq("_id",messageThreadId),new Document("$set", thread));
         JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
-
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.toString());
     }
     
     public StringBuffer RetrieveMessages(String threadId, Date startDate, Date endDate){

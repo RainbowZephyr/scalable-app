@@ -36,4 +36,9 @@ public class RemoveUserFromThreadCommand extends Command
 		return null;
 	}
 
+	@Override
+    protected boolean shouldReturnResponse() {
+        return false;
+    }
+
 }
