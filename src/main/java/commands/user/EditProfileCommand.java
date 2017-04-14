@@ -11,16 +11,21 @@ import command.Command;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
 
-public class SignUpCommand extends Command {
+public class EditProfileCommand extends Command {
 
 	@Override
 	protected StringBuffer execute(Map<String, Object> requestMapData)
 			throws Exception {
 		
 		String email = (String) requestMapData.get("email");
-		String hashedPassword = (String) requestMapData.get("password");
+		String hashedPassword = (String) requestMapData.get("oldpassword");
+		String newPassword = (String) requestMapData.get("newpassword");
 		String firstName = (String) requestMapData.get("firstName");
+		String newFirstName = (String) requestMapData.get("newfirstName");
+
 		String lastName = (String) requestMapData.get("lastName");
+		String newLastName = (String) requestMapData.get("newlastName");
+
 		Date dateOfBirth = (Date) requestMapData.get("dateOfBirth");
 		Timestamp createdAt = (Timestamp) requestMapData.get("createdAt");
 		
@@ -30,11 +35,14 @@ public class SignUpCommand extends Command {
 				.newInstance();
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("action", "signupUser");
+		parameters.put("action", "editProfile");
 		parameters.put("email", email);
-		parameters.put("password", hashedPassword);
+		parameters.put("hashedPassword", hashedPassword);
+		parameters.put("newpassword", newPassword);
 		parameters.put("firstName", firstName);
+		parameters.put("newfirstName", newFirstName);
 		parameters.put("lastName", lastName);
+		parameters.put("newlastName", newLastName);
 		parameters.put("dateOfBirth", dateOfBirth);
 		parameters.put("createdAt", createdAt);
 
@@ -46,6 +54,11 @@ public class SignUpCommand extends Command {
 		DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
 
 		return null;
+		
+		
+		
+		
+	
 	}
 
 }
