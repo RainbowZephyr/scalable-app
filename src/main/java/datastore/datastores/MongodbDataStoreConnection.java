@@ -99,7 +99,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         JsonArray jsonArray = new JsonArray();
         for (Document document : findIterable) {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("threadId", document.getString("obectId"));
+            jsonObject.addProperty("threadId", document.getObjectId("_id").toHexString());
             jsonObject.addProperty("threadName", document.getString("threadName"));
             jsonArray.add(jsonObject);
         }
