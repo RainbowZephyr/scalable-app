@@ -3,6 +3,7 @@ package datastore.datastores;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.FindIterable;
@@ -22,30 +23,6 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class MongodbDataStoreConnection extends DataStoreConnection {
     private MongoClient mongoClient;
-
-
-    /*
-    private MongoClient mongoClient;
-    private static MongoClientURI mongoClientURI;
-
-
-    @Override
-    public void init(Map<String, Object> parameters) {
-        super.init(parameters);
-        if (parameters.containsKey("mongoClientURI")) {
-            mongoClientURI = (MongoClientURI) parameters.get("mongoClientURI");
-        }
-        mongoClient = new MongoClient(mongoClientURI);
-    }
-
-    public static MongoClientURI getMongoClientURI() {
-        return mongoClientURI;
-    }
-
-    public static boolean isMongoClientURISet() {
-        return mongoClientURI != null;
-    }
-    */
 
     @Override
     public StringBuffer execute(Map<String, Object> parameters) throws Exception {
@@ -169,7 +146,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     	Document thread = messageThreadCollection.find(eq("_id",threadId)).first();
     	List<Document> messages = (List<Document>) thread.get("messages");
     	if(messages == null){
-    		messages = new LinkedList<>();
+    		messages = new LinkedList<Document>();
     	}
     	Document message = new Document("body",messageBody);
     	message.append("userId", userId);
@@ -188,7 +165,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     	Document thread = messageThreadCollection.find(eq("_id",threadId)).first();
     	List<Document> messages = (List<Document>) thread.get("messages");
     	if(messages == null){
-    		messages = new LinkedList<>();
+    		messages = new LinkedList<Document>();
     	}
     	Document message = new Document("body",messageBody);
     	message.append("userId", userId);
