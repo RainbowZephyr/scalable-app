@@ -14,10 +14,15 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import utility.ResponseCodes;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -27,7 +32,9 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     @Override
     public StringBuffer execute(Map<String, Object> parameters) throws Exception {
 
-        mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+    	String host = getConfigProperty("host");
+    	int port = Integer.parseInt(getConfigProperty("port"));
+        mongoClient = new MongoClient(host, port);
 
         String action = (String) parameters.get("action");
 //		switch(action){
@@ -65,6 +72,17 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
             String threadId = parameters.get("threadId").toString();
             String userId = parameters.get("userId").toString();
             removeUserFromThread(threadId, userId);
+        }
+        if(action.equals("RetrieveMessage")){
+        	String threadId = (String) parameters.get("threadId");
+        	Date startDate = (Date) parameters.get("startDate");
+    		Date endDate = (Date) parameters.get("endDate");
+    		return RetrieveMessages(threadId, startDate, endDate);
+        }
+        if(action.equals("AddUserToThread")){
+        	String threadId = (String) parameters.get("threadId");
+        	String userId = (String) parameters.get("userId");
+    		return AddUserToThread(threadId, userId);
         }
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("responseCode", ResponseCodes.STATUS_SERVICE_UNAVAILABLE);
@@ -182,17 +200,66 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
 
         return new StringBuffer(response.getAsString());
     }
+    public StringBuffer RetrieveMessages(String threadId, Date startDate, Date endDate){
+    	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
+    	BasicDBObject query = new BasicDBObject("startDate", new BasicDBObject("$lt", endDate));
+    	FindIterable<Document> cursor = messageThreadCollection.find(query);
+    	
+    	JsonObject response = new JsonObject();
+        JsonArray jsonArray = new JsonArray();
+        
+    	for (Document document : cursor) {
+    		jsonArray.add(document.getString("threadId"));
+        }
+    	
+    	response.add("RetrieveMessages", jsonArray);
+        response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
+        return new StringBuffer(response.getAsString());
+    }
+    
+    public StringBuffer AddUserToThread(String threadId, String userId){
+    	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
+    	Document thread = messageThreadCollection.find(eq("_id",threadId)).first(); 
+        
+        List<String> users = (List<String>) thread.get("users");
+        users.add(userId.toString());
+        
+        JsonObject response = new JsonObject();
+        response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
+        return new StringBuffer(response.getAsString());
+    }
 
     private MongoDatabase getMessagingAppDB() {
-        return mongoClient.getDatabase("MessagesDB");  // TODO needs to be changed to the database name
+
+        return mongoClient.getDatabase(getConfigProperty("messages_database_name"));
     }
 
     private MongoCollection<Document> getMessageThreadsCollection() {
-        return getMessagingAppDB().getCollection("MessageThreads"); // TODO needs to be changed to the messaging thread collection name
+        return getMessagingAppDB().getCollection(getConfigProperty("messageThreads_table"));
     }
 
     private MongoCollection<Document> getUsersCollection() {
-        return getMessagingAppDB().getCollection("Users"); // TODO needs to be changed to the users collection name
+        return getMessagingAppDB().getCollection(getConfigProperty("users_table"));
+    }
+    
+    private String getConfigProperty(String key){
+    	Properties prop = new Properties();
+    	InputStream input = null;
+
+    	try {
+
+    		input = new FileInputStream("config/mongodb.properties");
+
+    		// load a properties file
+    		prop.load(input);
+
+    		// get the property value and print it out
+    		return prop.getProperty(key);
+
+    	} catch (IOException ex) {
+    		ex.printStackTrace();
+    	}
+    	return null;
     }
 
 }
