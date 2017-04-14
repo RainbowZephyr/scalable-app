@@ -9,7 +9,7 @@ import thread_pools.DatabaseThreadPool;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SearchForThreads extends Command{
+public class SearchForThreadsCommand extends Command{
 
 	@Override
 	protected StringBuffer execute(Map<String, Object> requestMapData) throws Exception {

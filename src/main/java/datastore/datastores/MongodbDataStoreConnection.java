@@ -77,7 +77,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         FindIterable<Document> findIterable = getMessageThreadsCollection().find(basicDBObject);
         JsonObject response = new JsonObject();
         JsonArray jsonArray = new JsonArray();
-        for (Document document : findIterable) {//obectId
+        for (Document document : findIterable) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("threadId", document.getString("obectId"));
             jsonObject.addProperty("threadName", document.getString("threadName"));
