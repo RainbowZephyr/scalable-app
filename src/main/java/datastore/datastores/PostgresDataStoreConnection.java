@@ -44,7 +44,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		String action = (String) parameters.get("action");
 		if (action == "loginUser") {
 			String email = (String) parameters.get("email");
-			String hashedPassword = (String) parameters.get("passWord");
+			String hashedPassword = (String) parameters.get("password");
 			// hashedpassword should be decrypted
 			return loginUser(email, hashedPassword);
 		}
@@ -338,7 +338,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 		ResultSet result;
 		try {
-			result = con.executeQuery("SELECT *");
+			result = con.executeQuery("DELETE from ");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
