@@ -1,9 +1,10 @@
-﻿{
+﻿ï»¿{
   "session_id": "",
   "app_id": "",
   "recieving_app_id": "",
   "service_type": "declineFriendRequest",
   "request_parameters": {
-    "friendEmail": "",
+    "user1ID": "",
+    "user2ID": "",
   }
 }	

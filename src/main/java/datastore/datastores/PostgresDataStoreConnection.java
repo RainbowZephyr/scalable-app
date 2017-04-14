@@ -44,7 +44,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		String action = (String) parameters.get("action");
 		if (action == "loginUser") {
 			String email = (String) parameters.get("email");
-			String hashedPassword = (String) parameters.get("passWord");
+			String hashedPassword = (String) parameters.get("password");
 			// hashedpassword should be decrypted
 			return loginUser(email, hashedPassword);
 		}
@@ -62,9 +62,10 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 
 		if (action == "removeFriend") {
-			String friendEmail = (String) parameters.get("friendEmail");
+			int user1id = (Integer) parameters.get("user1ID");
+			int user2id = (Integer) parameters.get("user2ID");
 
-			return removeFriend(friendEmail);
+			return removeFriend(user1id, user2id);
 		}
 
 		if (action == "getUser") {
@@ -76,33 +77,39 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			String email = (String) parameters.get("email");
 			String hashedPassword = (String) parameters.get("passWord");
 			String newPassword = (String) parameters.get("newpassWord");
-			String phoneNumber = (String) parameters.get("phoneNumber");
 			String firstName = (String) parameters.get("firstName");
+			String newFirstName = (String) parameters.get("newfirstName");
 			String lastName = (String) parameters.get("lastName");
-			String age = (String) parameters.get("age");
-			String gender = (String) parameters.get("gender");
+			String newLastName = (String) parameters.get("newlastName");
+			Date dateOfBirth = (Date) parameters.get("dateOfBirth");
+			Timestamp createdAt = (Timestamp) parameters.get("createdAt");
 
-			editProfile(email, hashedPassword, newPassword, phoneNumber,
-					firstName, lastName, age, gender);
+			editProfile( email, hashedPassword,
+					 newPassword,  firstName,newFirstName,
+					 lastName,  newLastName,  dateOfBirth,
+					 createdAt);
 
 		}
 
 		if (action == "declineFriendRequest") {
-			String friendEmail = (String) parameters.get("friendEmail");
+			int user1id = (Integer) parameters.get("user1ID");
+			int user2id = (Integer) parameters.get("user2ID");
 
-			return declineFriend(friendEmail);
+			return declineFriend(user1id, user2id);
 		}
 
 		if (action == "addFriend_request") {
-			String friendEmail = (String) parameters.get("friendEmail");
+			int user1id = (Integer) parameters.get("user1ID");
+			int user2id = (Integer) parameters.get("user2ID");
 
-			return addFriend(friendEmail);
+			return addFriend(user1id, user2id);
 		}
 
 		if (action == "acceptFriendRequest") {
-			String friendEmail = (String) parameters.get("friendEmail");
+			int user1id = (Integer) parameters.get("user1ID");
+			int user2id = (Integer) parameters.get("user2ID");
 
-			return acceptFriend(friendEmail);
+			return acceptFriend(user1id, user2id);
 		}
 
 		if (action == "logOut_request") {
@@ -131,7 +138,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 
 			json.addProperty("status", ResponseCodes.STATUS_OK);
 			if (result.next()) {
-				String id = result.getString("id");
+				int id = result.getInt("id");
 				// generate a random string (session)
 				String session = nextSessionId();
 				// connect to shared cache.
@@ -157,8 +164,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 
 				json.addProperty("loginStatus", "Success");
 				json.addProperty("userId", id);
-				json.addProperty("sessionId",session);
-
+				json.addProperty("sessionId", session);
 
 			} else {
 				json.addProperty("loginStatus", "Failed");
@@ -205,7 +211,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		return new StringBuffer(json.toString());
 	}
 
-	private StringBuffer removeFriend(String friendEmail) {
+	private StringBuffer removeFriend(int user1id, int user2id) {
 		Statement con = null;
 		try {
 			con = db.createStatement();
@@ -215,7 +221,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 		ResultSet result;
 		try {
-			result = con.executeQuery("SELECT *");
+			result = con.executeQuery("DELETE FROM friends WHERE user_1 = "
+					+ user1id + "AND user_2 =" + user2id);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -246,9 +253,10 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		return new StringBuffer(json.toString());
 	}
 
-	private StringBuffer editProfile(String username, String hashedPassword,
-			String newpassWord, String phoneNumber, String firstName,
-			String lastName, String age, String gender) {
+	private StringBuffer editProfile(String email, String hashedPassword,
+			String newPassword, String firstName, String newFirstname,
+			String lastName, String newLastname, Date dateOfBirth,
+			Timestamp createdAt) {
 		Statement con = null;
 		try {
 			con = db.createStatement();
@@ -258,7 +266,11 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 		ResultSet result;
 		try {
-			result = con.executeQuery("SELECT *");
+			result = con.executeQuery("UPDATE member SET password_hash ="
+					+ newPassword + "AND first_name = " + newFirstname
+					+ "AND last_name =" + newLastname + "WHERE first_name= "
+					+ firstName + "AND last_name=" + lastName + "AND email ="
+					+ email);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -268,7 +280,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		return new StringBuffer(json.toString());
 	}
 
-	private StringBuffer declineFriend(String friendEmail) {
+	private StringBuffer declineFriend(int user1id, int user2id) {
 		Statement con = null;
 		try {
 			con = db.createStatement();
@@ -278,7 +290,9 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 		ResultSet result;
 		try {
-			result = con.executeQuery("SELECT *");
+			result = con
+					.executeQuery("UPDATE friends SET accepted = 0 WHERE  user_1 ="
+							+ user1id + "AND user_2 = " + user2id);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -288,7 +302,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		return new StringBuffer(json.toString());
 	}
 
-	private StringBuffer addFriend(String friendEmail) {
+	private StringBuffer addFriend(int user1id, int user2id) {
 		Statement con = null;
 		try {
 			con = db.createStatement();
@@ -298,7 +312,9 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 		ResultSet result;
 		try {
-			result = con.executeQuery("SELECT *");
+			result = con
+					.executeQuery("INSERT INTO `friends`(user_1,user_2,accepted) VALUES ("
+							+ user1id + "','" + user2id + "',' 0" + "')");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -308,7 +324,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		return new StringBuffer(json.toString());
 	}
 
-	private StringBuffer acceptFriend(String friendEmail) {
+	private StringBuffer acceptFriend(int user1id, int user2id) {
 		Statement con = null;
 		try {
 			con = db.createStatement();
@@ -318,7 +334,9 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 		ResultSet result;
 		try {
-			result = con.executeQuery("SELECT *");
+			result = con
+					.executeQuery("UPDATE friends SET accepted = 1 WHERE  user_1 ="
+							+ user1id + "AND user_2 = " + user2id);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

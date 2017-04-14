@@ -1,4 +1,4 @@
-﻿{
+﻿ï»¿{
   "session_id": "",
   "app_id": "",
   "recieving_app_id": "",
@@ -7,10 +7,11 @@
     "oldpassWord": "",
     "newpassWord": "",
     "email": "",
-    "phoneNumber": "",
     "firstName": "",
+    "newfirstName": "",
     "lastName": "",
-    "age": "",
-    "gender": "",
+     "newlastName": "",
+    "dateOfBirth": "",
+    "createdAt": "",
   }
-}	
+} 
