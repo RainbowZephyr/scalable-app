@@ -5,6 +5,6 @@
   "service_type": "logIn",
   "request_parameters": {
     "email": "",
-    "passWord": "",
+    "password": "",
   }
 }	
