@@ -24,7 +24,7 @@ public class AddFriendCommand extends Command{
 				.newInstance();
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("action", "removeFriend");
+		parameters.put("action", "addFriend_request");
 		parameters.put("user1ID", user1id);
 		parameters.put("user2ID", user2id);
 	
