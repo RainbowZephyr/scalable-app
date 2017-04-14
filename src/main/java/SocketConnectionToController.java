@@ -19,7 +19,7 @@ public class SocketConnectionToController implements SocketConnection {
 
     private static SocketConnectionToController instance = new SocketConnectionToController();
     private static String HOST_ADDRESS = "127.0.0.1";
-    private  static int SPECIAL_PORT=8080;
+    private  static int SPECIAL_PORT=6002;
     private ChannelHandlerContext ctx;
     private Channel specialRequestChannel;
 
