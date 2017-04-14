@@ -4,7 +4,7 @@ import command.Command;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
 import services.RequestHandle;
-import threads.DatabaseThreadPool;
+import thread_pools.DatabaseThreadPool;
 
 import java.util.HashMap;
 import java.util.Map;

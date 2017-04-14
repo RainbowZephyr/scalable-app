@@ -1,4 +1,4 @@
-package threads;
+package thread_pools;
 
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;

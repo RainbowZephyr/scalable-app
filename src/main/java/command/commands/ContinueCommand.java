@@ -3,7 +3,7 @@ package command.commands;
 import command.Command;
 import connections.QueueConsumerListenerThread;
 import services.Response;
-import threads.CommandsThreadPool;
+import thread_pools.CommandsThreadPool;
 import utility.ResponseCodes;
 
 import java.util.Map;
