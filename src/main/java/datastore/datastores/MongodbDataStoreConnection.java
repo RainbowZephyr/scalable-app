@@ -9,6 +9,8 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+
 import datastore.DataStoreConnection;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -77,9 +79,9 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         }
         if(action.equals("RetrieveMessage")){
         	String threadId = (String) parameters.get("threadId");
-        	Date startDate = (Date) parameters.get("startDate");
-    		Date endDate = (Date) parameters.get("endDate");
-    		return RetrieveMessages(threadId, startDate, endDate);
+        	String startDate = (String) parameters.get("startDate");
+    		String endDate = (String) parameters.get("endDate");
+    		return retrieveMessages(threadId, startDate, endDate);
         }
         if(action.equals("AddUserToThread")){
         	String threadId = (String) parameters.get("threadId");
@@ -208,16 +210,20 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         return new StringBuffer(response.toString());
     }
     
-    public StringBuffer RetrieveMessages(String threadId, Date startDate, Date endDate){
+    public StringBuffer retrieveMessages(String threadId, String startDate, String endDate){
+    	ObjectId messageThreadId =  new ObjectId(threadId);
     	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
-    	BasicDBObject query = new BasicDBObject("startDate", new BasicDBObject("$lt", endDate));
-    	FindIterable<Document> cursor = messageThreadCollection.find(query);
+    	//BasicDBObject query = new BasicDBObject("startDate", new BasicDBObject("$lt", endDate));
+    	//FindIterable<Document> cursor = messageThreadCollection.find(query);
+    	FindIterable<Document> cursor = messageThreadCollection.find(Filters.and(Filters.gte("timestamp", startDate),Filters.lte("timestamp", endDate)));
     	
     	JsonObject response = new JsonObject();
         JsonArray jsonArray = new JsonArray();
         
-    	for (Document document : cursor) {
-    		jsonArray.add(document.getString("threadId"));
+        for (Document document : cursor) {
+    		if(document.getString("threadId").equals(messageThreadId)){
+    			jsonArray.add(document.toJson());
+    		}
         }
     	
     	response.add("RetrieveMessages", jsonArray);
