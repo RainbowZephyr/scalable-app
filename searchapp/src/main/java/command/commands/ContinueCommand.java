@@ -16,6 +16,8 @@ public class ContinueCommand extends Command {
         }
         CommandsThreadPool.sharedInstance().reloadThreadPool();
         Response response = new Response(ResponseCodes.STATUS_OK);
+
+        System.out.println(this.getClass().getCanonicalName());
         return response.toJson();
     }
 }

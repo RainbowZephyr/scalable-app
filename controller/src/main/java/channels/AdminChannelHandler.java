@@ -29,7 +29,7 @@ public class AdminChannelHandler extends SimpleChannelInboundHandler<FullHttpReq
 		// for a specific app
 		if (app_id.matches(".*\\d+.*")) {
 			// send to specific app
-			ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(data);
+			ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(data.replace("\n","") + "\n");
 
 		} else {
 			// send to all instances of app

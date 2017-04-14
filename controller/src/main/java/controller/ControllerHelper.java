@@ -159,7 +159,8 @@ public class ControllerHelper {
 		});
 
 		// Start the client.
-		Channel channel = b.connect(host, port).channel(); // (5)
+		Channel channel = b.connect(host, port).sync().channel(); // (5)
+
 		// Add to appropriate channel group
 		AppType appType = ControllerHelper.sharedInstance().getAppByName(app_id).getAppType();
 		switch (appType) {

@@ -40,7 +40,7 @@ public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<Full
 			if (requests_per_second < 10) {
 				jsonMessage = "{ \"session_id\": \"\"," + " \"app_id\": \"controller\"," + " \"recieving_app_id\": \""
 						+ app_id + "\"," + " \"service_type\": \"freeze\"," + " \"request_parameters\": {}}";
-				ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage);
+				ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage.replace("\n","")+"\n");
 				ControllerHelper.sharedInstance().getAppByName(app_id).setStatus(0);
 				// send freeze
 				System.out.println("FREEZE APP: " + app_id);
@@ -54,7 +54,7 @@ public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<Full
 							+ continuedAppName + "\", \"service_type\": \"continue\", \"request_parameters\": {}}";
 					Channel tempChannel = ControllerHelper.sharedInstance().getChannels().get(continuedAppName);
 					if(tempChannel != null){
-						tempChannel.writeAndFlush(jsonMessage);
+						tempChannel.writeAndFlush(jsonMessage.replace("\n","")+"\n");
 						ControllerHelper.sharedInstance().getAppByName(continuedAppName).setStatus(1);
 						System.out.println("CONTINUE APP: " + continuedAppName);
 					}else{
@@ -82,13 +82,13 @@ public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<Full
 						jsonMessage = "{" + "\"app_id\": \"controller\"," + "\"recieving_app_id\": \"" + app_id + "\","
 								+ "\"service_type\": \"set_max_thread_count\"," + "\"request_parameters\": {\"count\": "
 								+ newThreadCount + "}}";
-						ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage);
+						ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage.replace("\n","")+"\n");
 						ControllerHelper.sharedInstance().getAppByName(app_id).setMax_thread_count(newThreadCount);
 
 						jsonMessage = "{" + "\"app_id\": \"controller\"," + "\"recieving_app_id\": \"" + app_id + "\","
 								+ "\"service_type\": \"set_max_db_connections_count\","
 								+ "\"request_parameters\": {\"count\": " + (newThreadCount / 2) + "}}";
-						ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage);
+						ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage.replace("\n","")+"\n");
 						ControllerHelper.sharedInstance().getAppByName(app_id).setMax_db_count(newThreadCount / 2);
 
 					}
