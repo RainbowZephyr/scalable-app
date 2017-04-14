@@ -85,8 +85,8 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         }
         response.add("ThreadNames", jsonArray);
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
-
-        return new StringBuffer(response.getAsString());
+        String s = response.toString();
+        return new StringBuffer(s);
     }
     
 	private StringBuffer createMessagesThread(String threadName, String userId) {
@@ -184,15 +184,15 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     }
 
     private MongoDatabase getMessagingAppDB() {
-        return mongoClient.getDatabase("bleh");  // TODO needs to be changed to the database name
+        return mongoClient.getDatabase("MessagesDB");  // TODO needs to be changed to the database name
     }
 
     private MongoCollection<Document> getMessageThreadsCollection() {
-        return getMessagingAppDB().getCollection("bleh"); // TODO needs to be changed to the messaging thread collection name
+        return getMessagingAppDB().getCollection("MessageThreads"); // TODO needs to be changed to the messaging thread collection name
     }
 
     private MongoCollection<Document> getUsersCollection() {
-        return getMessagingAppDB().getCollection("bleh1"); // TODO needs to be changed to the users collection name
+        return getMessagingAppDB().getCollection("Users"); // TODO needs to be changed to the users collection name
     }
 
 }

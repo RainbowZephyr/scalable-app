@@ -29,7 +29,7 @@ public class SearchForThreadsCommand extends Command{
 	
     @Override
     protected boolean shouldReturnResponse() {
-        return true;
+        return false;
     }
 	
 }
