@@ -147,12 +147,12 @@ public class Dispatcher {
         String commandName = "";
         for (String key : _htblCommands.keySet()) {
             Class<?> commandClass = _htblCommands.get(key);
-            if (commandClass.getName().equals(value)) {
+
+            if (commandClass.getName().equals(value.getName())) {
                 commandName = key;
                 break;
             }
         }
-
         if (commandName.length() > 0) {
             _htblCommands.put(commandName, value);
         }
