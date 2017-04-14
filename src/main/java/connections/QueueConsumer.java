@@ -110,11 +110,16 @@ public class QueueConsumer implements Runnable, Consumer {
     }
 
     public void run() {
-        try {
-            boolean autoAck = false;
-            channel.basicConsume(QUEUE_NAME, autoAck, this);
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (true) {
+            try {
+                boolean autoAck = false;
+                channel.basicConsume(QUEUE_NAME, autoAck, this);
+                Thread.sleep(1000);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -138,14 +143,14 @@ public class QueueConsumer implements Runnable, Consumer {
         long deliveryTag = env.getDeliveryTag();
         // Construct Service Request
         ServiceRequest serviceRequest = constructReq(map);
-        
+
         try {
             Dispatcher.sharedInstance().dispatchRequest(new RequestHandle(
                     Producer.class.getSimpleName()), serviceRequest);
         } catch (CannotAcceptRequestException e) {
             sendAck(deliveryTag, false);
             QueueConsumerListenerThread.sharedInstance().start(); // restarting the app
-        }catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -173,12 +178,13 @@ public class QueueConsumer implements Runnable, Consumer {
     }
 
     public void sendAck(long deliveryTag, boolean ack) throws IOException {
-        if(ack){
+        if (ack) {
             channel.basicAck(deliveryTag, false);
-        }else{
+        } else {
             channel.basicNack(deliveryTag, false, true);
         }
     }
+
     public void handleCancel(String consumerTag) {
     }
 
