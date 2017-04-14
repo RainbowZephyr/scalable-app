@@ -25,7 +25,7 @@ public abstract class DataStoreConnection implements Runnable {
             StringBuffer strBuffer = execute(parameters);
             RequestHandle requestHandle = (RequestHandle)
                     parameters.get(RequestHandle.class.getSimpleName());
-            requestHandle.send(strBuffer);
+//            requestHandle.send(strBuffer);
         } catch (Exception e) {
             e.printStackTrace();
         }
