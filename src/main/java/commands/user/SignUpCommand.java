@@ -32,7 +32,7 @@ public class SignUpCommand extends Command {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("action", "signupUser");
 		parameters.put("email", email);
-		parameters.put("hashedPassword", hashedPassword);
+		parameters.put("password", hashedPassword);
 		parameters.put("firstName", firstName);
 		parameters.put("lastName", lastName);
 		parameters.put("dateOfBirth", dateOfBirth);
