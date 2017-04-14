@@ -17,6 +17,7 @@ import utility.ResponseCodes;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,6 +72,17 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
             String threadId = parameters.get("threadId").toString();
             String userId = parameters.get("userId").toString();
             removeUserFromThread(threadId, userId);
+        }
+        if(action.equals("RetrieveMessage")){
+        	String threadId = (String) parameters.get("threadId");
+        	Date startDate = (Date) parameters.get("startDate");
+    		Date endDate = (Date) parameters.get("endDate");
+    		return RetrieveMessages(threadId, startDate, endDate);
+        }
+        if(action.equals("AddUserToThread")){
+        	String threadId = (String) parameters.get("threadId");
+        	String userId = (String) parameters.get("userId");
+    		return AddUserToThread(threadId, userId);
         }
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("responseCode", ResponseCodes.STATUS_SERVICE_UNAVAILABLE);
@@ -186,6 +198,34 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
 
+        return new StringBuffer(response.getAsString());
+    }
+    public StringBuffer RetrieveMessages(String threadId, Date startDate, Date endDate){
+    	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
+    	BasicDBObject query = new BasicDBObject("startDate", new BasicDBObject("$lt", endDate));
+    	FindIterable<Document> cursor = messageThreadCollection.find(query);
+    	
+    	JsonObject response = new JsonObject();
+        JsonArray jsonArray = new JsonArray();
+        
+    	for (Document document : cursor) {
+    		jsonArray.add(document.getString("threadId"));
+        }
+    	
+    	response.add("RetrieveMessages", jsonArray);
+        response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
+        return new StringBuffer(response.getAsString());
+    }
+    
+    public StringBuffer AddUserToThread(String threadId, String userId){
+    	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
+    	Document thread = messageThreadCollection.find(eq("_id",threadId)).first(); 
+        
+        List<String> users = (List<String>) thread.get("users");
+        users.add(userId.toString());
+        
+        JsonObject response = new JsonObject();
+        response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
         return new StringBuffer(response.getAsString());
     }
 
