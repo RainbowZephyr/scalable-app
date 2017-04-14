@@ -84,6 +84,17 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         	String imageUrl = (String) parameters.get("imageUrl");
         	return sendImageMessage(threadId, userId, messageBody, imageUrl);
         }
+        if(action.equals("getUsersInThread"))
+        {
+        	String threadId = (String) parameters.get("threadId").toString();
+        	return getUsersInThread(threadId);
+        }
+        if(action.equals("removeUserFromThread"))
+        {
+        	String threadId = parameters.get("threadId").toString();
+        	String userId = parameters.get("userId").toString();
+        	removeUserFromThread(threadId, userId);
+        }
         return null;
     }
 
@@ -196,7 +207,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     {
     	BasicDBObject inQuery = new BasicDBObject();
     	inQuery.put("threadId", threadId);
-    	FindIterable<Document> findIterable = getUsersCollection().find(inQuery);
+    	FindIterable<Document> findIterable = getMessageThreadsCollection().find(inQuery);
     	
     	JsonObject response = new JsonObject();
         JsonArray jsonArray = new JsonArray();
@@ -208,8 +219,22 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         response.add("GetUsersInThread", jsonArray);
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
 
-        return new StringBuffer(response.getAsString());
+        return new StringBuffer(response.getAsString());     
+    }
+    
+    public StringBuffer removeUserFromThread(String threadId, String userId)
+    {
+    	BasicDBObject removeQuery = new BasicDBObject();
+    	removeQuery.put("threadId", threadId);
+    	removeQuery.put("userId", userId);
+    	
+    	DBCollection db =  (DBCollection) getMessagingAppDB();
+    	db.remove(removeQuery);
+    	
+    	JsonObject response = new JsonObject();
+        response.addProperty("responseCode", ResponseCodes.STATUS_OK);
         
+        return new StringBuffer(response.getAsString());
     }
 
     private MongoDatabase getMessagingAppDB() {
