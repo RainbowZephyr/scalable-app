@@ -1,4 +1,4 @@
-package commands.user;
+package command.commands;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -11,7 +11,7 @@ import command.Command;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
 
-public class EditProfileCommand extends Command {
+public class UserEditProfileCommand extends Command {
 
 	@Override
 	protected StringBuffer execute(Map<String, Object> requestMapData)

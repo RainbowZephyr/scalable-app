@@ -1,7 +1,5 @@
-package commands.user;
+package command.commands;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,11 +9,12 @@ import command.Command;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
 
-public class RemoveFriendCommand extends Command{
+public class UserAcceptFriendCommand extends Command{
 
 	@Override
 	protected StringBuffer execute(Map<String, Object> requestMapData)
 			throws Exception {
+		
 		int user1id = (Integer) requestMapData.get("user1ID");
 		int user2id = (Integer) requestMapData.get("user2ID");
 		Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
@@ -24,7 +23,7 @@ public class RemoveFriendCommand extends Command{
 				.newInstance();
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("action", "removeFriend");
+		parameters.put("action", "acceptFriendRequest");
 		parameters.put("user1ID", user1id);
 		parameters.put("user2ID", user2id);
 	
@@ -34,7 +33,7 @@ public class RemoveFriendCommand extends Command{
 		parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
 		connection.init(parameters);
 		DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
-
+		
 		return null;
 	}
 

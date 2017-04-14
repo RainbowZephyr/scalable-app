@@ -1,4 +1,4 @@
-package commands.user;
+package command.commands;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import command.Command;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
 
-public class LoginCommand extends Command {
+public class UserLoginCommand extends Command {
 
 	@Override
 	protected StringBuffer execute(Map<String, Object> requestMapData)

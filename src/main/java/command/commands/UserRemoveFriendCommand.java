@@ -1,4 +1,4 @@
-package commands.user;
+package command.commands;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -11,33 +11,23 @@ import command.Command;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
 
-public class SignUpCommand extends Command {
+public class UserRemoveFriendCommand extends Command{
 
 	@Override
 	protected StringBuffer execute(Map<String, Object> requestMapData)
 			throws Exception {
-		
-		String email = (String) requestMapData.get("email");
-		String hashedPassword = (String) requestMapData.get("password");
-		String firstName = (String) requestMapData.get("firstName");
-		String lastName = (String) requestMapData.get("lastName");
-		Date dateOfBirth = (Date) requestMapData.get("dateOfBirth");
-		Timestamp createdAt = (Timestamp) requestMapData.get("createdAt");
-		
+		int user1id = (Integer) requestMapData.get("user1ID");
+		int user2id = (Integer) requestMapData.get("user2ID");
 		Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
 				.getDataStoreConnection("Postgresql_database_connection");
 		DataStoreConnection connection = (DataStoreConnection) connectionClass
 				.newInstance();
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("action", "signupUser");
-		parameters.put("email", email);
-		parameters.put("password", hashedPassword);
-		parameters.put("firstName", firstName);
-		parameters.put("lastName", lastName);
-		parameters.put("dateOfBirth", dateOfBirth);
-		parameters.put("createdAt", createdAt);
-
+		parameters.put("action", "removeFriend");
+		parameters.put("user1ID", user1id);
+		parameters.put("user2ID", user2id);
+	
 
 		RequestHandle requestHandle = (RequestHandle) this.parameters
 				.get(RequestHandle.class.getSimpleName());

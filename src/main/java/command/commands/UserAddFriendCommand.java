@@ -1,4 +1,4 @@
-package commands.user;
+package command.commands;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -11,7 +11,7 @@ import command.Command;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
 
-public class RejectFriendCommand extends Command{
+public class UserAddFriendCommand extends Command{
 
 	@Override
 	protected StringBuffer execute(Map<String, Object> requestMapData)
@@ -24,7 +24,7 @@ public class RejectFriendCommand extends Command{
 				.newInstance();
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("action", "declineFriendRequest");
+		parameters.put("action", "addFriend_request");
 		parameters.put("user1ID", user1id);
 		parameters.put("user2ID", user2id);
 	

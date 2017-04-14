@@ -1,4 +1,4 @@
-package commands.user;
+package command.commands;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import thread_pools.DatabaseThreadPool;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
 
-public class GetUserCommand extends Command{
+public class UserGetUserCommand extends Command{
 
 	
 	
