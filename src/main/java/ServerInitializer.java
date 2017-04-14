@@ -5,6 +5,10 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+
 
 public class ServerInitializer extends ChannelInitializer<SocketChannel> {
     protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -14,11 +18,11 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
          *
          * IN PRODUCTION COMMENT OUT decoder, encoder, aggregator & HttpRequestHandle
          */
-//        pipeline.addLast("decoder", new HttpRequestDecoder());
-//        pipeline.addLast("encoder", new HttpResponseEncoder());
-//        pipeline.addLast("aggregator", new HttpObjectAggregator(1048576));
-//        pipeline.addLast(HttpRequestHandle.class.getSimpleName(),
-//                new HttpRequestHandle());
+        pipeline.addLast("decoder", new HttpRequestDecoder());
+        pipeline.addLast("encoder", new HttpResponseEncoder());
+        pipeline.addLast("aggregator", new HttpObjectAggregator(1048576));
+        //pipeline.addLast(HttpRequestHandle.class.getSimpleName(),
+               // new HttpRequestHandle());
         pipeline.addLast(new DelimiterBasedFrameDecoder(Integer.MAX_VALUE, Delimiters.lineDelimiter()));
 
         //by7wlhom mn bytes le format el string
