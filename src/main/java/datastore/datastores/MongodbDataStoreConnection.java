@@ -189,14 +189,21 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     }
 
     public StringBuffer removeUserFromThread(String threadId, String userId) {
-        ObjectId messageThreadId = new ObjectId(threadId);
-        MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
-        Document thread = messageThreadCollection.find(eq("_id",messageThreadId)).first();
-        List<String> users = (List<String>) thread.get("users");
+    	ObjectId messageThreadId = new ObjectId(threadId);
+    	
+    	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
+    	Document thread = messageThreadCollection.find(eq("_id",messageThreadId)).first();
+    	List<String> users = (List<String>) thread.get("users");
+    	users.remove(userId);
+    	messageThreadCollection.updateOne(eq("_id",messageThreadId),new Document("$set", thread));
         
-        users.remove(userId);
-        messageThreadCollection.updateOne(eq("_id",messageThreadId),new Document("$set", thread));
-        JsonObject response = new JsonObject();
+    	MongoCollection<Document> userCollection = getUsersCollection();
+    	Document userThread = userCollection.find(eq("userId",userId)).first();
+    	List<String> threads = (List<String>) userThread.get("threads");
+    	threads.remove(messageThreadId);
+    	userCollection.updateOne(eq("userId", userId), new Document("$set", userThread));
+    	
+    	JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
         return new StringBuffer(response.toString());
     }
