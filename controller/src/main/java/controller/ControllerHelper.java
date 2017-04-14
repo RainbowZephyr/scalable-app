@@ -1,7 +1,22 @@
 package controller;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -12,12 +27,6 @@ import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.concurrent.GlobalEventExecutor;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ControllerHelper {
 
@@ -160,7 +169,6 @@ public class ControllerHelper {
 
 		// Start the client.
 		Channel channel = b.connect(host, port).sync().channel(); // (5)
-
 		// Add to appropriate channel group
 		AppType appType = ControllerHelper.sharedInstance().getAppByName(app_id).getAppType();
 		switch (appType) {
@@ -180,15 +188,37 @@ public class ControllerHelper {
 			channelGroupMessage.add(channel);
 			break;
 		}
+		// Add to channels hashmap
 		channels.put(app_id, channel);
 
 	}
 
 	// NETTY CONNECTION
-	static class ApplicationResponseHandler extends ChannelInboundHandlerAdapter {
+	static class ApplicationResponseHandler extends SimpleChannelInboundHandler<String> {
 		@Override
-		public void channelRead(ChannelHandlerContext ctx, Object msg) {
+		public void channelRead0(ChannelHandlerContext ctx, String msg) {
 			System.out.println("APPLICATION RESPONDED WITH: \n" + msg);
+			JsonParser jsonParser = new JsonParser();
+			JsonObject json = (JsonObject) jsonParser.parse(msg);
+			String app_id = json.get("app_id").getAsString();
+			String service_type = json.get("service_type").getAsString();
+			if(service_type.equals("freeze")){
+				ControllerHelper.sharedInstance().getAppByName(app_id).setStatus(0);
+			}else{
+				if(service_type.equals("continue")){
+					ControllerHelper.sharedInstance().getAppByName(app_id).setStatus(1);
+				}else{
+					if(service_type.equals("set_max_thread_count")){
+						int thread_count = json.get("count").getAsInt();
+						ControllerHelper.sharedInstance().getAppByName(app_id).setMax_thread_count(thread_count);
+					}else{
+						if(service_type.equals("set_max_db_connections_count")){
+							int db_count = json.get("count").getAsInt();
+							ControllerHelper.sharedInstance().getAppByName(app_id).setMax_db_count(db_count);
+						}
+					}
+				}
+			}
 		}
 
 		@Override

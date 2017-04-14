@@ -1,0 +1,11 @@
+{
+  "session_id": "",
+  "app_id": "",
+  "receiving_app_id": "",
+  "service_type": "add_comment_request",
+  "request_parameters": {
+    "user_id": 0,
+    "post_id": 0,
+    "comment_text": ""
+  }
+}

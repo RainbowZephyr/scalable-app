@@ -12,7 +12,6 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
-
 import java.nio.charset.StandardCharsets;
 
 public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
@@ -40,8 +39,8 @@ public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<Full
 			if (requests_per_second < 10) {
 				jsonMessage = "{ \"session_id\": \"\"," + " \"app_id\": \"controller\"," + " \"recieving_app_id\": \""
 						+ app_id + "\"," + " \"service_type\": \"freeze\"," + " \"request_parameters\": {}}";
-				ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage.replace("\n","")+"\n");
-				ControllerHelper.sharedInstance().getAppByName(app_id).setStatus(0);
+				ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage + "\n");
+//				ControllerHelper.sharedInstance().getAppByName(app_id).setStatus(0);
 				// send freeze
 				System.out.println("FREEZE APP: " + app_id);
 			} else {
@@ -53,19 +52,19 @@ public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<Full
 					jsonMessage = "{ \"session_id\": \"\", \"app_id\": \"controller\", \"recieving_app_id\": \""
 							+ continuedAppName + "\", \"service_type\": \"continue\", \"request_parameters\": {}}";
 					Channel tempChannel = ControllerHelper.sharedInstance().getChannels().get(continuedAppName);
-					if(tempChannel != null){
-						tempChannel.writeAndFlush(jsonMessage.replace("\n","")+"\n");
-						ControllerHelper.sharedInstance().getAppByName(continuedAppName).setStatus(1);
+					if (tempChannel != null) {
+						tempChannel.writeAndFlush(jsonMessage + "\n");
+//						ControllerHelper.sharedInstance().getAppByName(continuedAppName).setStatus(1);
 						System.out.println("CONTINUE APP: " + continuedAppName);
-					}else{
+					} else {
 						System.out.println("SHOULD CONTINUE APP BUT NO FROZEN APPS FOUND");
 					}
-					
+
 				} else {
 					if (max_thread_count == requests_per_second / 2) {
 						// DO NOTHING
 					} else {
-						//CHANGE THREAD COUNT AND DB CONNECTIONS
+						// CHANGE THREAD COUNT AND DB CONNECTIONS
 						int newThreadCount = 0;
 						if (max_thread_count > requests_per_second / 2) {
 							newThreadCount = ((requests_per_second / 2)
@@ -82,20 +81,20 @@ public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<Full
 						jsonMessage = "{" + "\"app_id\": \"controller\"," + "\"recieving_app_id\": \"" + app_id + "\","
 								+ "\"service_type\": \"set_max_thread_count\"," + "\"request_parameters\": {\"count\": "
 								+ newThreadCount + "}}";
-						ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage.replace("\n","")+"\n");
-						ControllerHelper.sharedInstance().getAppByName(app_id).setMax_thread_count(newThreadCount);
+						ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage + "\n");
+//						ControllerHelper.sharedInstance().getAppByName(app_id).setMax_thread_count(newThreadCount);
 
 						jsonMessage = "{" + "\"app_id\": \"controller\"," + "\"recieving_app_id\": \"" + app_id + "\","
 								+ "\"service_type\": \"set_max_db_connections_count\","
 								+ "\"request_parameters\": {\"count\": " + (newThreadCount / 2) + "}}";
-						ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage.replace("\n","")+"\n");
-						ControllerHelper.sharedInstance().getAppByName(app_id).setMax_db_count(newThreadCount / 2);
+						ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage + "\n");
+//						ControllerHelper.sharedInstance().getAppByName(app_id).setMax_db_count(newThreadCount / 2);
 
 					}
 				}
 			}
 		}
-		
+
 		ControllerHelper.sharedInstance().updateConfFromApps();
 		channelHandlerContext.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK))
 				.addListener(ChannelFutureListener.CLOSE);

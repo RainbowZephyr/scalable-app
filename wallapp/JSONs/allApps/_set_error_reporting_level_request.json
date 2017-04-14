@@ -1,0 +1,9 @@
+{
+  "session_id": "",
+  "app_id": "",
+  "recieving_app_id": "",
+  "service_type": "set_error_reporting_level",
+  "request_parameters": {
+    "level": ""
+  }
+}

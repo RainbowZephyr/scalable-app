@@ -24,6 +24,7 @@ public class AdminChannelInitializer extends ChannelInitializer<SocketChannel> {
 		pipeline.addLast("codec", new HttpServerCodec());
 		// Deals with fragmentation in http traffic:
 		pipeline.addLast("aggregator", new HttpObjectAggregator(Short.MAX_VALUE));
+
 		pipeline.addLast(AdminChannelHandler.class.getName(), new AdminChannelHandler());
 	}
 }

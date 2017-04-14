@@ -1,7 +1,5 @@
 package controller;
 
-import channels.AdminChannelInitializer;
-import channels.LoadBalancerChannelInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -10,6 +8,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import org.apache.log4j.BasicConfigurator;
+
+import channels.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
