@@ -40,79 +40,48 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
             String userId = (String) parameters.get("userId");
             return createMessagesThread(threadName, userId);
         }
-        if (action.equals("searchForUser")) {
+        if (action.equals("searchForThreads")) {
             String nameQuery = (String) parameters.get("nameQuery");
-            return searchForUser(nameQuery);
-        } 
-        if (action.equals("searchForUsersAndThreads")) {
-            String nameQuery = (String) parameters.get("nameQuery");
-            return searchForUsersAndThreads(nameQuery);
+            return searchForThreads(nameQuery);
         }
-        if(action.equals("sendTextMessage")){
-        	String threadId = (String) parameters.get("threadId");
-        	String messageBody = (String) parameters.get("messageBody");
-        	String userId = (String) parameters.get("fromUserId");
-        	return sendTextMessage(threadId, userId, messageBody);
+        if (action.equals("sendTextMessage")) {
+            String threadId = (String) parameters.get("threadId");
+            String messageBody = (String) parameters.get("messageBody");
+            String userId = (String) parameters.get("fromUserId");
+            return sendTextMessage(threadId, userId, messageBody);
         }
-        if(action.equals("sendImageMessage")){
-        	String threadId = (String) parameters.get("threadId");
-        	String messageBody = (String) parameters.get("messageBody");
-        	String userId = (String) parameters.get("fromUserId");
-        	String imageUrl = (String) parameters.get("imageUrl");
-        	return sendImageMessage(threadId, userId, messageBody, imageUrl);
+        if (action.equals("sendImageMessage")) {
+            String threadId = (String) parameters.get("threadId");
+            String messageBody = (String) parameters.get("messageBody");
+            String userId = (String) parameters.get("fromUserId");
+            String imageUrl = (String) parameters.get("imageUrl");
+            return sendImageMessage(threadId, userId, messageBody, imageUrl);
         }
-        if(action.equals("getUsersInThread"))
-        {
-        	String threadId = (String) parameters.get("threadId").toString();
-        	return getUsersInThread(threadId);
+        if (action.equals("getUsersInThread")) {
+            String threadId = (String) parameters.get("threadId").toString();
+            return getUsersInThread(threadId);
         }
-        if(action.equals("removeUserFromThread"))
-        {
-        	String threadId = parameters.get("threadId").toString();
-        	String userId = parameters.get("userId").toString();
-        	removeUserFromThread(threadId, userId);
+        if (action.equals("removeUserFromThread")) {
+            String threadId = parameters.get("threadId").toString();
+            String userId = parameters.get("userId").toString();
+            removeUserFromThread(threadId, userId);
         }
         return null;
     }
 
-    private StringBuffer searchForUsersAndThreads(String nameQuery) {
+    private StringBuffer searchForThreads(String nameQuery) {
         BasicDBObject basicDBObject = new BasicDBObject();
-        basicDBObject.put("userName", java.util.regex.Pattern.compile(nameQuery));
-        FindIterable<Document> findIterable = getUsersCollection().find(basicDBObject);
-
-        JsonObject response = new JsonObject();
-
-        JsonArray jsonArray = new JsonArray();
-        for (Document document : findIterable) {
-            jsonArray.add(document.getString("userName"));
-        }
-
-        basicDBObject = new BasicDBObject();
         basicDBObject.put("threadName", java.util.regex.Pattern.compile(nameQuery));
-        findIterable = getMessageThreadsCollection().find(basicDBObject);
-
-        for (Document document : findIterable) {
-            jsonArray.add(document.getString("threadName"));
-        }
-
-        response.add("UsersAndThreadsNames", jsonArray);
-        response.addProperty("responseCode", ResponseCodes.STATUS_OK);
-
-        return new StringBuffer(response.getAsString());
-    }
-
-    private StringBuffer searchForUser(String nameQuery) {
-        BasicDBObject basicDBObject = new BasicDBObject();
-        basicDBObject.put("userName", java.util.regex.Pattern.compile(nameQuery));
-        FindIterable<Document> findIterable = getUsersCollection().find(basicDBObject);
-
+        FindIterable<Document> findIterable = getMessageThreadsCollection().find(basicDBObject);
         JsonObject response = new JsonObject();
         JsonArray jsonArray = new JsonArray();
-        for (Document document : findIterable) {
-            jsonArray.add(document.getString("userName"));
+        for (Document document : findIterable) {//obectId
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("threadId", document.getString("obectId"));
+            jsonObject.addProperty("threadName", document.getString("threadName"));
+            jsonArray.add(jsonObject);
         }
-
-        response.add("userNames", jsonArray);
+        response.add("ThreadNames", jsonArray);
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
 
         return new StringBuffer(response.getAsString());
@@ -140,77 +109,75 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
         response.addProperty("threadId", messageThreadId.toString());
         return new StringBuffer(response.getAsString());
     }
-    
-    public StringBuffer sendTextMessage(String threadId, String userId, String messageBody){
-    	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
-    	Document thread = messageThreadCollection.find(eq("_id",threadId)).first();
-    	List<Document> messages = (List<Document>) thread.get("messages");
-    	if(messages == null){
-    		messages = new LinkedList<Document>();
-    	}
-    	Document message = new Document("body",messageBody);
-    	message.append("userId", userId);
-    	message.append("timestamp", System.currentTimeMillis()+"");
-    	message.append("type", "text");
-    	messages.add(message);
-    	thread.append("messages", messages);
-    	messageThreadCollection.updateOne(eq("_id",threadId),new Document("$set", thread));
-    	JsonObject response = new JsonObject();
-        response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
-        return new StringBuffer(response.getAsString());
-    }
-    
-    public StringBuffer sendImageMessage(String threadId, String userId, String messageBody, String imageUrl){
-    	MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
-    	Document thread = messageThreadCollection.find(eq("_id",threadId)).first();
-    	List<Document> messages = (List<Document>) thread.get("messages");
-    	if(messages == null){
-    		messages = new LinkedList<Document>();
-    	}
-    	Document message = new Document("body",messageBody);
-    	message.append("userId", userId);
-    	message.append("timestamp", System.currentTimeMillis()+"");
-    	message.append("imageUrl", imageUrl);
-    	message.append("type", "image");
-    	messages.add(message);
-    	thread.append("messages", messages);
-    	messageThreadCollection.updateOne(eq("_id",threadId),new Document("$set", thread));
-    	JsonObject response = new JsonObject();
+
+    public StringBuffer sendTextMessage(String threadId, String userId, String messageBody) {
+        MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
+        Document thread = messageThreadCollection.find(eq("_id", threadId)).first();
+        List<Document> messages = (List<Document>) thread.get("messages");
+        if (messages == null) {
+            messages = new LinkedList<Document>();
+        }
+        Document message = new Document("body", messageBody);
+        message.append("userId", userId);
+        message.append("timestamp", System.currentTimeMillis() + "");
+        message.append("type", "text");
+        messages.add(message);
+        thread.append("messages", messages);
+        messageThreadCollection.updateOne(eq("_id", threadId), new Document("$set", thread));
+        JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
         return new StringBuffer(response.getAsString());
     }
 
-    public StringBuffer getUsersInThread(String threadId)
-    {
-    	BasicDBObject inQuery = new BasicDBObject();
-    	inQuery.put("threadId", threadId);
-    	FindIterable<Document> findIterable = getMessageThreadsCollection().find(inQuery);
-    	
-    	JsonObject response = new JsonObject();
+    public StringBuffer sendImageMessage(String threadId, String userId, String messageBody, String imageUrl) {
+        MongoCollection<Document> messageThreadCollection = getMessageThreadsCollection();
+        Document thread = messageThreadCollection.find(eq("_id", threadId)).first();
+        List<Document> messages = (List<Document>) thread.get("messages");
+        if (messages == null) {
+            messages = new LinkedList<Document>();
+        }
+        Document message = new Document("body", messageBody);
+        message.append("userId", userId);
+        message.append("timestamp", System.currentTimeMillis() + "");
+        message.append("imageUrl", imageUrl);
+        message.append("type", "image");
+        messages.add(message);
+        thread.append("messages", messages);
+        messageThreadCollection.updateOne(eq("_id", threadId), new Document("$set", thread));
+        JsonObject response = new JsonObject();
+        response.addProperty("responseCode", ResponseCodes.STATUS_OK);   //TODO need a known key to follow
+        return new StringBuffer(response.getAsString());
+    }
+
+    public StringBuffer getUsersInThread(String threadId) {
+        BasicDBObject inQuery = new BasicDBObject();
+        inQuery.put("threadId", threadId);
+        FindIterable<Document> findIterable = getMessageThreadsCollection().find(inQuery);
+
+        JsonObject response = new JsonObject();
         JsonArray jsonArray = new JsonArray();
-        
+
         for (Document document : findIterable) {
             jsonArray.add(document.getString("userName"));
         }
-    	
+
         response.add("GetUsersInThread", jsonArray);
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
 
-        return new StringBuffer(response.getAsString());     
+        return new StringBuffer(response.getAsString());
     }
-    
-    public StringBuffer removeUserFromThread(String threadId, String userId)
-    {
-    	BasicDBObject removeQuery = new BasicDBObject();
-    	removeQuery.put("threadId", threadId);
-    	removeQuery.put("userId", userId);
-    	
-    	DBCollection db =  (DBCollection) getMessagingAppDB();
-    	db.remove(removeQuery);
-    	
-    	JsonObject response = new JsonObject();
+
+    public StringBuffer removeUserFromThread(String threadId, String userId) {
+        BasicDBObject removeQuery = new BasicDBObject();
+        removeQuery.put("threadId", threadId);
+        removeQuery.put("userId", userId);
+
+        DBCollection db = (DBCollection) getMessagingAppDB();
+        db.remove(removeQuery);
+
+        JsonObject response = new JsonObject();
         response.addProperty("responseCode", ResponseCodes.STATUS_OK);
-        
+
         return new StringBuffer(response.getAsString());
     }
 
