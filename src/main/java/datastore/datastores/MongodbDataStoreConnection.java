@@ -136,7 +136,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
     	Document thread = messageThreadCollection.find(eq("_id",messageThreadId)).first();
     	List<Document> messages = (List<Document>) thread.get("messages");
     	if(messages == null){
-    		messages = new LinkedList<>();
+    		messages = new LinkedList<Document>();
     	}
     	Document message = new Document("body",messageBody);
     	message.append("userId", userId);
