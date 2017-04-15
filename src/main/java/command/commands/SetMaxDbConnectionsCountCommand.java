@@ -20,7 +20,9 @@ public class SetMaxDbConnectionsCountCommand extends Command {
         int result = DatabaseThreadPool.sharedInstance().getThreadPool().getCorePoolSize();
         // construct response
         Response response = new Response(ResponseCodes.STATUS_OK);
-        response.addToResponse("thread_count", result);
+        response.addToResponse("app_id", Constants.APPLICATION_ID);
+        response.addToResponse("service_type", "set_max_db_connections_count");
+        response.addToResponse("count", result);
         return response.toJson();
     }
 }
