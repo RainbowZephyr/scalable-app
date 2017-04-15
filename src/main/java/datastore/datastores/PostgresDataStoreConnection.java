@@ -7,6 +7,8 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.*;
 
+import javax.net.ssl.SSLEngineResult.Status;
+
 import services.RequestHandle;
 import services.Response;
 import thread_pools.DatabaseThreadPool;
@@ -123,7 +125,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 	private StringBuffer loginUser(String email, String hashedPassword)
 			throws InstantiationException, IllegalAccessException {
 		Statement con = null;
-		Response response = new Response(ResponseCodes.STATUS_OK);
+		// Response response = new Response(ResponseCodes.STATUS_OK);
 
 		try {
 			con = db.createStatement();
@@ -132,11 +134,12 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		ResultSet result;
+		Response response = null;
 		try {
 			result = con.executeQuery("SELECT * FROM member WHERE email = "
 					+ email + "AND password_hash = " + hashedPassword);
 			result.beforeFirst();
-			response.addToResponse("status", ResponseCodes.STATUS_OK);
+			response = new Response(ResponseCodes.STATUS_OK);
 			if (result.next()) {
 				int id = result.getInt("id");
 				// generate a random string (session)
@@ -157,13 +160,11 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 				connection.init(parameters);
 				DatabaseThreadPool.sharedInstance().getThreadPool()
 						.execute(connection);
-
-				response.addToResponse("loginStatus", "Success");
 				response.addToResponse("userId", id);
 				response.addToResponse("sessionId", session);
 
 			} else {
-				response.addToResponse("loginStatus", "Failed");
+				response = new Response(ResponseCodes.STATUS_NOT_FOUND);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -223,12 +224,11 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		Response response = new Response(ResponseCodes.STATUS_OK);
-		response.addToResponse("status", ResponseCodes.STATUS_OK);
 		return response.toJson();
 	}
 
 	private StringBuffer getUser(int userID) {
-		Response response = new Response(ResponseCodes.STATUS_OK);
+		Response response = null;
 		Statement con = null;
 		try {
 			con = db.createStatement();
@@ -247,11 +247,14 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 				String firstName = result.getString("first_name");
 				String lastName = result.getString("last_name");
 				String dateOfBirth = result.getString("date_of_birth");
-				response.addToResponse("status", ResponseCodes.STATUS_OK);
+				response = new Response(ResponseCodes.STATUS_OK);
 				response.addToResponse("email", email);
 				response.addToResponse("firstName", firstName);
 				response.addToResponse("lastName", lastName);
 				response.addToResponse("dateOfBirth", dateOfBirth);
+
+			} else {
+				response = new Response(ResponseCodes.STATUS_NOT_FOUND);
 
 			}
 
@@ -286,7 +289,6 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		Response response = new Response(ResponseCodes.STATUS_OK);
-		response.addToResponse("status", ResponseCodes.STATUS_OK);
 		return response.toJson();
 	}
 
@@ -308,7 +310,6 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		Response response = new Response(ResponseCodes.STATUS_OK);
-		response.addToResponse("status", ResponseCodes.STATUS_OK);
 		return response.toJson();
 	}
 
@@ -330,7 +331,6 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		Response response = new Response(ResponseCodes.STATUS_OK);
-		response.addToResponse("status", ResponseCodes.STATUS_OK);
 		return response.toJson();
 	}
 
@@ -352,7 +352,6 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		Response response = new Response(ResponseCodes.STATUS_OK);
-		response.addToResponse("status", ResponseCodes.STATUS_OK);
 		return response.toJson();
 	}
 
@@ -375,13 +374,9 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		// the member id.
 		parameters.put("sessionId", sessionID);
 
-		RequestHandle requestHandle = (RequestHandle) this.parameters
-				.get(RequestHandle.class.getSimpleName());
-		parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
 		connection.init(parameters);
 		DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
 		Response response = new Response(ResponseCodes.STATUS_OK);
-		response.addToResponse("status", ResponseCodes.STATUS_OK);
 		return response.toJson();
 	}
 
