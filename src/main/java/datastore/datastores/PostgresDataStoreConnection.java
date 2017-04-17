@@ -5,15 +5,12 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
-import java.awt.List;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.*;
-
-import javax.net.ssl.SSLEngineResult.Status;
 
 import services.RequestHandle;
 import services.Response;
@@ -133,15 +130,13 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		        InputStream in = new FileInputStream("config/postgres_config.properties");
 		        prop.load(in);
 		        in.close();
-		        Enumeration enumKeys = prop.propertyNames();
-		        Hashtable<String, String> postgresprop = new Hashtable<String,String>();
-		        String strActionName,
-                strClassName;
-		        while (enumKeys.hasMoreElements()) {
-		            strActionName = (String) enumKeys.nextElement();
-		            strClassName = (String) prop.get(strActionName);
-		            postgresprop.put(strActionName, strClassName);
-		        }
+		        String dbUrl = "jdbc:postgresql://127.0.0.1:";
+		        String username = prop.get("username").toString();
+		        String password = prop.get("password").toString();
+		        String port = prop.get("port").toString();
+		        dbUrl = dbUrl+port+"/"+prop.get("dbname");
+		        JDBC jdbc = new JDBC();
+		        jdbc.Connect(dbUrl,username, password);
 		    }
 
 	private StringBuffer loginUser(String email, String hashedPassword)

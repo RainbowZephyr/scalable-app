@@ -6,8 +6,11 @@ import java.sql.SQLException;
 
 public class JDBC {
 
-	public static void main(String[] argv) {
-
+//	public static void main(String[] argv) {
+	public JDBC(){
+		
+	}
+	protected void Connect(String dbURL,String user, String pass){
 		System.out.println("-------- PostgreSQL "
 				+ "JDBC Connection Testing ------------");
 
@@ -30,8 +33,11 @@ public class JDBC {
 
 		try {
 
+//			connection = DriverManager.getConnection(
+//					"jdbc:postgresql://127.0.0.1:5430/User", "postgres","");
+			
 			connection = DriverManager.getConnection(
-					"jdbc:postgresql://127.0.0.1:5430/User", "postgres","");
+					dbURL, user,pass);
 
 		} catch (SQLException e) {
 

@@ -11,7 +11,6 @@ public class UserLoginCommand extends Command {
 	@Override
 	protected StringBuffer execute(Map<String, Object> requestMapData)
 			throws Exception {
-
 		
 		Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
 				.getDataStoreConnection("Postgresql_database_connection");
