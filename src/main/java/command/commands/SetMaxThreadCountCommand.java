@@ -20,7 +20,9 @@ public class SetMaxThreadCountCommand extends Command {
         int result = CommandsThreadPool.sharedInstance().getThreadPool().getCorePoolSize();
         // construct response
         Response response = new Response(ResponseCodes.STATUS_OK);
-        response.addToResponse("thread_count", result);
+        response.addToResponse("app_id", Constants.APPLICATION_ID);
+        response.addToResponse("service_type", "set_max_thread_count");
+        response.addToResponse("count", result);
 
         return response.toJson();
     }

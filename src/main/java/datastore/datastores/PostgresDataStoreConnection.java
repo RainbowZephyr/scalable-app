@@ -13,7 +13,10 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.*;
 
+import javax.net.ssl.SSLEngineResult.Status;
+
 import services.RequestHandle;
+import services.Response;
 import thread_pools.DatabaseThreadPool;
 import utility.ResponseCodes;
 
@@ -144,7 +147,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 	private StringBuffer loginUser(String email, String hashedPassword)
 			throws InstantiationException, IllegalAccessException {
 		Statement con = null;
-		JsonObject json = new JsonObject();
+		// Response response = new Response(ResponseCodes.STATUS_OK);
 
 		try {
 			con = db.createStatement();
@@ -153,12 +156,12 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		ResultSet result;
+		Response response = null;
 		try {
 			result = con.executeQuery("SELECT * FROM member WHERE email = "
 					+ email + "AND password_hash = " + hashedPassword);
 			result.beforeFirst();
-
-			json.addProperty("status", ResponseCodes.STATUS_OK);
+			response = new Response(ResponseCodes.STATUS_OK);
 			if (result.next()) {
 				int id = result.getInt("id");
 				// generate a random string (session)
@@ -176,26 +179,20 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 				parameters.put("sessionId", session);
 				parameters.put("userId", id);
 
-				RequestHandle requestHandle = (RequestHandle) this.parameters
-						.get(RequestHandle.class.getSimpleName());
-				parameters.put(RequestHandle.class.getSimpleName(),
-						requestHandle);
 				connection.init(parameters);
 				DatabaseThreadPool.sharedInstance().getThreadPool()
 						.execute(connection);
-
-				json.addProperty("loginStatus", "Success");
-				json.addProperty("userId", id);
-				json.addProperty("sessionId", session);
+				response.addToResponse("userId", id);
+				response.addToResponse("sessionId", session);
 
 			} else {
-				json.addProperty("loginStatus", "Failed");
+				response = new Response(ResponseCodes.STATUS_NOT_FOUND);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new StringBuffer(json.toString());
+		return response.toJson();
 
 	}
 
@@ -228,9 +225,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		JsonObject json = new JsonObject();
-		json.addProperty("status", ResponseCodes.STATUS_OK);
-		return new StringBuffer(json.toString());
+		Response response = new Response(ResponseCodes.STATUS_OK);
+		return response.toJson();
 	}
 
 	private StringBuffer removeFriend(int user1id, int user2id) {
@@ -249,13 +245,12 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		JsonObject json = new JsonObject();
-		json.addProperty("status", ResponseCodes.STATUS_OK);
-		return new StringBuffer(json.toString());
+		Response response = new Response(ResponseCodes.STATUS_OK);
+		return response.toJson();
 	}
 
 	private StringBuffer getUser(int userID) {
-		JsonObject json = new JsonObject();
+		Response response = null;
 		Statement con = null;
 		try {
 			con = db.createStatement();
@@ -274,11 +269,14 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 				String firstName = result.getString("first_name");
 				String lastName = result.getString("last_name");
 				String dateOfBirth = result.getString("date_of_birth");
-				json.addProperty("status", ResponseCodes.STATUS_OK);
-				json.addProperty("email", email);
-				json.addProperty("firstName", firstName);
-				json.addProperty("lastName", lastName);
-				json.addProperty("dateOfBirth", dateOfBirth);
+				response = new Response(ResponseCodes.STATUS_OK);
+				response.addToResponse("email", email);
+				response.addToResponse("firstName", firstName);
+				response.addToResponse("lastName", lastName);
+				response.addToResponse("dateOfBirth", dateOfBirth);
+
+			} else {
+				response = new Response(ResponseCodes.STATUS_NOT_FOUND);
 
 			}
 
@@ -287,7 +285,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 
-		return new StringBuffer(json.toString());
+		return response.toJson();
 	}
 
 	private StringBuffer editProfile(String email, String hashedPassword,
@@ -312,9 +310,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		JsonObject json = new JsonObject();
-		json.addProperty("status", ResponseCodes.STATUS_OK);
-		return new StringBuffer(json.toString());
+		Response response = new Response(ResponseCodes.STATUS_OK);
+		return response.toJson();
 	}
 
 	private StringBuffer declineFriend(int user1id, int user2id) {
@@ -334,9 +331,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		JsonObject json = new JsonObject();
-		json.addProperty("status", ResponseCodes.STATUS_OK);
-		return new StringBuffer(json.toString());
+		Response response = new Response(ResponseCodes.STATUS_OK);
+		return response.toJson();
 	}
 
 	private StringBuffer addFriend(int user1id, int user2id) {
@@ -356,9 +352,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		JsonObject json = new JsonObject();
-		json.addProperty("status", ResponseCodes.STATUS_OK);
-		return new StringBuffer(json.toString());
+		Response response = new Response(ResponseCodes.STATUS_OK);
+		return response.toJson();
 	}
 
 	private StringBuffer acceptFriend(int user1id, int user2id) {
@@ -378,9 +373,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		JsonObject json = new JsonObject();
-		json.addProperty("status", ResponseCodes.STATUS_OK);
-		return new StringBuffer(json.toString());
+		Response response = new Response(ResponseCodes.STATUS_OK);
+		return response.toJson();
 	}
 
 	private StringBuffer logoutUser(int sessionID)
@@ -402,14 +396,10 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		// the member id.
 		parameters.put("sessionId", sessionID);
 
-		RequestHandle requestHandle = (RequestHandle) this.parameters
-				.get(RequestHandle.class.getSimpleName());
-		parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
 		connection.init(parameters);
 		DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
-		JsonObject json = new JsonObject();
-		json.addProperty("status", ResponseCodes.STATUS_OK);
-		return new StringBuffer(json.toString());
+		Response response = new Response(ResponseCodes.STATUS_OK);
+		return response.toJson();
 	}
 
 }
