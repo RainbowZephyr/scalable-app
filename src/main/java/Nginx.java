@@ -1,6 +1,7 @@
 import nginx.clojure.NginxClojureRT;
 import nginx.clojure.NginxHttpServerChannel;
 import nginx.clojure.java.ArrayMap;
+import nginx.clojure.java.Constants;
 import nginx.clojure.java.NginxJavaRequest;
 import nginx.clojure.java.NginxJavaRingHandler;
 
@@ -30,7 +31,7 @@ public class Nginx implements NginxJavaRingHandler {
             }
             String data = buffer.toString();
 
-            NginxClojureRT.log.info("DATA "+data);
+            NginxClojureRT.log.info("REQUEST "+r.get(Constants.BODY));
 
 
         } catch (IOException e)
