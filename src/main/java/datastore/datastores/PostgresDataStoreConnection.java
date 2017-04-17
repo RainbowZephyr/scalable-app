@@ -35,7 +35,6 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		String url = (String) parameters.get("databaseURL");
 		String username = (String) parameters.get("databaseURL");
 		String password = (String) parameters.get("databaseURL");
-
 		try {
 			db = DriverManager.getConnection(url, username, password);
 		} catch (SQLException e) {
