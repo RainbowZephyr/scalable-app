@@ -22,13 +22,13 @@ public class UserLoginCommand extends Command {
 		DataStoreConnection connection = (DataStoreConnection) connectionClass.newInstance();
 		
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("action", "loginUser");
+		requestMapData.put("action", "loginUser");// HHHHH
 		parameters.put("email", email);
 		parameters.put("password", password);
 		RequestHandle requestHandle = (RequestHandle)
 		this.parameters.get(RequestHandle.class.getSimpleName());
 		parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
-		connection.init(parameters);
+		connection.init(parameters); 
 		DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
 		
 		

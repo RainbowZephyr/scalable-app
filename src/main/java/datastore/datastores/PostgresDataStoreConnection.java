@@ -1,8 +1,14 @@
 package datastore.datastores;
 
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
+import java.util.Properties;
 import java.awt.List;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.*;
@@ -41,6 +47,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 	@Override
 	public StringBuffer execute(Map<String, Object> parameters)
 			throws Exception {
+		LoadPostGresProperties();
 		String action = (String) parameters.get("action");
 		if (action == "loginUser") {
 			String email = (String) parameters.get("email");
@@ -118,6 +125,22 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 
 		return null;
 	}
+
+	protected void LoadPostGresProperties() throws IOException, ClassNotFoundException {
+		        Properties prop = new Properties();
+		        InputStream in = new FileInputStream("config/postgres_config.properties");
+		        prop.load(in);
+		        in.close();
+		        Enumeration enumKeys = prop.propertyNames();
+		        Hashtable<String, String> postgresprop = new Hashtable<String,String>();
+		        String strActionName,
+                strClassName;
+		        while (enumKeys.hasMoreElements()) {
+		            strActionName = (String) enumKeys.nextElement();
+		            strClassName = (String) prop.get(strActionName);
+		            postgresprop.put(strActionName, strClassName);
+		        }
+		    }
 
 	private StringBuffer loginUser(String email, String hashedPassword)
 			throws InstantiationException, IllegalAccessException {
