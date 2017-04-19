@@ -1,13 +1,16 @@
 package datastore.datastores;
 
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
-import java.awt.List;
+import java.util.Properties;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.*;
-
-import javax.net.ssl.SSLEngineResult.Status;
 
 import services.RequestHandle;
 import services.Response;
@@ -28,22 +31,11 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		return new BigInteger(130, random).toString(32);
 	}
 
-	public void init(Map<String, Object> parameters) {
-		String url = (String) parameters.get("databaseURL");
-		String username = (String) parameters.get("databaseURL");
-		String password = (String) parameters.get("databaseURL");
-
-		try {
-			db = DriverManager.getConnection(url, username, password);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	@Override
 	public StringBuffer execute(Map<String, Object> parameters)
 			throws Exception {
+		LoadPostGresProperties();
 		String action = (String) parameters.get("action");
 		if (action == "loginUser") {
 			String email = (String) parameters.get("email");
@@ -122,6 +114,20 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		return null;
 	}
 
+	protected void LoadPostGresProperties() throws IOException, ClassNotFoundException {
+		        Properties prop = new Properties();
+		        InputStream in = new FileInputStream("config/postgres_config.properties");
+		        prop.load(in);
+		        in.close();
+		        String dbUrl = "jdbc:postgresql://127.0.0.1:";
+		        String username = prop.get("username").toString();
+		        String password = prop.get("password").toString();
+		        String port = prop.get("port").toString();
+		        dbUrl = dbUrl+port+"/"+prop.get("dbname");
+		        JDBC jdbc = new JDBC();
+		        db = jdbc.Connect(dbUrl,username, password);
+		    }
+
 	private StringBuffer loginUser(String email, String hashedPassword)
 			throws InstantiationException, IllegalAccessException {
 		Statement con = null;
@@ -137,7 +143,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		Response response = null;
 		try {
 			result = con.executeQuery("SELECT * FROM member WHERE email = "
-					+ email + "AND password_hash = " + hashedPassword);
+					+ email + "AND password_hash = " + hashedPassword + "LIMIT 1");
 			result.beforeFirst();
 			response = new Response(ResponseCodes.STATUS_OK);
 			if (result.next()) {
