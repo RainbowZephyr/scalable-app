@@ -35,7 +35,7 @@ public class SocketConnectionToController implements SocketConnection {
         EventLoopGroup reqBossGroup = new NioEventLoopGroup(5);
         EventLoopGroup reqWorkerGroup = new NioEventLoopGroup();
         try {
-            // server instance to listen on Special requests Port
+            // server instance to listen on Special requests.conf Port
             ServerBootstrap reqServerBootstrap = new ServerBootstrap();
             reqServerBootstrap.group(reqBossGroup, reqWorkerGroup);
             reqServerBootstrap.channel(NioServerSocketChannel.class);

@@ -24,12 +24,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>0.10.2.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.codesnippets4all</groupId>
             <artifactId>quick-json</artifactId>
             <version>1.0.4</version>
@@ -81,7 +75,11 @@
             <artifactId>netty-all</artifactId>
             <version>4.0.45.Final</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver</artifactId>
+            <version>3.4.2</version>
+        </dependency>
 
     </dependencies>
 
