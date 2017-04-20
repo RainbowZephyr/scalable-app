@@ -14,7 +14,8 @@ public class ResponseCodes {
             STATUS_NOT_FOUND = "404",
             STATUS_INTERNAL_SERVER_ERROR = "500",
             STATUS_NOT_IMPLEMENTED = "501",
-            STATUS_SERVICE_UNAVAILABLE = "503";
+            STATUS_SERVICE_UNAVAILABLE = "503",
+            STATUS_DATA_BASE_ERROR = "600";
 
     static {
         _mapCodes = new HashMap<String, String>();
@@ -26,7 +27,8 @@ public class ResponseCodes {
                 {STATUS_NOT_FOUND, "Not Found"},
                 {STATUS_INTERNAL_SERVER_ERROR, "Internal Server Error"},
                 {STATUS_NOT_IMPLEMENTED, "Not Implemented"},
-                {STATUS_SERVICE_UNAVAILABLE, "Service Unavailable"}
+                {STATUS_SERVICE_UNAVAILABLE, "Service Unavailable"},
+                {STATUS_DATA_BASE_ERROR, "Database Error: Couldn't Insert, Duplicate"}
 
         };
         for (String[] pair : pairs) {

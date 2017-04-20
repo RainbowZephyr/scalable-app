@@ -1,26 +1,21 @@
 package datastore.datastores;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Properties;
+
+import datastore.DataStoreConnection;
+import datastore.DataStoreConnectionFactory;
+import services.Response;
+import thread_pools.DatabaseThreadPool;
+import utility.ResponseCodes;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.*;
-
-import services.RequestHandle;
-import services.Response;
-import thread_pools.DatabaseThreadPool;
-import utility.ResponseCodes;
-
-import com.google.gson.JsonObject;
-
-import datastore.DataStoreConnection;
-import datastore.DataStoreConnectionFactory;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 public class PostgresDataStoreConnection extends DataStoreConnection {
 
@@ -49,8 +44,10 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			String hashedPassword = (String) parameters.get("password");
 			String firstName = (String) parameters.get("firstName");
 			String lastName = (String) parameters.get("lastName");
-			Date dateOfBirth = (Date) parameters.get("dateOfBirth");
-			Timestamp createdAt = (Timestamp) parameters.get("createdAt");
+			String dateString = (String) parameters.get("dateOfBirth");
+			Date dateOfBirth = Date.valueOf(dateString);
+			String createdAtString = (String) parameters.get("createdAt");
+			Timestamp createdAt = Timestamp.valueOf(createdAtString);
 
 			return signupUser(email, hashedPassword, firstName, lastName,
 					dateOfBirth, createdAt);
@@ -119,11 +116,12 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		        InputStream in = new FileInputStream("config/postgres_config.properties");
 		        prop.load(in);
 		        in.close();
-		        String dbUrl = "jdbc:postgresql://127.0.0.1:";
+		        String dbUrl = "jdbc:postgresql://";
 		        String username = prop.get("username").toString();
 		        String password = prop.get("password").toString();
+		        String host = prop.get("hostname").toString();
 		        String port = prop.get("port").toString();
-		        dbUrl = dbUrl+port+"/"+prop.get("dbname");
+		        dbUrl = dbUrl+host+":"+port+"/"+prop.get("dbname");
 		        JDBC jdbc = new JDBC();
 		        db = jdbc.Connect(dbUrl,username, password);
 		    }
@@ -190,26 +188,23 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		ResultSet result;
+		Response response;
 		try {
-			result = con
-					.executeQuery("INSERT INTO `member`(id,email,password_hash,first_name,last_name,date_of_birth,created_at) VALUES ('?','"
-							+ email
-							+ "','"
-							+ hashedPassword
-							+ "',"
-							+ firstName
-							+ ",'"
-							+ lastName
-							+ ",'"
-							+ dateOfBirth
-							+ ",'"
-							+ createdAt + "')");
+			String query = "INSERT INTO member(email,password_hash,first_name,last_name,date_of_birth,created_at) " +
+					"VALUES ("
+					+ "'" + email + "',"
+					+ "'" + hashedPassword + "',"
+					+ "'" + firstName + "',"
+					+ "'" + lastName + "',"
+					+ "'" + dateOfBirth + "',"
+					+ "'" + createdAt + "')";
+			con.execute(query); // use Execute if inserting (executeQuery otherwise)
+			response = new Response(ResponseCodes.STATUS_OK);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			response = new Response(ResponseCodes.STATUS_DATA_BASE_ERROR);
 		}
-		Response response = new Response(ResponseCodes.STATUS_OK);
 		return response.toJson();
 	}
 
