@@ -10,7 +10,7 @@ public class JDBC {
 	public JDBC(){
 		
 	}
-	protected void Connect(String dbURL,String user, String pass){
+	protected Connection Connect(String dbURL,String user, String pass){
 		System.out.println("-------- PostgreSQL "
 				+ "JDBC Connection Testing ------------");
 
@@ -23,7 +23,7 @@ public class JDBC {
 			System.out.println("Where is your PostgreSQL JDBC Driver? "
 					+ "Include in your library path!");
 			e.printStackTrace();
-			return;
+			return null;
 
 		}
 
@@ -43,7 +43,7 @@ public class JDBC {
 
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
-			return;
+			return null;
 
 		}
 
@@ -52,6 +52,7 @@ public class JDBC {
 		} else {
 			System.out.println("Failed to make connection!");
 		}
+		return connection;
 	}
 
 }

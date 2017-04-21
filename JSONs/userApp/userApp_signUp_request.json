@@ -1,16 +1,14 @@
-﻿ï»¿{
+ï»¿{
   "session_id": "",
   "app_id": "",
   "recieving_app_id": "",
   "service_type": "signUp",
   "request_parameters": {
-    "password": "",
-    "email": "",
-    "firstName": "",
-    "lastName": "",
-    "dateOfBirth": "",
-    "createdAt": "",
-    
-    
+    "password": "lol",
+    "email": "heba.salama18@gmail.com",
+    "firstName": "Heba",
+    "lastName": "Salama",
+    "dateOfBirth": "18-02-1995",
+    "createdAt": "",    
   }
 } 

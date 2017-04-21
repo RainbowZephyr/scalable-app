@@ -31,17 +31,6 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		return new BigInteger(130, random).toString(32);
 	}
 
-	public void init(Map<String, Object> parameters) {
-		String url = (String) parameters.get("databaseURL");
-		String username = (String) parameters.get("databaseURL");
-		String password = (String) parameters.get("databaseURL");
-		try {
-			db = DriverManager.getConnection(url, username, password);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	@Override
 	public StringBuffer execute(Map<String, Object> parameters)
@@ -136,7 +125,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		        String port = prop.get("port").toString();
 		        dbUrl = dbUrl+port+"/"+prop.get("dbname");
 		        JDBC jdbc = new JDBC();
-		        jdbc.Connect(dbUrl,username, password);
+		        db = jdbc.Connect(dbUrl,username, password);
 		    }
 
 	private StringBuffer loginUser(String email, String hashedPassword)
@@ -154,7 +143,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		Response response = null;
 		try {
 			result = con.executeQuery("SELECT * FROM member WHERE email = "
-					+ email + "AND password_hash = " + hashedPassword);
+					+ email + "AND password_hash = " + hashedPassword + "LIMIT 1");
 			result.beforeFirst();
 			response = new Response(ResponseCodes.STATUS_OK);
 			if (result.next()) {
