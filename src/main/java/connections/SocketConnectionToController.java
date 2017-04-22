@@ -9,10 +9,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
-import java.io.IOException;
 
-
-public class SocketConnectionToController implements SocketConnection {
+public class SocketConnectionToController implements SocketConnection, Runnable {
     private static SocketConnectionToController instance = new SocketConnectionToController();
     private static String hostAddress;
     private static int specialPort;
@@ -22,11 +20,16 @@ public class SocketConnectionToController implements SocketConnection {
     private SocketConnectionToController() {
     }
 
+    public void setControllerRemoteAddress(String hostAddress, int port){
+        SocketConnectionToController.hostAddress = hostAddress;
+        specialPort = port;
+    }
+
     public static SocketConnectionToController sharedInstance() {
         return instance;
     }
 
-    public void init(String hostAddress, int port) throws InterruptedException, IOException {
+    private void init(String hostAddress, int port) {
         EventLoopGroup reqBossGroup = new NioEventLoopGroup(5);
         EventLoopGroup reqWorkerGroup = new NioEventLoopGroup();
         try {
@@ -40,8 +43,9 @@ public class SocketConnectionToController implements SocketConnection {
             // bind to special request port
             specialRequestChannel = reqServerBootstrap.bind(hostAddress,
                     port).sync().channel();
-//            System.err.println("Listening For Controller Requests on http" + "://"+hostAddress+":" + port + '/');
             specialRequestChannel.closeFuture().sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally {
             reqBossGroup.shutdownGracefully();
             reqWorkerGroup.shutdownGracefully();
@@ -51,5 +55,14 @@ public class SocketConnectionToController implements SocketConnection {
     public void sendMessage(String response) {
         response += "\n";
         ctx.writeAndFlush(response);
+    }
+
+    @Override
+    public void run() {
+        init(hostAddress, specialPort);
+    }
+
+    public void setCtx(ChannelHandlerContext ctx) {
+        this.ctx = ctx;
     }
 }

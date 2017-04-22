@@ -2,7 +2,9 @@ package load_balancer;
 
 import connections.InboundMessageQueue;
 import connections.OutboundMessageQueue;
+import connections.SocketConnectionToController;
 import javafx.util.Pair;
+import nginx.clojure.NginxClojureRT;
 import nginx.clojure.java.NginxJavaRingHandler;
 
 import java.io.FileInputStream;
@@ -11,14 +13,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+import static java.lang.Thread.sleep;
+
 public class NginxInitialization implements NginxJavaRingHandler {
     private static NginxInitialization ourInstance = new NginxInitialization();
 
-    private String mqServerAddress;
-    private int mqServerPort;
+    private String mqServerAddress, controllerServerAddress;
+    private int mqServerPort, controllerServerPort;
     private final String DELIMITER = ";";
     private final String appInstanceConfPath = "/home/abdoo/IdeaProjects/scalable-app/config/apps_instances.properties";
     private final String messageQueueConfPath = "/home/abdoo/IdeaProjects/scalable-app/config/message_queue_server.properties";
+    private final String controllerConfPath = "/home/abdoo/IdeaProjects/scalable-app/config/controller.properties";
+
     @Override
     public Object[] invoke(Map<String, Object> map) throws IOException {
         getInstance();
@@ -32,6 +38,44 @@ public class NginxInitialization implements NginxJavaRingHandler {
     public NginxInitialization() {
         loadMessageQueueServerLocation();
         readInstancesQueuesIntoSharedMemory();
+        loadControllerLocation();
+        startSendingDataToController();
+    }
+
+    private void loadControllerLocation() {
+        Properties prop = new Properties();
+        InputStream in = null;
+        try {
+            in = new FileInputStream(controllerConfPath);
+            prop.load(in);
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        controllerServerAddress = prop.getProperty("ControllerServerAddress");
+        controllerServerPort = Integer.parseInt(prop.getProperty("ControllerServerPort"));
+        Thread thread = new Thread(SocketConnectionToController.sharedInstance());
+        thread.start();
+    }
+
+
+    private void startSendingDataToController() {
+        Runnable thread = new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    try {
+                        sleep(1000);
+                        // send data here
+                        NginxClojureRT.log.info("SENT DATA");
+//                        SocketConnectionToController.sharedInstance().sendMessage("");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        thread.run();
     }
 
     /**

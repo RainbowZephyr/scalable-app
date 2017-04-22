@@ -107,7 +107,7 @@ public class Nginx implements NginxJavaRingHandler {
         countersHashMap.put(appName, counter);
     }
 
-    private void turnOffInstance(String instanceName){
+    public static void turnOffInstance(String instanceName){
         getMessageQueuesHashMap().remove(instanceName);
         countersHashMap.remove(instanceName);
         NginxInitialization.getInstance().changeInstanceState(instanceName, 0); // turn off in config

@@ -24,9 +24,9 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new DelimiterBasedFrameDecoder(Integer.MAX_VALUE, Delimiters.lineDelimiter()));
         pipeline.addLast(new StringDecoder());
         pipeline.addLast(new StringEncoder());
-//        pipeline.addLast(RequestParser.class.getSimpleName(),
-//                new RequestParser());
-//        pipeline.addLast(AdminRequestServer.class.getSimpleName(),
-//                new AdminRequestServer());
+        pipeline.addLast(RequestParser.class.getSimpleName(),
+                new RequestParser()); // your handler (controller request handler)
+        pipeline.addLast(ControllerRequestHandler.class.getSimpleName(),
+                new ControllerRequestHandler()); // your handler (controller request handler)
     }
 }
