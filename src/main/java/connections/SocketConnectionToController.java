@@ -8,16 +8,14 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import services.ServerInitializer;
 
 import java.io.IOException;
-
-import static utility.Constants.SPECIAL_PORT;
 
 
 public class SocketConnectionToController implements SocketConnection {
     private static SocketConnectionToController instance = new SocketConnectionToController();
-    private static String HOST_ADDRESS = "127.0.0.1";
+    private static String hostAddress;
+    private static int specialPort;
     private ChannelHandlerContext ctx;
     private Channel specialRequestChannel;
 
@@ -28,7 +26,7 @@ public class SocketConnectionToController implements SocketConnection {
         return instance;
     }
 
-    public void init() throws InterruptedException, IOException {
+    public void init(String hostAddress, int port) throws InterruptedException, IOException {
         EventLoopGroup reqBossGroup = new NioEventLoopGroup(5);
         EventLoopGroup reqWorkerGroup = new NioEventLoopGroup();
         try {
@@ -40,13 +38,9 @@ public class SocketConnectionToController implements SocketConnection {
             // add the appropriate child handler
             reqServerBootstrap.childHandler(new ServerInitializer());
             // bind to special request port
-            specialRequestChannel = reqServerBootstrap.bind(HOST_ADDRESS,
-                    SPECIAL_PORT).sync().channel();
-            System.err.println("Listening For JSONRequests on queue: [" +
-                    QueueConsumer.sharedInstance().getQUEUE_NAME() + "] -> " +
-                    QueueConsumer.sharedInstance().getMQ_SERVER_ADDRESS() +
-                    ":" + QueueConsumer.sharedInstance().getMQ_SERVER_PORT() + '/');
-            System.err.println("Listening For Controller Requests on http" + "://127.0.0.1:" + SPECIAL_PORT + '/');
+            specialRequestChannel = reqServerBootstrap.bind(hostAddress,
+                    port).sync().channel();
+//            System.err.println("Listening For Controller Requests on http" + "://"+hostAddress+":" + port + '/');
             specialRequestChannel.closeFuture().sync();
         } finally {
             reqBossGroup.shutdownGracefully();
@@ -57,9 +51,5 @@ public class SocketConnectionToController implements SocketConnection {
     public void sendMessage(String response) {
         response += "\n";
         ctx.writeAndFlush(response);
-    }
-
-    public void setCtx(ChannelHandlerContext ctx) {
-        this.ctx = ctx;
     }
 }

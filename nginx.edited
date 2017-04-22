@@ -52,7 +52,7 @@ http {
 
     location /Java {
         handler_type 'java';
-        handler_name 'Nginx';
+        handler_name 'load_balancer.Nginx';
     }
 
         #error_page  404              /404.html;

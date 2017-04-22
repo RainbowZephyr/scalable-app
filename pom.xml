@@ -20,25 +20,6 @@
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-            <version>4.1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.codesnippets4all</groupId>
-            <artifactId>quick-json</artifactId>
-            <version>1.0.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>nginx-clojure</groupId>
-            <artifactId>nginx-clojure</artifactId>
-            <version>0.4.4</version>
-        </dependency>
-
-
         <!--ThreadPool Library-->
         <dependency>
             <groupId>io.netty</groupId>
@@ -69,11 +50,6 @@
         </dependency>
 
 
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver</artifactId>
-            <version>3.4.2</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <dependency>
             <groupId>commons-lang</groupId>
@@ -87,6 +63,33 @@
             <artifactId>commons-io</artifactId>
             <version>2.5</version>
         </dependency>
+
+        <dependency>
+            <groupId>nginx-clojure</groupId>
+            <artifactId>nginx-clojure</artifactId>
+            <version>0.4.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.redisson/redisson -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm-all -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>5.0.3</version>
+        </dependency>
+
 
     </dependencies>
 

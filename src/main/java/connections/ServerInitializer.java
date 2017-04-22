@@ -1,4 +1,4 @@
-package services;
+package connections;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -24,9 +24,9 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new DelimiterBasedFrameDecoder(Integer.MAX_VALUE, Delimiters.lineDelimiter()));
         pipeline.addLast(new StringDecoder());
         pipeline.addLast(new StringEncoder());
-        pipeline.addLast(RequestParser.class.getSimpleName(),
-                new RequestParser());
-        pipeline.addLast(AdminRequestServer.class.getSimpleName(),
-                new AdminRequestServer());
+//        pipeline.addLast(RequestParser.class.getSimpleName(),
+//                new RequestParser());
+//        pipeline.addLast(AdminRequestServer.class.getSimpleName(),
+//                new AdminRequestServer());
     }
 }
