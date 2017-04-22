@@ -18,9 +18,10 @@ import java.util.concurrent.TimeoutException;
  */
 public class OutboundMessageQueue implements SocketConnection, Serializable {
 
-    private String queueName;
+    private String queueName, mqServerAddress;
+    private int mqServerPort;
     private String JSON_MESSAGE = "application/json";
-    private Channel channelSerialized; // need to serialize this
+    private transient Channel channel; // need to serialize this
     private transient Connection connection;
     private transient AMQP.BasicProperties.Builder basicProperties;
 
@@ -31,6 +32,8 @@ public class OutboundMessageQueue implements SocketConnection, Serializable {
     public OutboundMessageQueue(String mqServerAddress, int mqServerPort, String queueName) {
         try {
             this.queueName = queueName;
+            this.mqServerAddress = mqServerAddress;
+            this.mqServerPort = mqServerPort;
             init(mqServerAddress, mqServerPort);
         } catch (IOException e) {
             e.printStackTrace();
@@ -57,26 +60,32 @@ public class OutboundMessageQueue implements SocketConnection, Serializable {
         //getting a connection
         connection = factory.newConnection();
         //creating a channel
-        channelSerialized = connection.createChannel();
+        channel = connection.createChannel();
         //declaring a queue for this channel. If queue does not exist,
         //it will be created on the server.
-        channelSerialized.queueDeclare(queueName, false, false, false, null);
+        channel.queueDeclare(queueName, false, false, false, null);
         basicProperties = new AMQP.BasicProperties.Builder();
         basicProperties.contentType(JSON_MESSAGE);
     }
 
     public void sendMessage(String respose, String reqUUID){
-        basicProperties.correlationId(reqUUID);
+        // this next part of code is stupid , I know that bs I have no time to
+        // figure out how to serialize a 3rd party class
+        // Reinitialize the connection everytime sending a message
         try {
+            init(mqServerAddress, mqServerPort);
+            basicProperties.correlationId(reqUUID);
             sendMessage(respose);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
             e.printStackTrace();
         }
     }
 
 
     public void sendMessage(String repsonse) throws IOException {
-        channelSerialized.basicPublish("", queueName, basicProperties.build(),
+        channel.basicPublish("", queueName, basicProperties.build(),
                 SerializationUtils.serialize(repsonse.toString()));
     }
 }

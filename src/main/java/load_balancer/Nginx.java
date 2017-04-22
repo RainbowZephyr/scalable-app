@@ -16,8 +16,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static nginx.clojure.MiniConstants.DEFAULT_ENCODING;
+
 
 public class Nginx implements NginxJavaRingHandler {
 
@@ -30,27 +32,26 @@ public class Nginx implements NginxJavaRingHandler {
                     .entries(8096)
                     .averageValueSize(8096)
                     .create();
-
-    private static volatile ChronicleMap<Long, NginxHttpServerChannel>
+    // just for now using a normal concurrent hashmap (not shared)
+    private static volatile Map<Long, NginxHttpServerChannel>
             channelNginxSharedHashMap =
-            ChronicleMap.of(Long.class, NginxHttpServerChannel.class)
-                    .name("NginxResponsesChannels")
-                    .entries(8096)
-                    .averageValueSize(8096)
-                    .create();
+            new ConcurrentHashMap<>();
 
     private static volatile NginxSharedHashMap<String, Integer>
             countersHashMap =
             NginxSharedHashMap.build("Counters");
 
     //List<Pair<Boolean,OutboundMessageQueue>>
-    public static  ChronicleMap<String, List<Pair<Boolean,OutboundMessageQueue>>> getMessageQueuesHashMap() {
+    public static ChronicleMap<String, List<Pair<Boolean,OutboundMessageQueue>>> getMessageQueuesHashMap() {
         return messageQueuesHashMap;
     }
     //NginxHttpServerChannel
-    public static ChronicleMap<Long, NginxHttpServerChannel> getChannelNginxSharedHashMap() {
+    public static Map<Long, NginxHttpServerChannel> getChannelNginxSharedHashMap() {
         return channelNginxSharedHashMap;
     }
+//    public static NginxSharedHashMap<Long, NginxHttpServerChannel> getChannelNginxSharedHashMap(){
+//        return channelNginxSharedHashMap;
+//    }
 
     public static NginxSharedHashMap<String, Integer> getCountersHashMap() {
         return countersHashMap;
@@ -61,14 +62,16 @@ public class Nginx implements NginxJavaRingHandler {
         NginxJavaRequest req = (NginxJavaRequest) request;
         // hijack to be able to respond at any time (async response)
         NginxHttpServerChannel channel = req.hijack(true);
+
+        channelNginxSharedHashMap.put(req.nativeRequest(), channel);
+
         // get body of the request & turn to json
         RequestBodyFetcher b = new RequestBodyFetcher(); // get body of the request
         NativeInputStream body = (NativeInputStream) b.fetch(req.nativeRequest(), DEFAULT_ENCODING);
         // LOG
-//        NginxClojureRT.log.info("REQUEST: " + req.nativeRequest() + " ,BODY: " + streamToString(body));
+        NginxClojureRT.log.info("REQUEST: " + req.nativeRequest() + " ,BODY: " + channelNginxSharedHashMap.get(req.nativeRequest()));
         // call putInCorrespondingQueue
         putInCorrespondingQueue(streamToString(body), req.nativeRequest()+"");
-
         return null; // this is ignored as the request is hijacked
     }
 
@@ -88,7 +91,6 @@ public class Nginx implements NginxJavaRingHandler {
     }
 
     public static synchronized void putInCorrespondingQueue(String json, String reqUUID) {
-        gson = new Gson();
         Map<String, Object> map = gson.fromJson(json, Map.class);
         String appName = (String) map.get("app_id");
         // get corresponding Queue
@@ -103,7 +105,6 @@ public class Nginx implements NginxJavaRingHandler {
         // increment counter
         counter = counter < mapObject.size() - 1 ? counter++ : 0; // increment counter
         countersHashMap.put(appName, counter);
-        NginxClojureRT.log.info("countersHashMap : " + countersHashMap);
     }
 
     private void turnOffInstance(String instanceName){

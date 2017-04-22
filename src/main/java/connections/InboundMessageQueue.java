@@ -1,17 +1,19 @@
 package connections;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
 import load_balancer.Nginx;
+import nginx.clojure.NginxClojureRT;
 import nginx.clojure.NginxHttpServerChannel;
+import nginx.clojure.java.ArrayMap;
 import org.apache.commons.lang.SerializationUtils;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+
+import static nginx.clojure.MiniConstants.NGX_HTTP_OK;
 
 
 /**
@@ -24,8 +26,7 @@ public class InboundMessageQueue implements Runnable, Consumer {
     private String queueName;
     private Channel channel;
     private Connection connection;
-    private static Type NginxResponsesChannelsHashMapValueType =
-            new TypeToken<NginxHttpServerChannel>(){}.getType();
+
     public InboundMessageQueue(String mqServerAddress, int mqServerPort, String queueName) {
         this.queueName = queueName;
         init(mqServerAddress, mqServerPort);
@@ -83,18 +84,24 @@ public class InboundMessageQueue implements Runnable, Consumer {
         // send back to the requester
         String jsonStr = (String) SerializationUtils.deserialize(body);
         String correlationId = props.getCorrelationId();
-        Gson gson = new Gson();
+        Gson gson = new Gson(); // will cause a memory leak
         Map<String, Object> map = gson.fromJson(jsonStr, Map.class);
+
         // if a request, push in the corresponding queue
         if(isRequest(map)){
             Nginx.putInCorrespondingQueue(jsonStr, correlationId);
             return;
         }
+
+        NginxClojureRT.log.info("SharedMap : " + correlationId+ ":" + Nginx.getChannelNginxSharedHashMap());
         // get channel from the channel map
         NginxHttpServerChannel channel =
-                Nginx.getChannelNginxSharedHashMap().get(correlationId);
+                Nginx.getChannelNginxSharedHashMap().remove(Long.parseLong(correlationId));
+        NginxClojureRT.log.info("HERE : "+ channel);
         // correlationId = requestId for the request
-        channel.sendResponse(200); // for now (l7ad ama a3raf ha3ml http response ezzai)
+        channel.sendResponse(new Object[] { NGX_HTTP_OK,
+                        ArrayMap.create("content-type", "text/json"),
+                        jsonStr});
     }
 
     public void handleCancel(String consumerTag) {
