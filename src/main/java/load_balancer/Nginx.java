@@ -98,12 +98,17 @@ public class Nginx implements NginxJavaRingHandler {
         // get List
         List<Pair<Boolean,OutboundMessageQueue>> mapObject =
                 getMessageQueuesHashMap().get(appName);
-        // send on that queue
-        if (mapObject.get(counter).getKey()){
-            mapObject.get(counter).getValue().sendMessage(json, reqUUID);
+        // loop till you find a working one
+        while(!mapObject.get(counter).getKey()){
+            if(counter < mapObject.size() - 1){
+                counter++;
+            }else{
+                counter = 0;
+            }
         }
-        // increment counter
-        counter = counter < mapObject.size() - 1 ? counter++ : 0; // increment counter
+        // send on the queue
+        mapObject.get(counter).getValue().sendMessage(json, reqUUID);
+        NginxClojureRT.log.info("COUNTER: " + counter + " MAPSIZE:"+ mapObject.size() +" IS LESS ? " + (counter < mapObject.size() - 1));
         countersHashMap.put(appName, counter);
     }
 

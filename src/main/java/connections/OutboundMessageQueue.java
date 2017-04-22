@@ -88,4 +88,13 @@ public class OutboundMessageQueue implements SocketConnection, Serializable {
         channel.basicPublish("", queueName, basicProperties.build(),
                 SerializationUtils.serialize(repsonse.toString()));
     }
+
+    public int getCount(){
+        try {
+            return channel.queueDeclarePassive(queueName).getMessageCount();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
 }

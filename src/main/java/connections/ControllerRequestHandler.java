@@ -9,7 +9,14 @@ import java.util.Map;
 public class ControllerRequestHandler extends SimpleChannelInboundHandler<Map<String, Object>> {
     protected void channelRead0(ChannelHandlerContext ctx, Map<String, Object> request) throws Exception {
         // 4oof hat3ml eh hna, bs to shutdown an instance use this
-//        Nginx.turnOffInstance("NameOfInstanceOfApp ex wall1");
+        String serviceType = (String) request.get("service_type");
+        String startSending = "start_sending" , stopSending = "stop_sending";
+        if(serviceType.matches(startSending) &&
+                !SocketConnectionToController.sharedInstance().isSending()) {
+            SocketConnectionToController.sharedInstance().startSendingDataToController();
+        }else if(serviceType.matches(stopSending)){
+            SocketConnectionToController.sharedInstance().stopSendingDataToController();
+        }
     }
 
     @Override

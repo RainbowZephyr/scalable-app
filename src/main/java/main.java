@@ -1,18 +1,38 @@
-import load_balancer.NginxInitialization;
+import connections.SocketConnectionToController;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class main {
-    //private final static int REQUEST_PORT = 6001, SPECIAL_PORT = 6002;
-    private final static String HOST = "127.0.0.1";
-    private final static int port = 6001;
+    private static final String controllerConfPath = "config/controller.properties";
+
     public static void main(String[] args) throws Exception {
 
-        //init Nginx
-        NginxInitialization.getInstance();
-
+        //init Listening To Controller
+        startListeningToController();
 
         // get statistics and send each second
 
 //        SocketConnectionToController.sharedInstance().init(HOST, port); // blocking code
+    }
+
+    public static void startListeningToController() {
+        Properties prop = new Properties();
+        InputStream in = null;
+        try {
+            in = new FileInputStream(controllerConfPath);
+            prop.load(in);
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String controllerServerAddress = prop.getProperty("ControllerServerAddress");
+        int controllerServerPort = Integer.parseInt(prop.getProperty("ControllerServerPort"));
+        SocketConnectionToController.sharedInstance().setControllerRemoteAddress
+                (controllerServerAddress, controllerServerPort);
+        SocketConnectionToController.sharedInstance().init();
     }
 
 }

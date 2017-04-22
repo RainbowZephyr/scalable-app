@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 
 public class TestControllerCommands {
     final static String CONTROLLER_HOST = "127.0.0.1";
-    final static int CONTROLLER_PORT = 6002;
+    final static int CONTROLLER_PORT = 6001;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         bootNettyClient(CONTROLLER_HOST, CONTROLLER_PORT);
