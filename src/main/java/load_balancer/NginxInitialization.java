@@ -1,7 +1,7 @@
 package load_balancer;
 
-import com.google.gson.Gson;
 import connections.InboundMessageQueue;
+import connections.OutboundMessageQueue;
 import javafx.util.Pair;
 import nginx.clojure.java.NginxJavaRingHandler;
 
@@ -12,16 +12,7 @@ import java.io.InputStream;
 import java.util.*;
 
 public class NginxInitialization implements NginxJavaRingHandler {
-    private static Gson gson = new Gson();
     private static NginxInitialization ourInstance = new NginxInitialization();
-
-    public String getMqServerAddress() {
-        return mqServerAddress;
-    }
-
-    public int getMqServerPort() {
-        return mqServerPort;
-    }
 
     private String mqServerAddress;
     private int mqServerPort;
@@ -62,12 +53,13 @@ public class NginxInitialization implements NginxJavaRingHandler {
         while(e.hasMoreElements()){
             String key = (String) e.nextElement();
             String [] temp = prop.getProperty(key).split(DELIMITER);
-            List<Pair<Boolean,String>> arr = new ArrayList<>();
+            List<Pair<Boolean, OutboundMessageQueue>> arr = new ArrayList<>();
             Nginx.getCountersHashMap().put(key, 0);
             for(int i=0; i<temp.length; i++){
                 String mqOutboundQueueName = temp[i].split("=")[0] + "_InboundQueue"; // inbound for the instance
                 boolean state = (Integer.parseInt(temp[i].split("=")[1]) == 1); // is the instance running
-                arr.add(new Pair<>(state, mqOutboundQueueName));
+                arr.add(new Pair<>(state, new OutboundMessageQueue(mqServerAddress, mqServerPort,
+                        mqOutboundQueueName)));
                 startMessageQueueListener(temp[i].split("=")[0]);
             }
             Nginx.getMessageQueuesHashMap().put(key, arr);

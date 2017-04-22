@@ -20,9 +20,9 @@ public class OutboundMessageQueue implements SocketConnection, Serializable {
 
     private String queueName;
     private String JSON_MESSAGE = "application/json";
-    private Channel channel; // need to serialize this
-    private Connection connection;
-    private AMQP.BasicProperties.Builder basicProperties;
+    private Channel channelSerialized; // need to serialize this
+    private transient Connection connection;
+    private transient AMQP.BasicProperties.Builder basicProperties;
 
     public OutboundMessageQueue(){
 
@@ -56,12 +56,11 @@ public class OutboundMessageQueue implements SocketConnection, Serializable {
 
         //getting a connection
         connection = factory.newConnection();
-
         //creating a channel
-        channel = connection.createChannel();
+        channelSerialized = connection.createChannel();
         //declaring a queue for this channel. If queue does not exist,
         //it will be created on the server.
-        channel.queueDeclare(queueName, false, false, false, null);
+        channelSerialized.queueDeclare(queueName, false, false, false, null);
         basicProperties = new AMQP.BasicProperties.Builder();
         basicProperties.contentType(JSON_MESSAGE);
     }
@@ -77,7 +76,7 @@ public class OutboundMessageQueue implements SocketConnection, Serializable {
 
 
     public void sendMessage(String repsonse) throws IOException {
-        channel.basicPublish("", queueName, basicProperties.build(),
+        channelSerialized.basicPublish("", queueName, basicProperties.build(),
                 SerializationUtils.serialize(repsonse.toString()));
     }
 }

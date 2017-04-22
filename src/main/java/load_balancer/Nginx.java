@@ -2,8 +2,8 @@ package load_balancer;
 
 import com.google.gson.Gson;
 import connections.OutboundMessageQueue;
-import connections.RedisConnection;
 import javafx.util.Pair;
+import net.openhft.chronicle.map.ChronicleMap;
 import nginx.clojure.NativeInputStream;
 import nginx.clojure.NginxClojureRT;
 import nginx.clojure.NginxHttpServerChannel;
@@ -11,7 +11,6 @@ import nginx.clojure.RequestBodyFetcher;
 import nginx.clojure.java.NginxJavaRequest;
 import nginx.clojure.java.NginxJavaRingHandler;
 import nginx.clojure.util.NginxSharedHashMap;
-import org.redisson.api.RMap;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,26 +22,34 @@ import static nginx.clojure.MiniConstants.DEFAULT_ENCODING;
 public class Nginx implements NginxJavaRingHandler {
 
     private static Gson gson = new Gson();
-    private static volatile RMap<String, List<Pair<Boolean,String>>>
+    private static volatile ChronicleMap<String, List<Pair<Boolean, OutboundMessageQueue>>>
             messageQueuesHashMap =
-            RedisConnection.getInstance().getRedisson().getMap("MessageQueuesHashMap");
+            ChronicleMap.of(String.class, (Class<List<Pair<Boolean, OutboundMessageQueue>>>) (Class)List.class)
+                    .name("MessageQueuesHashMap")
+                    .averageKeySize(8096)
+                    .entries(8096)
+                    .averageValueSize(8096)
+                    .create();
 
-    private static volatile RMap<Long, NginxHttpServerChannel>
+    private static volatile ChronicleMap<Long, NginxHttpServerChannel>
             channelNginxSharedHashMap =
-            RedisConnection.getInstance().getRedisson().getMap("NginxResponsesChannels");
+            ChronicleMap.of(Long.class, NginxHttpServerChannel.class)
+                    .name("NginxResponsesChannels")
+                    .entries(8096)
+                    .averageValueSize(8096)
+                    .create();
 
     private static volatile NginxSharedHashMap<String, Integer>
             countersHashMap =
             NginxSharedHashMap.build("Counters");
 
     //List<Pair<Boolean,OutboundMessageQueue>>
-    public static RMap<String, List<Pair<Boolean,String>>>
-    getMessageQueuesHashMap() {
-        return RedisConnection.getInstance().getRedisson().getMap("MessageQueuesHashMap");
+    public static  ChronicleMap<String, List<Pair<Boolean,OutboundMessageQueue>>> getMessageQueuesHashMap() {
+        return messageQueuesHashMap;
     }
     //NginxHttpServerChannel
-    public static RMap<Long, NginxHttpServerChannel> getChannelNginxSharedHashMap() {
-        return RedisConnection.getInstance().getRedisson().getMap("NginxResponsesChannels");
+    public static ChronicleMap<Long, NginxHttpServerChannel> getChannelNginxSharedHashMap() {
+        return channelNginxSharedHashMap;
     }
 
     public static NginxSharedHashMap<String, Integer> getCountersHashMap() {
@@ -87,23 +94,16 @@ public class Nginx implements NginxJavaRingHandler {
         // get corresponding Queue
         int counter = countersHashMap.get(appName);
         // get List
-        List<Pair<Boolean,String>> mapObject =
+        List<Pair<Boolean,OutboundMessageQueue>> mapObject =
                 getMessageQueuesHashMap().get(appName);
         // send on that queue
         if (mapObject.get(counter).getKey()){
-            String outboundQueueName = mapObject.get(counter).getValue();
-            sendMessage(outboundQueueName, json, reqUUID);
+            mapObject.get(counter).getValue().sendMessage(json, reqUUID);
         }
         // increment counter
         counter = counter < mapObject.size() - 1 ? counter++ : 0; // increment counter
         countersHashMap.put(appName, counter);
         NginxClojureRT.log.info("countersHashMap : " + countersHashMap);
-    }
-
-    public static synchronized void sendMessage(String queueName, String json, String reqUUID){
-        OutboundMessageQueue outboundMessageQueue = new OutboundMessageQueue(NginxInitialization.getInstance().getMqServerAddress(),
-                NginxInitialization.getInstance().getMqServerPort(), queueName);
-        outboundMessageQueue.sendMessage(json, reqUUID);
     }
 
     private void turnOffInstance(String instanceName){

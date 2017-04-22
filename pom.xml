@@ -76,18 +76,11 @@
             <version>4.1.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.redisson/redisson -->
+        <!-- https://mvnrepository.com/artifact/net.openhft/chronicle-map -->
         <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson</artifactId>
-            <version>3.3.2</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm-all -->
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>5.0.3</version>
+            <groupId>net.openhft</groupId>
+            <artifactId>chronicle-map</artifactId>
+            <version>3.13.0</version>
         </dependency>
 
 
