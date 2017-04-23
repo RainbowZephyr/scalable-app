@@ -9,8 +9,11 @@ import org.apache.commons.lang.SerializationUtils;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
+
+import static utility.Constants.CORRELATION_ID_KEY;
 
 
 /**
@@ -104,7 +107,10 @@ public class Producer implements SocketConnection {
                 .getSimpleName() + "_QUEUE");
     }
 
-    public void sendMessage(String repsonse) throws IOException {
+    @Override
+    public void sendMessage(String repsonse, Map<String, Object> additionalParams) throws IOException {
+        basicProperties.correlationId((String) additionalParams.get(CORRELATION_ID_KEY));
+        System.out.println(additionalParams.get(CORRELATION_ID_KEY));
         channel.basicPublish("", PRODUCER_QUEUE_NAME, basicProperties.build(),
                 SerializationUtils.serialize(repsonse.toString()));
     }

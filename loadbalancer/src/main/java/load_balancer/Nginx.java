@@ -91,7 +91,7 @@ public class Nginx implements NginxJavaRingHandler {
 
     public static synchronized void putInCorrespondingQueue(String json, String reqUUID) {
         Map<String, Object> map = gson.fromJson(json, Map.class);
-        String appName = (String) map.get("app_id");
+        String appName = (String) map.get("recieving_app_id");
         // get corresponding Queue
         int counter = countersHashMap.get(appName);
         // get List
@@ -112,7 +112,7 @@ public class Nginx implements NginxJavaRingHandler {
         SocketConnectionToController.sharedInstance().getStatisticsMap()
                 .put(instanceName, count);
         // LOG
-        NginxClojureRT.log.info(SocketConnectionToController.sharedInstance().getStatisticsMap());
+        NginxClojureRT.log.info("REQ: " + reqUUID);
         countersHashMap.put(appName, counter);
     }
 

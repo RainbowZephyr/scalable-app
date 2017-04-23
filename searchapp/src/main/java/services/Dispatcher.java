@@ -57,7 +57,7 @@ public class Dispatcher {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
             response.addToResponse(APP_ID_KEY, APPLICATION_ID);
             response.addToResponse(RECEIVING_APP_ID_KEY, "Controller");
-            requestHandle.send(response.toJson()); // output to the queue
+            requestHandle.send(response.toJson(), null); // output to the queue
         }
     }
 
@@ -82,7 +82,7 @@ public class Dispatcher {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
             response.addToResponse("app_id", APPLICATION_ID);
             response.addToResponse("recieving_app_id", "Controller");
-            requestHandle.send(response.toJson()); // output to the queue
+            requestHandle.send(response.toJson(), null); // output to the queue
         }
 
     }

@@ -22,7 +22,7 @@ public abstract class Command implements Runnable {
             StringBuffer strbufResponse = execute(serviceRequest.getData());
             if (shouldReturnResponse()) {
                 // send response to the queue
-                requestHandle.send(strbufResponse);
+                requestHandle.send(strbufResponse, serviceRequest.getData());
             }
         } catch (Exception e) {
             e.printStackTrace();

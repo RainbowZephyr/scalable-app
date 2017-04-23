@@ -133,11 +133,12 @@ public class QueueConsumer implements Runnable, Consumer {
 
         // parse JSONString
         Gson gson = new Gson();
+
         Map<String, Object> map = gson.fromJson(jsonStr, Map.class);
 
         long deliveryTag = env.getDeliveryTag();
         // Construct Service Request
-        ServiceRequest serviceRequest = constructReq(map);
+        ServiceRequest serviceRequest = constructReq(map, props.getCorrelationId());
         
         try {
             Dispatcher.sharedInstance().dispatchRequest(new RequestHandle(
@@ -162,13 +163,14 @@ public class QueueConsumer implements Runnable, Consumer {
         }
     }
 
-    public ServiceRequest constructReq(Map<String, Object> request) {
+    public ServiceRequest constructReq(Map<String, Object> request, String correlationId) {
         String sessionId = (String) request.get(SESSION_ID_KEY);
         String appId = (String) request.get(APP_ID_KEY);
         String receivingAppId = (String) request.get(RECEIVING_APP_ID_KEY);
         String strAction = (String) request.get(ACTION_NAME_KEY);
         Map<String, Object> requestParams = (Map<String, Object>)
                 request.get(REQUEST_PARAMETERS_KEY);
+        requestParams.put(CORRELATION_ID_KEY, correlationId); // adds the correlation id
         return new ServiceRequest(strAction, sessionId, requestParams);
     }
 

@@ -17,7 +17,7 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 	private TitanGraph graph;
 	final private String USER_ID_KEY = "userId", USER_NAME = "username", FRIEND_KEY = "friend", ID_INDEX = "byID",
 			NAME_INDEX = "byName";
-	final private String PROPS_PATH = "./config/titan_properties.properties";
+	final private String PROPS_PATH = "searchapp/config/titan_properties.properties";
 
 	@Override
 	public StringBuffer execute(Map<String, Object> parameters) throws Exception {
@@ -153,7 +153,7 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 	 * 
 	 * @param userId
 	 *            user who accepted the friend request
-	 * @param friendUserId
+	 * @param friendId
 	 *            user who sent the request
 	 */
 	private void addFriend(long userId, long friendId) {
