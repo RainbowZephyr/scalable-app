@@ -100,7 +100,7 @@ public class QueueConsumer implements Runnable, Consumer {
 
     private void loadConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream in = new FileInputStream("messageapp/config/message_queues.properties");
+        InputStream in = new FileInputStream("searchapp/config/message_queues.properties");
         prop.load(in);
         in.close();
         MQ_SERVER_ADDRESS = prop.getProperty(this.getClass().getSimpleName() + "_HOST");
@@ -110,16 +110,11 @@ public class QueueConsumer implements Runnable, Consumer {
     }
 
     public void run() {
-        while (true) {
-            try {
-                boolean autoAck = false;
-                channel.basicConsume(QUEUE_NAME, autoAck, this);
-                Thread.sleep(1000);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            boolean autoAck = false;
+            channel.basicConsume(QUEUE_NAME, autoAck, this);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -138,19 +133,20 @@ public class QueueConsumer implements Runnable, Consumer {
 
         // parse JSONString
         Gson gson = new Gson();
+
         Map<String, Object> map = gson.fromJson(jsonStr, Map.class);
 
         long deliveryTag = env.getDeliveryTag();
         // Construct Service Request
-        ServiceRequest serviceRequest = constructReq(map);
-
+        ServiceRequest serviceRequest = constructReq(map, props.getCorrelationId());
+        
         try {
             Dispatcher.sharedInstance().dispatchRequest(new RequestHandle(
                     Producer.class.getSimpleName()), serviceRequest);
         } catch (CannotAcceptRequestException e) {
             sendAck(deliveryTag, false);
             QueueConsumerListenerThread.sharedInstance().start(); // restarting the app
-        } catch (IllegalAccessException e) {
+        }catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -167,24 +163,24 @@ public class QueueConsumer implements Runnable, Consumer {
         }
     }
 
-    public ServiceRequest constructReq(Map<String, Object> request) {
+    public ServiceRequest constructReq(Map<String, Object> request, String correlationId) {
         String sessionId = (String) request.get(SESSION_ID_KEY);
         String appId = (String) request.get(APP_ID_KEY);
         String receivingAppId = (String) request.get(RECEIVING_APP_ID_KEY);
         String strAction = (String) request.get(ACTION_NAME_KEY);
         Map<String, Object> requestParams = (Map<String, Object>)
                 request.get(REQUEST_PARAMETERS_KEY);
+        requestParams.put(CORRELATION_ID_KEY, correlationId); // adds the correlation id
         return new ServiceRequest(strAction, sessionId, requestParams);
     }
 
     public void sendAck(long deliveryTag, boolean ack) throws IOException {
-        if (ack) {
+        if(ack){
             channel.basicAck(deliveryTag, false);
-        } else {
+        }else{
             channel.basicNack(deliveryTag, false, true);
         }
     }
-
     public void handleCancel(String consumerTag) {
     }
 

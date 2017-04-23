@@ -11,6 +11,7 @@ import io.netty.handler.logging.LoggingHandler;
 import services.ServerInitializer;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static utility.Constants.SPECIAL_PORT;
 
@@ -54,12 +55,13 @@ public class SocketConnectionToController implements SocketConnection {
         }
     }
 
-    public void sendMessage(String response) {
-        response += "\n";
-        ctx.writeAndFlush(response);
-    }
-
     public void setCtx(ChannelHandlerContext ctx) {
         this.ctx = ctx;
+    }
+
+    @Override
+    public void sendMessage(String response, Map<String, Object> additionalParams) throws IOException {
+        response += "\n";
+        ctx.writeAndFlush(response);
     }
 }

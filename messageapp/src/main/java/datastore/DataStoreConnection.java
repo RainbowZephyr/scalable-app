@@ -1,6 +1,7 @@
 package datastore;
 
 import services.RequestHandle;
+import services.ServiceRequest;
 
 import java.util.Map;
 
@@ -22,17 +23,18 @@ public abstract class DataStoreConnection implements Runnable {
 
     final public void run() {
         try {
-            StringBuffer strBuffer = execute(parameters);
+            ServiceRequest serviceRequest = (ServiceRequest)
+                    parameters.get(ServiceRequest.class.getSimpleName());
+            StringBuffer strBuffer = execute(serviceRequest.getData());
             RequestHandle requestHandle = (RequestHandle)
                     parameters.get(RequestHandle.class.getSimpleName());
-            requestHandle.send(strBuffer);
+            requestHandle.send(strBuffer, serviceRequest.getData());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    final public void init(Map<String, Object> parameters) {
-
+    public void init(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
 }

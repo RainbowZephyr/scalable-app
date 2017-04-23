@@ -57,7 +57,7 @@ public class Dispatcher {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
             response.addToResponse(APP_ID_KEY, APPLICATION_ID);
             response.addToResponse(RECEIVING_APP_ID_KEY, "Controller");
-            requestHandle.send(response.toJson()); // output to the queue
+            requestHandle.send(response.toJson(), null); // output to the queue
         }
     }
 
@@ -81,8 +81,8 @@ public class Dispatcher {
         } else {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
             response.addToResponse("app_id", APPLICATION_ID);
-            response.addToResponse("recieving_app_id", "Controller");
-            requestHandle.send(response.toJson()); // output to the queue
+            response.addToResponse("receiving_app_id", "Controller");
+            requestHandle.send(response.toJson(), null); // output to the queue
         }
 
     }
@@ -109,7 +109,7 @@ public class Dispatcher {
     /* Instantiate database Thread Pool */
     protected void loadDataStoreConnections() throws IOException, ClassNotFoundException {
         Properties prop = new Properties();
-        InputStream in = new FileInputStream("wallapp/config/data_store.properties");
+        InputStream in = new FileInputStream("searchapp/config/data_store.properties");
         prop.load(in);
         in.close();
         Enumeration enumKeys = prop.propertyNames();
@@ -161,8 +161,8 @@ public class Dispatcher {
     public void init() throws IOException, ClassNotFoundException {
         _htblCommands = new Hashtable<String, Class<?>>();
         _adminHtblCommands = new Hashtable<String, Class<?>>();
-        loadCommands(_htblCommands, "wallapp/config/commands.properties");
-        loadCommands(_adminHtblCommands, "wallapp/config/admin_commands.properties");
+        loadCommands(_htblCommands, "searchapp/config/commands.properties");
+        loadCommands(_adminHtblCommands, "searchapp/config/admin_commands.properties");
         loadDataStoreConnections();
         loadConnections();
     }

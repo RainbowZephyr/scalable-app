@@ -5,6 +5,7 @@ import connections.SocketConnectionFactory;
 import exceptions.MultipleResponseException;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class RequestHandle {
     private StringBuffer stringBuffer;
@@ -20,7 +21,7 @@ public class RequestHandle {
      *
      * @param stringBuffer
      */
-    public synchronized void send(StringBuffer stringBuffer)
+    public synchronized void send(StringBuffer stringBuffer, Map<String, Object> params)
             throws MultipleResponseException, IOException {
         if (didSendMessage) {
             throw new MultipleResponseException();
@@ -28,7 +29,7 @@ public class RequestHandle {
         this.stringBuffer = stringBuffer;
         // get some factory and send message with result
         SocketConnectionFactory.sharedInstance().getConnection(connectionId)
-                .sendMessage(stringBuffer.toString());
+                .sendMessage(stringBuffer.toString(), params);
         // some how send this to its destination (should be put in the corresponding queue)
         didSendMessage = true;
     }

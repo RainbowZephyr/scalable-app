@@ -2,6 +2,8 @@ package datastore.datastores;
 
 
 import datastore.DataStoreConnection;
+import services.Response;
+import utility.ResponseCodes;
 
 import java.util.Map;
 
@@ -13,6 +15,7 @@ public class ConcreteDataStoreConnection extends DataStoreConnection {
 
     public StringBuffer execute(Map<String, Object> parameters) {
         System.out.println("ECHO EXECUTED, CHECK the Response Queue");
-        return new StringBuffer("ConcreteDataStoreConnection execute");
+        Response response = new Response(ResponseCodes.STATUS_CREATED);
+        return response.toJson();
     }
 }

@@ -81,7 +81,7 @@ public class Dispatcher {
         } else {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
             response.addToResponse("app_id", APPLICATION_ID);
-            response.addToResponse("recieving_app_id", "Controller");
+            response.addToResponse("receiving_app_id", "Controller");
             requestHandle.send(response.toJson(), null); // output to the queue
         }
 

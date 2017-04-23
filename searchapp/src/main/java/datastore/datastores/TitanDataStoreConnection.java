@@ -67,7 +67,7 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 	 * configuration file.
 	 */
 	private void connect() {
-		String dataDir = "./config/titan-cassandra-es.properties";
+		String dataDir = "./searchapp/config/titan-cassandra-es.properties";
 		this.graph = TitanFactory.open(dataDir);
 
 		this.initialize();

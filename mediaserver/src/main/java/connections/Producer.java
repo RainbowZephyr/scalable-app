@@ -9,8 +9,11 @@ import org.apache.commons.lang.SerializationUtils;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
+
+import static utility.Constants.CORRELATION_ID_KEY;
 
 
 /**
@@ -93,7 +96,7 @@ public class Producer implements SocketConnection {
 
     private void loadConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream in = new FileInputStream("config/message_queues.properties");
+        InputStream in = new FileInputStream("searchapp/config/message_queues.properties");
         prop.load(in);
         in.close();
         MQ_SERVER_ADDRESS = prop.getProperty(this.getClass().getSimpleName() + "_HOST");
@@ -104,7 +107,9 @@ public class Producer implements SocketConnection {
                 .getSimpleName() + "_QUEUE");
     }
 
-    public void sendMessage(String repsonse) throws IOException {
+    public void sendMessage(String repsonse, Map<String, Object> additionalParams) throws IOException {
+        basicProperties.correlationId((String) additionalParams.get(CORRELATION_ID_KEY));
+        System.out.println("SENDING:" + additionalParams.get(CORRELATION_ID_KEY));
         channel.basicPublish("", PRODUCER_QUEUE_NAME, basicProperties.build(),
                 SerializationUtils.serialize(repsonse.toString()));
     }

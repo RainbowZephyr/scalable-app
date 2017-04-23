@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
 import load_balancer.Nginx;
-import nginx.clojure.NginxClojureRT;
 import nginx.clojure.NginxHttpServerChannel;
 import nginx.clojure.java.ArrayMap;
 import org.apache.commons.lang.SerializationUtils;
@@ -85,8 +84,8 @@ public class InboundMessageQueue implements Runnable, Consumer {
         String jsonStr = (String) SerializationUtils.deserialize(body);
         String correlationId = props.getCorrelationId();
         Gson gson = new Gson(); // will cause a memory leak
+
         Map<String, Object> map = gson.fromJson(jsonStr, Map.class);
-        NginxClojureRT.log.info("Received: " + jsonStr + " IS REQ?" + props.getCorrelationId());
         // if a request, push in the corresponding queue
         if(isRequest(map)){
             Nginx.putInCorrespondingQueue(jsonStr, correlationId);
