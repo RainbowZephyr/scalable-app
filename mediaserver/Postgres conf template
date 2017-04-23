@@ -1,0 +1,9 @@
+#host and port can be left empty for default value
+#duplicate this file to Postgres.conf and type values between square brackets DO NOT REMOVE THE TEMPLATE OR RENAME IT
+username=[]
+password=[]
+host=
+port=
+database=[]
+
+

@@ -1,0 +1,267 @@
+title {label: "Scalable App ERD (condensed)", size: "20"}
+
+# Entities
+
+[Member] {bgcolor: "#d0e0d0"}
+    +id {label: "int, not null"}
+    email {label: "varchar, not null, unique"}
+    password_hash {label: "varchar, not null"}
+    first_name {label: "varchar, not null"}
+    last_name {label: "varchar, not null"}
+    date_of_birth {label: "date"}
+    *profile_picture {label: "varchar, not null"}
+    *cover_picture {label: "varchar, not null"}
+    created_at {label: "TIMESTAMP"}
+    last_login {label: "TIMESTAMP"}
+
+[User] {bgcolor: "#daeada"}
+    +*user_id {label: "int, not null"}
+
+[Admin] {bgcolor: "#dbebdb"}
+    +*admin_id {label: "int, not null"}
+
+[Sessions]
+    +id {label: "serial, not null"}
+    *user_id {label: "int, not null"}
+    session_start {label: "TIMESTAMP, not null"}
+    last_access {label: "TIMESTAMP, not null"}
+	address  {label: "varchar"}
+    
+[Logins]
+    +id  {label: "serial, not null"}
+    *user_id {label: "int, not null"}
+    last_login {label: "TIMESTAMP, not null"}
+    address {label: "varchar"}
+    logout {label: "boolean, not null"}
+
+[Login_Failures]
+	+id  {label: "serial, not null"}
+    *user_id {label: "int, not null"}
+    access_time {label: "TIMESTAMP, not null"}
+    address {label: "varchar"}
+	
+[Friends]
+    +*user_1 {label: "int, not null"}
+    +*user_2 {label: "int, not null"}
+    accepted {label: "boolean, not null"}
+
+[Blocks]
+    +*user_1 {label: "int, not null"}
+    +*user_2 {label: "int, not null"}
+
+[Post] {bgcolor: "#ffe5a3"}
+    +id {label: "int, not null"}
+    *user1_id {label: "int, not null"}
+    *user2_id {label: "int, not null"}
+    post_text {label: "varchar, not null"}
+    created_at {label: "TIMESTAMP"}
+    update_time {label: "TIMESTAMP"}
+
+[Post_Tags] {bgcolor: "#ffe5a3"}
+    +*post_id {label: "int, not null"}
+    +*user1_id {label: "int, not null"}
+    +*user2_id {label: "int, not null"}
+
+[Post_Hashtags] {bgcolor: "#ffe5a3"}
+    +*post_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+    +hashtag {label: "varchar, not null"}
+
+[Post_Reactions] {bgcolor: "#ffe5a3"}
+    +*post_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+    reaction_type {label: "int, not null"}
+
+[Comment] {bgcolor: "#fffa98"}
+    +id {label: "int, not null"}
+    *post_id {label: "int, not null"}
+    *user_id {label: "int, not null"}
+    comment_text {label: "varchar, not null"}
+    created_at {label: "TIMESTAMP"}
+    update_time {label: "TIMESTAMP"}
+
+[Comment_Tags] {bgcolor: "#fffa98"}
+    +*comment_id {label: "int, not null"}
+    +*user1_id {label: "int, not null"}
+    +*user2_id {label: "int, not null"}
+
+[Comment_Likes] {bgcolor: "#fffa98"}
+    +*comment_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+
+[Message_Thread] {bgcolor: "#a1ffe8"}
+    +id {label: "int, not null"}
+    created_at {label: "TIMESTAMP, not null"}
+
+[Message] {bgcolor: "#a1ffe8"}
+    +id {label: "int, not null"}
+    *thread_id {label: "int, not null"}
+    *user_id {label: "int, not null"}
+    message_text {label: "varchar, not null"}
+    created_at {label: "TIMESTAMP"}
+
+[Message_Thread_Users] {bgcolor: "#a1ffe8"}
+    +*thread_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+
+[Event]
+    +id {label: "int, not null"}
+    title {label: "varchar, not null"}
+    description {label: "varchar, not null"}
+    start_date {label: "TIMESTAMP"}
+    end_date {label: "TIMESTAMP"}
+    *creator_id {label: "int, not null"}
+    created_at {label: "TIMESTAMP, not null"}
+
+[Event_Subscribers]
+    +*event_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+    attending {label: "boolean, default NULL"}
+
+[Image]
+    +id {label: "int, not null"}
+    image_path {label: "varchar, not null"}
+
+[Saved_Posts]
+    +*post_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+
+[Facebook_Group] {bgcolor: "#debdff"}
+    +id {label: "int, not null"}
+    name {label: "varchar, not null"}
+    description {label: "varchar, not null"}
+    *creator_id {label: "int, not null"}
+    created_at {label: "TIMESTAMP, not null"}
+
+[Group_Members] {bgcolor: "#debdff"}
+    +*group_id {label: "int, not null"}
+    +*user_id {label: "int, not null"}
+    admin {label: "boolean, not null"}
+
+[Group_Post] {bgcolor: "#debdff"}
+    +id {label: "int, not null"}
+    *group_id {label: "int, not null"}
+    *user_id {label: "int, not null"}
+    text {label: "varchar"}
+    created_at {label: "TIMESTAMP, not null"}
+    updated_at {label: "TIMESTAMP, not null"}
+
+[Group_Post_Comments]
+    +id {label: "int, not null"}
+    *group_post_id {label: "int, not null"}
+    *group_post_id {label: "int, not null"}
+    *user_id {label: "int, not null"}
+    text {label: "varchar, not null"}
+    created_at {label: "TIMESTAMP, not null"}
+    updated_at {label: "TIMESTAMP, not null"}
+
+[Follows]
+    +*user1_id {label: "int, not null"}
+    +*user2_id {label: "int, not null"}
+
+[Comment_Replies]
+    +id {label: "int, not null"}
+    *comment_id {label: "int, not null"}
+    *user_id {label: "int, not null"}
+    text {label: "varchar, not null"}
+    created_at {label: "TIMESTAMP, not null"}
+    updated_at {label: "TIMESTAMP, not null"}
+
+[Report_User]
+    +*user1_id {label: "int, not null"}
+    +*user2_id {label: "int, not null"}
+
+[Report_Post]
+    +*user_id {label: "int, not null"}
+    +*post_id {label: "int, not null"}
+
+[Report_Comment]
+    +*user_id {label: "int, not null"}
+    +*comment_id {label: "int, not null"}
+
+[Report_Group]
+    +*user_id {label: "int, not null"}
+    +*group_id {label: "int, not null"}
+
+[User_Album]
+    +*user_id {label: "int, not null"}
+    +*picture_id {label: "varchar, not null"}
+
+[Post_Images]
+    +*post_id {label: "int, not null"}
+    +*picture_id {label: "int, not null"}
+
+[Comment_Image]
+    +*comment_id {label: "int, not null"}
+    +*picture_id {label: "int, not null"}
+
+[Reply_Image]
+    +*reply_id {label: "int, not null"}
+    +*picture_id {label: "int, not null"}
+
+
+
+#Relationships
+Member                      1--1 User
+Member                      1--1 Admin
+User                        *--* User {label: "friends"}
+
+User                        1--* Post
+Post                        1--* Post_Tags
+Post_Tags                   1--* User
+
+User                        1--* Comment
+Comment                     1--* Comment_Tags
+Comment_Tags                1--* User
+
+Message_Thread              1--+ Message_Thread_Users
+Message_Thread              1--* Message
+Message_Thread_Users        1--+ User
+Post                        1--* Comment
+
+Post                        1--* Post_Hashtags
+User                        1--+ Post_Hashtags
+
+Friends                     *--* User
+Blocks                      *--* User
+
+User                        1--* Event
+Event_Subscribers           *--+ User
+
+Post                        +--* Post_Reactions
+User                        +--* Post_Reactions
+
+Comment                     +--* Comment_Likes
+Comment_Likes               *--? User
+
+User                        +--* Saved_Posts
+Saved_Posts                 *--+ Post
+
+Facebook_Group              +--* Group_Members
+Group_Members               *--+ User
+
+Facebook_Group              +--* Group_Post
+Group_Post                  *--+ User
+
+Group_Post                  +--* Group_Post_Comments
+Group_Post_Comments         *--+ User
+
+Member                      ?--1 Image
+Post_Images                 +--* Image
+Comment_Image               ?--1 Image
+Reply_Image                 ?--1 Image
+
+User                        +--* Report_User
+User                        +--* Report_Group
+User                        +--* Report_Comment
+User                        +--* Report_Post
+
+
+User                        +--* Follows
+Comment                     +--* Comment_Replies
+User                        ?--* User_Album
+User_Album                  *--+ Image
+
+User                        1--* Logins
+User                        1--* Sessions
+User                        1--* Login_Failures
