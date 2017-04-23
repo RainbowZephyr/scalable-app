@@ -1,7 +1,6 @@
 package controller;
 
 import channels.AdminChannelInitializer;
-import channels.LoadBalancerChannelInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -16,8 +15,9 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Controller {
-	private final static int LOAD_BALANCER_PORT = 4000, ADMIN_PORT = 4001;
-	private final static String HOST = "127.0.0.1";
+	private final static int LOAD_BALANCER_PORT = 6001, ADMIN_PORT = 4001;
+	private final static String HOST = "127.0.0.1" , LOAD_BALANCER_HOST = "127.0.0.1";
+	private static Channel channelToController;
 
 	public static void main(String[] args) throws Exception {
 
@@ -25,28 +25,30 @@ public class Controller {
 		getAppsFromConf();
 		// connect to all apps
 		establishAppsConnection();
-
+		Runnable runnable = new Runnable() {
+			public void run() {
+				try {
+					ControllerHelper.sharedInstance().
+                            loadBalancerBootNettyClient(LOAD_BALANCER_HOST, LOAD_BALANCER_PORT); // start connection to load balancer
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		Thread thread = new Thread(runnable);
+		thread.start();
 		/*
 		 * #1 run a netty server #2 keep polling for a message using the worker
 		 * threads #3 on message Received assign to a thread #4
 		 */
 
 		// should only call onMessage & process data through
-		EventLoopGroup loadBossGroup = new NioEventLoopGroup(5);
-		EventLoopGroup loadWorkerGroup = new NioEventLoopGroup();
 		EventLoopGroup adminBossGroup = new NioEventLoopGroup(5);
 		EventLoopGroup adminWorkerGroup = new NioEventLoopGroup();
 		try {
 			BasicConfigurator.configure();
-			// server instance to listen on normal requests Port
-			ServerBootstrap loadBalancerBootstrap = new ServerBootstrap();
-			loadBalancerBootstrap.group(loadBossGroup, loadWorkerGroup);
-			loadBalancerBootstrap.channel(NioServerSocketChannel.class);
-			loadBalancerBootstrap.handler(new LoggingHandler(LogLevel.TRACE));
-			// add the appropriate child handler
-			loadBalancerBootstrap.childHandler(new LoadBalancerChannelInitializer());
-			loadBalancerBootstrap.bind(HOST, LOAD_BALANCER_PORT).sync().channel();
-
 			// server instance to listen on special requests Port
 			ServerBootstrap specialReqServerBootstrap = new ServerBootstrap();
 			specialReqServerBootstrap.group(adminBossGroup, adminWorkerGroup);
@@ -55,14 +57,9 @@ public class Controller {
 			// add the appropriate child handler
 			specialReqServerBootstrap.childHandler(new AdminChannelInitializer());
 			Channel specialRequestChannel = specialReqServerBootstrap.bind(HOST, ADMIN_PORT).sync().channel();
-
-			System.err
-					.println("Listening For LoadBalancer Updates on http" + "://127.0.0.1:" + LOAD_BALANCER_PORT + '/');
 			System.err.println("Listening For Admin Requests on http" + "://127.0.0.1:" + ADMIN_PORT + '/');
 			specialRequestChannel.closeFuture().sync();
 		} finally {
-			loadBossGroup.shutdownGracefully();
-			loadWorkerGroup.shutdownGracefully();
 			adminBossGroup.shutdownGracefully();
 			adminWorkerGroup.shutdownGracefully();
 		}

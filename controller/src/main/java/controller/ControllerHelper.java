@@ -1,22 +1,10 @@
 package controller;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-
+import channels.LoadBalancerChannelHandler;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -28,6 +16,12 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class ControllerHelper {
 
 	private static ControllerHelper instance = new ControllerHelper();
@@ -38,6 +32,12 @@ public class ControllerHelper {
 	private static ChannelGroup channelGroupMessage = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 	private static ChannelGroup channelGroupSearch = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 	private static HashMap<String, Channel> channels = new HashMap<String, Channel>();
+
+	public Channel getChannelToLoadBalancer() {
+		return channelToLoadBalancer;
+	}
+
+	private Channel channelToLoadBalancer;
 
 	private ControllerHelper() {
 	}
@@ -140,7 +140,7 @@ public class ControllerHelper {
 					+ tempApps.get(i).getMax_db_count() + "\n";
 		}
 		try {
-			PrintWriter pw = new PrintWriter("./config/APP_CONFIG_FILE.config");
+			PrintWriter pw = new PrintWriter("controller/config/APP_CONFIG_FILE.config");
 			pw.print(newConf);
 			pw.close();
 			pw = null;
@@ -226,6 +226,55 @@ public class ControllerHelper {
 			cause.printStackTrace();
 			ctx.close();
 		}
+	}
+
+	public void loadBalancerBootNettyClient(String host, int port) throws
+			InterruptedException, IOException {
+		EventLoopGroup workerGroup = new NioEventLoopGroup();
+
+		try {
+			Bootstrap b = new Bootstrap(); // (1)
+			b.group(workerGroup); // (2)
+			b.channel(NioSocketChannel.class); // (3)
+			b.option(ChannelOption.SO_KEEPALIVE, true); // (4)
+			b.handler(new ChannelInitializer<SocketChannel>() {
+				@Override
+				public void initChannel(SocketChannel ch) throws Exception {
+					ch.pipeline().addLast(new DelimiterBasedFrameDecoder
+							(Integer.MAX_VALUE, Delimiters.lineDelimiter()));
+					ch.pipeline().addLast(new StringDecoder());
+					ch.pipeline().addLast(new StringEncoder());
+					ch.pipeline().addLast(
+							LoadBalancerChannelHandler.class.getName(),
+							new LoadBalancerChannelHandler());
+
+				}
+			});
+
+			// Start the client.
+			channelToLoadBalancer = b.connect(host, port).sync().channel(); // (5)
+			channelToLoadBalancer.closeFuture().sync();
+
+		} finally {
+			workerGroup.shutdownGracefully();
+		}
+
+	}
+
+	public boolean existsMoreThanOneApp(String app_id){
+		int appCount = 0;
+		for(int i = 0;i<ControllerHelper.sharedInstance().getApps().size();i++){
+			if(ControllerHelper.sharedInstance().getApps().get(i).getName().contains(app_id)
+					&& ControllerHelper.sharedInstance().getApps().get(i).getStatus() == 1){
+				appCount++;
+			}
+		}
+		return appCount > 1;
+	}
+
+	public void sendMessageToLoadBalancer(String message){
+		message += "\n";
+		channelToLoadBalancer.writeAndFlush(message);
 	}
 
 }

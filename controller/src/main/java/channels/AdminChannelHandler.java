@@ -10,6 +10,7 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -59,6 +60,8 @@ public class AdminChannelHandler extends SimpleChannelInboundHandler<FullHttpReq
 				case message:
 					ControllerHelper.sharedInstance().getChannelGroupMessage().writeAndFlush(data);
 					break;
+				case loadbalancer:
+					ControllerHelper.sharedInstance().sendMessageToLoadBalancer(data);
 				}
 			}
 		}

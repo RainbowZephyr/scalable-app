@@ -5,20 +5,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import controller.ControllerHelper;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
-import java.nio.charset.StandardCharsets;
 
-public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<String> {
 	@Override
-	public void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest o) throws Exception {
+	public void channelRead0(ChannelHandlerContext channelHandlerContext, String data) throws Exception {
 		// get JSON from http request
-		final String data = o.content().toString(StandardCharsets.UTF_8);
 		System.out.println("DATA RECEIVED @ LoadBalancer Port: " + data);
 
 		JsonParser jsonParser = new JsonParser();
@@ -36,10 +29,11 @@ public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<Full
 
 			// TODO Construct the actual JSON and send it using
 			// ControllerHelper.sharedInsance.getChannels().get(app_id).writeAndFlush(json)
-			if (requests_per_second < 10) {
+			if (requests_per_second < 10 && ControllerHelper.sharedInstance().existsMoreThanOneApp(app_id.replaceAll("\\d+.*", ""))) {
 				jsonMessage = "{ \"session_id\": \"\"," + " \"app_id\": \"controller\"," + " \"recieving_app_id\": \""
 						+ app_id + "\"," + " \"service_type\": \"freeze\"," + " \"request_parameters\": {}}";
 				ControllerHelper.sharedInstance().getChannels().get(app_id).writeAndFlush(jsonMessage + "\n");
+				ControllerHelper.sharedInstance().sendMessageToLoadBalancer(jsonMessage);
 //				ControllerHelper.sharedInstance().getAppByName(app_id).setStatus(0);
 				// send freeze
 				System.out.println("FREEZE APP: " + app_id);
@@ -96,8 +90,8 @@ public class LoadBalancerChannelHandler extends SimpleChannelInboundHandler<Full
 		}
 
 		ControllerHelper.sharedInstance().updateConfFromApps();
-		channelHandlerContext.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK))
-				.addListener(ChannelFutureListener.CLOSE);
-		channelHandlerContext.flush();
+//		channelHandlerContext.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK))
+//				.addListener(ChannelFutureListener.CLOSE);
+//		channelHandlerContext.flush();
 	}
 }
