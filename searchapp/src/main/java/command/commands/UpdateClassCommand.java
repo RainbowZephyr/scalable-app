@@ -26,7 +26,7 @@ public class UpdateClassCommand extends Command {
         // read binaries and write to directory
         ClassLoader parentClassLoader = CommandClassLoader.class.getClassLoader();
         CommandClassLoader classLoader = new CommandClassLoader(parentClassLoader);
-        Class<?> commandClass = classLoader.loadClass(packageName+className);
+        Class<?> commandClass = classLoader.loadClass(className);
         Dispatcher.sharedInstance().updateClass(commandClass);
         Response response = new Response(ResponseCodes.STATUS_OK);
         return response.toJson();
@@ -34,9 +34,10 @@ public class UpdateClassCommand extends Command {
 
     private void writeFile(String classEncodedBinaries, String className, String packageName)
             throws IOException {
-        String path = "./searchapp/target/classes/"+packageName.replace('.', File.separatorChar) + className + ".class";
+        String path = packageName.replace(".", "/") + className + ".class";
+        Gson gson = new Gson();
+        classEncodedBinaries = gson.fromJson(classEncodedBinaries, String.class);
         byte[] decodedBytes = Base64.getDecoder().decode(classEncodedBinaries);
         FileUtils.writeByteArrayToFile(new File(path), decodedBytes);
-        System.out.println(path);
     }
 }

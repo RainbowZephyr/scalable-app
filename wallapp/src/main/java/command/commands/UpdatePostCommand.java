@@ -1,11 +1,10 @@
 package command.commands;
 
-import java.util.Map;
-
 import command.Command;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
-import datastore.datastores.MongoDBStoreConnection;
+
+import java.util.Map;
 
 public class UpdatePostCommand extends Command {
 

@@ -8,8 +8,6 @@ import com.thinkaurelius.titan.core.util.TitanCleanup;
 import datastore.DataStoreConnection;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import services.Response;
-import utility.ResponseCodes;
 
 import java.io.*;
 import java.util.*;
@@ -19,7 +17,7 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 	private TitanGraph graph;
 	final private String USER_ID_KEY = "userId", USER_NAME = "username", FRIEND_KEY = "friend", ID_INDEX = "byID",
 			NAME_INDEX = "byName";
-	final private String PROPS_PATH = "./searchapp/config/titan_properties.properties";
+	final private String PROPS_PATH = "./config/titan_properties.properties";
 
 	@Override
 	public StringBuffer execute(Map<String, Object> parameters) throws Exception {
@@ -29,22 +27,22 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 
 		switch (parameters.get("action").toString()) {
 		case "add_user":
-			this.addUser(Long.parseLong((String) parameters.get("user_id")), (String) parameters.get("user_name"));
+			this.addUser((Long) parameters.get("user_id"), (String) parameters.get("user_name"));
 			break;
 		case "search_by_name":
 			result = this.searchUserByName((String) parameters.get("user_name"));
 			break;
 		case "add_friend":
-			this.addFriend(Long.parseLong((String) parameters.get("user_id")), Long.parseLong((String) parameters.get("friend_id")));
+			this.addFriend((Long) parameters.get("user_id"), (Long) parameters.get("friend_id"));
 			break;
 		case "get_friends_at":
-			result = this.getFriendsAt(Long.parseLong((String) parameters.get("user_id")), (Integer) parameters.get("at"));
+			result = this.getFriendsAt((Long) parameters.get("user_id"), (Integer) parameters.get("at"));
 			break;
 		case "get_friends_up_to":
-			result = this.getFriendsUpTo(Long.parseLong((String) parameters.get("user_id")), (Integer) parameters.get("at"));
+			result = this.getFriendsUpTo((Long) parameters.get("user_id"), (Integer) parameters.get("at"));
 			break;
 		case "remove_user":
-			this.removeUser(Long.parseLong((String) parameters.get("user_id")));
+			this.removeUser((Long) parameters.get("user_id"));
 			break;
 		case "remove_friend":
 			break;
@@ -54,15 +52,14 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 		default:
 			break;
 		}
-		Response response = new Response(ResponseCodes.STATUS_OK);
+
 		if (result != null) {
-			Map<String, List<?>> resultMap = new HashMap<String, List<?>>();
+			Map<String, List<?>> resultMap = new HashMap<>();
 			resultMap.put("results", result);
-			response.addToResponse("response_load", resultMap);
-			return response.toJson();
+			return new StringBuffer(result.toString());
 		}
 
-		return response.toJson();
+		return new StringBuffer();
 	}
 
 	/**
@@ -70,7 +67,7 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 	 * configuration file.
 	 */
 	private void connect() {
-		String dataDir = "./searchapp/config/titan-cassandra-es.properties";
+		String dataDir = "./config/titan-cassandra-es.properties";
 		this.graph = TitanFactory.open(dataDir);
 
 		this.initialize();
@@ -156,7 +153,7 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 	 * 
 	 * @param userId
 	 *            user who accepted the friend request
-	 * @param friendId
+	 * @param friendUserId
 	 *            user who sent the request
 	 */
 	private void addFriend(long userId, long friendId) {
@@ -186,7 +183,7 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 	 * @return The user (vertex) if found.
 	 */
 	private Vertex searchUserById(Long userId) {
-		return (Vertex) graph.query().has(USER_ID_KEY, userId).limit(1).vertices().iterator().next();
+		return graph.query().has(USER_ID_KEY, userId).limit(1).vertices().iterator().next();
 	}
 
 	/**
@@ -202,7 +199,7 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 				.limit(10).vertices();
 
 		for (TitanIndexQuery.Result<TitanVertex> result : vertices) {
-//			System.out.println("LOOP: " + result.getElement().value(USER_NAME));
+			System.out.println("LOOP: " + result.getElement().value(USER_NAME));
 			list.add(result.getElement().value(USER_ID_KEY));
 		}
 		return list;

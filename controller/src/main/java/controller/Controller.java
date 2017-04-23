@@ -74,7 +74,7 @@ public class Controller {
 		// read from config file to String
 		String res = "";
 		try {
-			BufferedReader in = new BufferedReader(new FileReader("./controller/config/APP_CONFIG_FILE.config"));
+			BufferedReader in = new BufferedReader(new FileReader("./config/APP_CONFIG_FILE.config"));
 			String str;
 			while ((str = in.readLine()) != null) {
 				res += str + "\n";

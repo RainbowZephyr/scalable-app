@@ -12,48 +12,56 @@
     <artifactId>wall-app</artifactId>
 
     <dependencies>
-        <!--  RabbitMQ Client  -->
+        <!-- RabbitMQ Client -->
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
             <version>4.1.0</version>
         </dependency>
-        <!--  Netty Server Library  -->
+
+        <!-- Netty Server Library -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>4.1.9.Final</version>
         </dependency>
-        <!-- Unit Testing Library -->
+
+        <!--Unit Testing Library-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-        <!-- JSON Parser -->
+
+        <!--JSON Parser-->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.8.0</version>
         </dependency>
-        <!--  Used for SerializationUtils  -->
+
+        <!-- Used for SerializationUtils -->
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
-        <!--  Apache Common IO  -->
+
+        <!-- Apache Common IO -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.5</version>
         </dependency>
+
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
             <version>3.2.2</version>
         </dependency>
+
+
     </dependencies>
 
 </project>

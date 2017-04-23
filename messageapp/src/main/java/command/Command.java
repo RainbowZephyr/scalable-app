@@ -18,10 +18,8 @@ public abstract class Command implements Runnable {
                 parameters.get(ServiceRequest.class.getSimpleName());
         RequestHandle requestHandle = (RequestHandle)
                 parameters.get(RequestHandle.class.getSimpleName());
-        Map<String, Object> requestMapData = serviceRequest.getData();
-        requestMapData.put(RequestHandle.class.getSimpleName(), requestHandle);
         try {
-            StringBuffer strbufResponse = execute(requestMapData);
+            StringBuffer strbufResponse = execute(serviceRequest.getData());
             if (shouldReturnResponse()) {
                 // send response to the queue
                 requestHandle.send(strbufResponse);

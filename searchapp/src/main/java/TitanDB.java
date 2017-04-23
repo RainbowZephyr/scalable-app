@@ -2,27 +2,12 @@ import com.thinkaurelius.titan.core.*;
 import com.thinkaurelius.titan.core.schema.Mapping;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
 import com.thinkaurelius.titan.core.util.TitanCleanup;
-
-import datastore.DataStoreConnection;
-import datastore.DataStoreConnectionFactory;
-import datastore.datastores.TitanDataStoreConnection;
-import services.RequestHandle;
-import thread_pools.DatabaseThreadPool;
-
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.structure.io.IoCore;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
@@ -33,7 +18,7 @@ public class TitanDB {
 	static TitanGraph graph;
 
 	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException {
-		 clearDatabase();
+		// clearDatabase();
 		// startConnectionToTitan(); // should be called only once I think
 		// Long id = Long.parseLong("716284862545507294");
 		// updateName(id, "7amada");
@@ -132,8 +117,8 @@ public class TitanDB {
 		List<Long> list = new ArrayList<Long>();
 		for (TitanIndexQuery.Result<TitanVertex> result : graph
 				.indexQuery(NAME_INDEX, USER_NAME + ":(*" + username + "*)").limit(10).vertices()) {
-			System.out.println((String) result.getElement().value(USER_NAME));
-			list.add((Long) result.getElement().value(USER_ID_KEY));
+			System.out.println((char[]) result.getElement().value(USER_NAME));
+			list.add(result.getElement().value(USER_ID_KEY));
 		}
 		return list;
 	}
@@ -144,7 +129,7 @@ public class TitanDB {
 	 * @return Vertex Object from the graph
 	 */
 	static Vertex getUser(Long userId) {
-		return (Vertex) graph.query().has(USER_ID_KEY, userId).limit(1).vertices().iterator().next();
+		return graph.query().has(USER_ID_KEY, userId).limit(1).vertices().iterator().next();
 	}
 
 	/**
@@ -194,13 +179,13 @@ public class TitanDB {
 	static void startConnectionToTitan() {
 		// path to config file (it has addresses to backend & indexing engine
 		// servers)
-		String dataDir = "./searchapp/config/titan-cassandra-es.properties";
+		String dataDir = "./config/titan-cassandra-es.properties";
 		// start a graph with config file
 		graph = TitanFactory.open(dataDir);
 	}
 
 	static void setupSchema() {
-		String propertiesPath = "./searchapp/config/titan_properties.properties";
+		String propertiesPath = "./config/titan_properties.properties";
 		Properties properties = new Properties();
 		InputStream in = null;
 		try {

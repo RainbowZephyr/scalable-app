@@ -1,12 +1,10 @@
 package command.commands;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import command.Command;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
-import datastore.datastores.MongoDBStoreConnection;
+
+import java.util.Map;
 
 public class AddPostCommand extends Command {
 
