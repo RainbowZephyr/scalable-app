@@ -8,14 +8,13 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import load_balancer.StatisticsRecord;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.Thread.sleep;
 
@@ -29,13 +28,15 @@ public class SocketConnectionToController implements SocketConnection, Runnable{
     private Runnable runnableTask;
     private volatile boolean isSend;
     private final String DELIMITER = ";";
-    private final String appInstanceConfPath = "loadbalancer/config/apps_instances.properties";
-    private final String messageQueueConfPath = "loadbalancer/config/message_queue_server.properties";
-    private Map<String, Integer> statisticsJson = new HashMap<>();
+    private final String appInstanceConfPath = "/home/abdoo/IdeaProjects/scalable-app/loadbalancer/config/apps_instances.properties";
+    private ConcurrentHashMap<String, Integer> statisticsJson = new ConcurrentHashMap<>();
+    private List<StatisticsRecord> statisticsJsonList = new ArrayList<>();
+    private Map<String, List<StatisticsRecord>> jsonMap = new HashMap<>();
     private Gson gson = new Gson();
 
-    private Map<String, OutboundMessageQueue> messageQueueMap = new HashMap<>();
-
+    public ConcurrentHashMap<String, Integer> getStatisticsMap() {
+        return statisticsJson;
+    }
 
     private SocketConnectionToController() {
     }
@@ -56,9 +57,10 @@ public class SocketConnectionToController implements SocketConnection, Runnable{
             public void run() {
                 while(isSend){
                     try {
-                        sleep(1000);
+                        sleep(5000); // send every 30 sec
                         // send data here
-                        SocketConnectionToController.sharedInstance().sendMessage(getStatistics());
+                        SocketConnectionToController.sharedInstance().sendMessage(getStatistics(5000));
+                        resetStatisticsHashMap();
                     } catch (InterruptedException e) {
                         // if sleep is interrupted, so what ?
                     }
@@ -66,7 +68,7 @@ public class SocketConnectionToController implements SocketConnection, Runnable{
             }
         };
         //init data to be sent
-        loadMessageQueues();
+        readQueueNamesIntoMemory();
         // init server
         EventLoopGroup reqBossGroup = new NioEventLoopGroup(5);
         EventLoopGroup reqWorkerGroup = new NioEventLoopGroup();
@@ -117,7 +119,7 @@ public class SocketConnectionToController implements SocketConnection, Runnable{
         return isSend;
     }
 
-    private void readQueueNamesIntoMemory(String mqServerAddress, int mqServerPort) {
+    private void readQueueNamesIntoMemory() {
         // load the names of the instances into sharedHashMap
         Properties prop = new Properties();
         InputStream in = null;
@@ -135,36 +137,23 @@ public class SocketConnectionToController implements SocketConnection, Runnable{
             String [] temp = prop.getProperty(key).split(DELIMITER);
 
             for(int i=0; i<temp.length; i++){
-                String mqOutboundQueueName = temp[i].split("=")[0] + "_InboundQueue"; // inbound for the instance
-                messageQueueMap.put(mqOutboundQueueName,
-                        new OutboundMessageQueue(
-                                mqServerAddress,
-                                mqServerPort,
-                                mqOutboundQueueName)
-                );
+                String instanceName = temp[i].split("=")[0]; // inbound for the instance
+                statisticsJson.put(instanceName, 0);
             }
         }
     }
 
-    private void loadMessageQueues() {
-        Properties prop = new Properties();
-        InputStream in = null;
-        try {
-            in = new FileInputStream(messageQueueConfPath);
-            prop.load(in);
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private String getStatistics(int seconds){
+        for (Map.Entry<String, Integer> entry : statisticsJson.entrySet()) {
+            statisticsJsonList.add(new StatisticsRecord(entry.getKey(), entry.getValue()));
         }
-        String mqServerAddress = prop.getProperty("MessageQueueServerAddress");
-        int mqServerPort = Integer.parseInt(prop.getProperty("MessageQueueServerPort"));
-        readQueueNamesIntoMemory(mqServerAddress, mqServerPort);
+        jsonMap.put("content",statisticsJsonList);
+        return gson.toJson(jsonMap);
     }
 
-    private String getStatistics(){
-        for(Map.Entry<String, OutboundMessageQueue> entry: messageQueueMap.entrySet()){
-            statisticsJson.put(entry.getKey(), entry.getValue().getCount());
+    private void resetStatisticsHashMap(){
+        for (Map.Entry<String, Integer> entry : statisticsJson.entrySet()) {
+            statisticsJson.put(entry.getKey(), 0);
         }
-        return gson.toJson(statisticsJson);
     }
 }

@@ -2,6 +2,7 @@ package load_balancer;
 
 import com.google.gson.Gson;
 import connections.OutboundMessageQueue;
+import connections.SocketConnectionToController;
 import javafx.util.Pair;
 import net.openhft.chronicle.map.ChronicleMap;
 import nginx.clojure.NativeInputStream;
@@ -68,8 +69,6 @@ public class Nginx implements NginxJavaRingHandler {
         // get body of the request & turn to json
         RequestBodyFetcher b = new RequestBodyFetcher(); // get body of the request
         NativeInputStream body = (NativeInputStream) b.fetch(req.nativeRequest(), DEFAULT_ENCODING);
-        // LOG
-        NginxClojureRT.log.info("REQUEST: " + req.nativeRequest() + " ,BODY: " + channelNginxSharedHashMap.get(req.nativeRequest()));
         // call putInCorrespondingQueue
         putInCorrespondingQueue(streamToString(body), req.nativeRequest()+"");
         return null; // this is ignored as the request is hijacked
@@ -106,9 +105,14 @@ public class Nginx implements NginxJavaRingHandler {
                 counter = 0;
             }
         }
+        String instanceName = mapObject.get(counter).getValue().getInstanceName();
         // send on the queue
         mapObject.get(counter).getValue().sendMessage(json, reqUUID);
-        NginxClojureRT.log.info("COUNTER: " + counter + " MAPSIZE:"+ mapObject.size() +" IS LESS ? " + (counter < mapObject.size() - 1));
+        int count = SocketConnectionToController.sharedInstance().getStatisticsMap().get(instanceName)+1;
+        SocketConnectionToController.sharedInstance().getStatisticsMap()
+                .put(instanceName, count);
+        // LOG
+        NginxClojureRT.log.info(SocketConnectionToController.sharedInstance().getStatisticsMap());
         countersHashMap.put(appName, counter);
     }
 

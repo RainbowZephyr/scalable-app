@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
 import load_balancer.Nginx;
-import nginx.clojure.NginxClojureRT;
 import nginx.clojure.NginxHttpServerChannel;
 import nginx.clojure.java.ArrayMap;
 import org.apache.commons.lang.SerializationUtils;
@@ -93,11 +92,9 @@ public class InboundMessageQueue implements Runnable, Consumer {
             return;
         }
 
-        NginxClojureRT.log.info("SharedMap : " + correlationId+ ":" + Nginx.getChannelNginxSharedHashMap());
         // get channel from the channel map
         NginxHttpServerChannel channel =
                 Nginx.getChannelNginxSharedHashMap().remove(Long.parseLong(correlationId));
-        NginxClojureRT.log.info("HERE : "+ channel);
         // correlationId = requestId for the request
         channel.sendResponse(new Object[] { NGX_HTTP_OK,
                         ArrayMap.create("content-type", "text/json"),

@@ -18,6 +18,14 @@ import java.util.concurrent.TimeoutException;
  */
 public class OutboundMessageQueue implements SocketConnection, Serializable {
 
+    public String getQueueName() {
+        return queueName;
+    }
+
+    public String getInstanceName(){
+        return queueName.split("_")[0];
+    }
+
     private String queueName, mqServerAddress;
     private int mqServerPort;
     private String JSON_MESSAGE = "application/json";

@@ -2,6 +2,7 @@ package load_balancer;
 
 import connections.InboundMessageQueue;
 import connections.OutboundMessageQueue;
+import connections.SocketConnectionToController;
 import javafx.util.Pair;
 import nginx.clojure.java.NginxJavaRingHandler;
 
@@ -17,13 +18,15 @@ public class NginxInitialization implements NginxJavaRingHandler {
     private String mqServerAddress;
     private int mqServerPort;
     private final String DELIMITER = ";";
-    private final String appInstanceConfPath = "/home/abdoo/IdeaProjects/scalable-app/config/apps_instances.properties";
-    private final String messageQueueConfPath = "/home/abdoo/IdeaProjects/scalable-app/config/message_queue_server.properties";
+    private final String appInstanceConfPath = "/home/abdoo/IdeaProjects/scalable-app/loadbalancer/config/apps_instances.properties";
+    private final String messageQueueConfPath = "/home/abdoo/IdeaProjects/scalable-app/loadbalancer/config/message_queue_server.properties";
+    private static final String controllerConfPath = "/home/abdoo/IdeaProjects/scalable-app/loadbalancer/config/controller.properties";
+
 
     @Override
     public Object[] invoke(Map<String, Object> map) throws IOException {
-        getInstance();
-        return new Object[0];
+        init();
+        return null;
     }
 
     public static NginxInitialization getInstance() {
@@ -31,8 +34,12 @@ public class NginxInitialization implements NginxJavaRingHandler {
     }
 
     public NginxInitialization() {
+    }
+
+    public void init(){
         loadMessageQueueServerLocation();
         readInstancesQueuesIntoSharedMemory();
+        startListeningToController();
     }
 
     /**
@@ -68,6 +75,7 @@ public class NginxInitialization implements NginxJavaRingHandler {
     }
 
     public void startMessageQueueListener(String instanceName){
+//        NginxClojureRT.log.info("LISTEN AT :" + instanceName + "_OutboundQueue");
         String inboundQueueName = instanceName + "_OutboundQueue"; // outbound for the instance
         Thread thread = new Thread(new InboundMessageQueue(mqServerAddress, mqServerPort, inboundQueueName));
         thread.start();
@@ -103,5 +111,23 @@ public class NginxInitialization implements NginxJavaRingHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void startListeningToController() {
+        Properties prop = new Properties();
+        InputStream in = null;
+        try {
+            in = new FileInputStream(controllerConfPath);
+            prop.load(in);
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String controllerServerAddress = prop.getProperty("ControllerServerAddress");
+        int controllerServerPort = Integer.parseInt(prop.getProperty("ControllerServerPort"));
+        SocketConnectionToController.sharedInstance().setControllerRemoteAddress
+                (controllerServerAddress, controllerServerPort);
+        Thread thread = new Thread(SocketConnectionToController.sharedInstance());
+        thread.start();
     }
 }
