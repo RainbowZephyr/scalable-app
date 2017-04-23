@@ -93,7 +93,7 @@ public class Producer implements SocketConnection {
 
     private void loadConfig() throws IOException {
         Properties prop = new Properties();
-        InputStream in = new FileInputStream("config/message_queues.properties");
+        InputStream in = new FileInputStream("messageapp/config/message_queues.properties");
         prop.load(in);
         in.close();
         MQ_SERVER_ADDRESS = prop.getProperty(this.getClass().getSimpleName() + "_HOST");

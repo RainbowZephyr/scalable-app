@@ -109,7 +109,7 @@ public class Dispatcher {
     /* Instantiate database Thread Pool */
     protected void loadDataStoreConnections() throws IOException, ClassNotFoundException {
         Properties prop = new Properties();
-        InputStream in = new FileInputStream("config/data_store.properties");
+        InputStream in = new FileInputStream("searchapp/config/data_store.properties");
         prop.load(in);
         in.close();
         Enumeration enumKeys = prop.propertyNames();
@@ -161,8 +161,8 @@ public class Dispatcher {
     public void init() throws IOException, ClassNotFoundException {
         _htblCommands = new Hashtable<String, Class<?>>();
         _adminHtblCommands = new Hashtable<String, Class<?>>();
-        loadCommands(_htblCommands, "config/commands.properties");
-        loadCommands(_adminHtblCommands, "config/admin_commands.properties");
+        loadCommands(_htblCommands, "searchapp/config/commands.properties");
+        loadCommands(_adminHtblCommands, "searchapp/config/admin_commands.properties");
         loadDataStoreConnections();
         loadConnections();
     }
