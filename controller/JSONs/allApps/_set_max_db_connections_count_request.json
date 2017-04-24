@@ -1,6 +1,6 @@
 {
   "app_id": "",
-  "recieving_app_id": "",
+  "receiving_app_id": "",
   "service_type": "set_max_db_connections_count",
   "request_parameters": {
     "count": 0

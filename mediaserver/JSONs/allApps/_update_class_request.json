@@ -1,9 +1,0 @@
-{
-  "app_id": "",
-  "recieving_app_id": "",
-  "service_type": "update_class",
-  "request_parameters": {
-    "class": "",
-    "updated_class": ""
-  }
-}

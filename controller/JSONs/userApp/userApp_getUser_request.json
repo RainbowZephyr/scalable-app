@@ -1,9 +1,9 @@
 ﻿{
-	"session_id":"",
-	"app_id": "" ,
-	"recieving_app_id": "",
-       "service_type":"getUser",
-	"request_parameters": {
-		"user_id":0,
-       }
+  "session_id": "",
+  "app_id": "",
+  "receiving_app_id": "",
+  "service_type": "getUser",
+  "request_parameters": {
+    "user_id": 0
+  }
 }	

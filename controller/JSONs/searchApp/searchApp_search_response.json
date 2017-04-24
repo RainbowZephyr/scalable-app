@@ -1,10 +1,9 @@
 {
   "session_id": "",
   "app_id": "",
-  "recieving_app_id": "",
+  "receiving_app_id": "",
   "response_status": "",
-  "response_load": 
-    [
-      "0": { "userId" } // userId is just a placeholder for the actual id
-    ]
-}
+  "response_load": {
+    "results": [ "userId" ] // userId is just a placeholder for the actual id
+    }
+  }

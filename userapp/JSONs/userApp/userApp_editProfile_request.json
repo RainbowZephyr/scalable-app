@@ -1,7 +1,7 @@
-﻿ï»¿{
+﻿{
   "session_id": "",
   "app_id": "",
-  "recieving_app_id": "",
+  "receiving_app_id": "",
   "service_type": "editProfile",
   "request_parameters": {
     "oldpassword": "",
@@ -12,6 +12,6 @@
     "lastName": "",
      "newlastName": "",
     "dateOfBirth": "",
-    "createdAt": "",
+    "createdAt": ""
   }
 } 

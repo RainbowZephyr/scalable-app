@@ -1,9 +1,0 @@
-{
-  "app_id": "",
-  "recieving_app_id": "",
-  "service_type": "delete_command",
-  "request_parameters": {
-    "command": "",
-    "is_admin_command": "boolean"
-  }
-}

@@ -1,16 +1,13 @@
 ﻿{
-	"session_id":"",
-	"app_id": "" ,
-	"recieving_app_id": "",
-       "service_type":"signUp",
-	"request_parameters": {
-		"userName":"",
-		"passWord":"",
-		"email":"",
-		"phoneNumber":"",
-		"firstName":"",
-		"lastName":"",
-       "age":"",
-       "gender":"", 
-       }
-}	
+  "app_id": "",
+  "receiving_app_id": "",
+  "service_type": "signupUser",
+  "request_parameters": {
+    "email": "test@test.com",
+    "password": "password",
+    "firstName": "testFirstName",
+    "lastName": "testLastName",
+    "dateOfBirth": "2001-09-28",
+    "createdAt": "2020-01-25 22:30:15"
+  }
+}

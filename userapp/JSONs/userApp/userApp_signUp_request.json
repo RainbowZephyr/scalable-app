@@ -1,6 +1,6 @@
 ﻿{
   "app_id": "",
-  "recieving_app_id": "",
+  "receiving_app_id": "",
   "service_type": "signupUser",
   "request_parameters": {
     "email": "test@test.com",
