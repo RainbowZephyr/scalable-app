@@ -7,8 +7,7 @@ import utility.ResponseCodes;
 
 import java.util.Map;
 
-import static utility.Constants.COMMAND_NAME_KEY;
-import static utility.Constants.IS_ADMIN_COMMAND_KEY;
+import static utility.Constants.*;
 
 
 public class DeleteCommand extends Command {
@@ -19,6 +18,9 @@ public class DeleteCommand extends Command {
         Dispatcher.sharedInstance().removeCommand(className, adminCommand);
 
         Response response = new Response(ResponseCodes.STATUS_OK);
+        response.addToResponse("app_id", APPLICATION_ID);
+        response.addToResponse("receiving_app_id", "Controller");
+        response.addToResponse("service_type", "delete");
         return response.toJson();
     }
 }

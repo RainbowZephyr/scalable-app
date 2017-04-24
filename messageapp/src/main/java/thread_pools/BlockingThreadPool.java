@@ -1,6 +1,5 @@
 package thread_pools;
 
-import connections.QueueConsumerListenerThread;
 import exceptions.CannotAcceptRequestException;
 
 import java.util.concurrent.BlockingQueue;
@@ -34,13 +33,6 @@ public class BlockingThreadPool extends ThreadPoolExecutor {
                 while (true) {
                     // if thread pool is down (reject)
                     if (executor.isShutdown()) {
-                        try {
-                            synchronized (QueueConsumerListenerThread.sharedInstance()) {
-                                QueueConsumerListenerThread.sharedInstance().wait();
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
                         throw new CannotAcceptRequestException();
                     }
                     if (executor.getActiveCount() < executor.getCorePoolSize()) {

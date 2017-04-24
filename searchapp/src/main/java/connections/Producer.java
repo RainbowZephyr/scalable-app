@@ -111,6 +111,6 @@ public class Producer implements SocketConnection {
     public void sendMessage(String repsonse, Map<String, Object> additionalParams) throws IOException {
         basicProperties.correlationId((String) additionalParams.get(CORRELATION_ID_KEY));
         channel.basicPublish("", PRODUCER_QUEUE_NAME, basicProperties.build(),
-                SerializationUtils.serialize(repsonse.toString()));
+                SerializationUtils.serialize(repsonse));
     }
 }

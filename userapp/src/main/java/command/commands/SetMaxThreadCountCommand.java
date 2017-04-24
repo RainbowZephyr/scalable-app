@@ -8,6 +8,8 @@ import utility.ResponseCodes;
 
 import java.util.Map;
 
+import static utility.Constants.APPLICATION_ID;
+
 public class SetMaxThreadCountCommand extends Command {
 
     public StringBuffer execute(Map<String, Object> requestMapData) {
@@ -20,9 +22,10 @@ public class SetMaxThreadCountCommand extends Command {
         int result = CommandsThreadPool.sharedInstance().getThreadPool().getCorePoolSize();
         // construct response
         Response response = new Response(ResponseCodes.STATUS_OK);
-        response.addToResponse("app_id", Constants.APPLICATION_ID);
-        response.addToResponse("service_type", "set_max_thread_count");
         response.addToResponse("count", result);
+        response.addToResponse("app_id", APPLICATION_ID);
+        response.addToResponse("receiving_app_id", "Controller");
+        response.addToResponse("service_type", "set_max_thread_count");
 
         return response.toJson();
     }

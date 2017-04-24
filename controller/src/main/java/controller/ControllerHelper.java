@@ -199,30 +199,26 @@ public class ControllerHelper {
 		public void channelRead0(ChannelHandlerContext ctx, String msg) {
 			System.out.println("APPLICATION RESPONDED WITH: \n" + msg);
 			JsonParser jsonParser = new JsonParser();
-			JsonObject json = (JsonObject) jsonParser.parse(msg);
-			String app_id = json.get("app_id").getAsString();
-			String service_type = json.get("service_type").getAsString();
-			if(service_type.equals("freeze")){
-				ControllerHelper.sharedInstance().getAppByName(app_id).setStatus(0);
-			}else{
-				if(service_type.equals("continue")){
+			if(msg != null) {
+				JsonObject json = (JsonObject) jsonParser.parse(msg);
+				String app_id = json.get("app_id").getAsString();
+				String service_type = json.get("service_type").getAsString();
+				if (service_type.equals("freeze")) {
+					ControllerHelper.sharedInstance().getAppByName(app_id).setStatus(0);
+				} else if (service_type.equals("continue")){
 					ControllerHelper.sharedInstance().getAppByName(app_id).setStatus(1);
-				}else{
-					if(service_type.equals("set_max_thread_count")){
-						int thread_count = json.get("count").getAsInt();
-						ControllerHelper.sharedInstance().getAppByName(app_id).setMax_thread_count(thread_count);
-					}else{
-						if(service_type.equals("set_max_db_connections_count")){
-							int db_count = json.get("count").getAsInt();
-							ControllerHelper.sharedInstance().getAppByName(app_id).setMax_db_count(db_count);
-						}
-					}
+				} else if (service_type.equals("set_max_thread_count")) {
+					int thread_count = json.get("count").getAsInt();
+					ControllerHelper.sharedInstance().getAppByName(app_id).setMax_thread_count(thread_count);
+				} else if (service_type.equals("set_max_db_connections_count")) {
+					int db_count = json.get("count").getAsInt();
+					ControllerHelper.sharedInstance().getAppByName(app_id).setMax_db_count(db_count);
 				}
 			}
 		}
 
-		@Override
-		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 			cause.printStackTrace();
 			ctx.close();
 		}

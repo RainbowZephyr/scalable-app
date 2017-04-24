@@ -84,6 +84,8 @@ public class OutboundMessageQueue implements SocketConnection, Serializable {
             init(mqServerAddress, mqServerPort);
             basicProperties.correlationId(reqUUID);
             sendMessage(respose);
+            channel.close();
+            connection.close();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {

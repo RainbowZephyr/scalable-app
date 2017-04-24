@@ -34,6 +34,7 @@ public class QueueConsumer implements Runnable, Consumer {
     private int MQ_SERVER_PORT; // default port(change from rabbitMq config file 8albn fi /etc/rabbitMQ/config
     private Channel channel;
     private Connection connection;
+    private boolean sentAck;
 
     private QueueConsumer() {
     }
@@ -130,7 +131,6 @@ public class QueueConsumer implements Runnable, Consumer {
     public void handleDelivery(String consumerTag, Envelope env,
                                BasicProperties props, byte[] body) throws IOException {
         String jsonStr = (String) SerializationUtils.deserialize(body);
-
         // parse JSONString
         Gson gson = new Gson();
         Map<String, Object> map = gson.fromJson(jsonStr, Map.class);
@@ -144,7 +144,15 @@ public class QueueConsumer implements Runnable, Consumer {
                     Producer.class.getSimpleName()), serviceRequest);
         } catch (CannotAcceptRequestException e) {
             sendAck(deliveryTag, false);
-            QueueConsumerListenerThread.sharedInstance().start(); // restarting the app
+            sentAck = true;
+            System.out.println("CAN't ACCEPT REQ" + deliveryTag);
+            synchronized (QueueConsumerListenerThread.sharedInstance()) {
+                try {
+                    QueueConsumerListenerThread.sharedInstance().wait();
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            }
         }catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
@@ -158,7 +166,10 @@ public class QueueConsumer implements Runnable, Consumer {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            sendAck(deliveryTag, true);
+            if(!sentAck) {
+                sendAck(deliveryTag, true);
+            }
+            sentAck = false;
         }
     }
 

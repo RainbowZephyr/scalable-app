@@ -18,5 +18,9 @@ public final class Constants {
             RESPONSE_STATUS_KEY = "response_status",
             CORRELATION_ID_KEY = "correlation_id";
     public final static int SPECIAL_PORT = 6002;
-    public final static String APPLICATION_ID = "ACTUAL APPLICATION ID SHOULD BE HERE INSTEAD";
+    public static String APPLICATION_ID = "ACTUAL APPLICATION ID SHOULD BE HERE INSTEAD";
+
+    public static void setAppId(String appId){
+        APPLICATION_ID = appId;
+    }
 }

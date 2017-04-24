@@ -8,6 +8,8 @@ import com.thinkaurelius.titan.core.util.TitanCleanup;
 import datastore.DataStoreConnection;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import services.Response;
+import utility.ResponseCodes;
 
 import java.io.*;
 import java.util.*;
@@ -22,12 +24,12 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 	@Override
 	public StringBuffer execute(Map<String, Object> parameters) throws Exception {
 		this.connect();
-
+		Response response = null;
 		List<?> result = null;
 
 		switch (parameters.get("action").toString()) {
 		case "add_user":
-			this.addUser(Long.parseLong((String) parameters.get("user_id")), (String) parameters.get("user_name"));
+			response = addUser(Long.parseLong((String) parameters.get("user_id")), (String) parameters.get("user_name"));
 			break;
 		case "search_by_name":
 			result = this.searchUserByName((String) parameters.get("user_name"));
@@ -39,15 +41,16 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 			result = this.getFriendsAt(Long.parseLong((String) parameters.get("user_id")), Integer.parseInt((String) parameters.get("at")));
 			break;
 		case "get_friends_up_to":
-			result = this.getFriendsUpTo(Long.parseLong((String) parameters.get("user_id")), Integer.parseInt((String) parameters.get("at")));
+			result = this.getFriendsUpTo(Long.parseLong((String) parameters.get("user_id")), (Integer) parameters.get("at"));
 			break;
 		case "remove_user":
-			this.removeUser(Long.parseLong((String) parameters.get("user_id")));
+			response = removeUser(Long.parseLong((String) parameters.get("user_id")));
 			break;
 		case "remove_friend":
 			break;
 		case "clear_database":
 			this.clear();
+			response = new Response(ResponseCodes.STATUS_OK);
 			break;
 		default:
 			break;
@@ -56,10 +59,11 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 		if (result != null) {
 			Map<String, List<?>> resultMap = new HashMap<>();
 			resultMap.put("results", result);
-			return new StringBuffer(result.toString());
+			response = new Response(ResponseCodes.STATUS_OK);
+			response.addToResponse("response_body", resultMap);
 		}
-
-		return new StringBuffer();
+		graph.close();
+		return response.toJson();
 	}
 
 	/**
@@ -69,7 +73,6 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 	private void connect() {
 		String dataDir = "./searchapp/config/titan-cassandra-es.properties";
 		this.graph = TitanFactory.open(dataDir);
-
 		this.initialize();
 	}
 
@@ -134,45 +137,44 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 	/**
 	 * Adds a new vertex to the graph and assigns the userId and userName
 	 * properties as necessary.
-	 * 
-	 * @param userId
+	 *  @param userId
 	 *            The value of the userId property.
 	 * @param userName
-	 *            The value of the userName property.
 	 */
-	private void addUser(long userId, String userName) {
+	private Response addUser(long userId, String userName) {
 		System.out.println("Adding: " + userId + " - " + userName);
 		Vertex user = this.graph.newTransaction().addVertex();
 		user.property(USER_ID_KEY, userId);
 		user.property(USER_NAME, userName.toLowerCase());
 		user.graph().tx().commit();
+		return new Response(ResponseCodes.STATUS_CREATED);
 	}
 
 	/**
 	 * Creates an edge in the graph corresponding to the friendship relation.
-	 * 
-	 * @param userId
+	 *  @param userId
 	 *            user who accepted the friend request
 	 * @param friendId
-	 *            user who sent the request
 	 */
-	private void addFriend(long userId, long friendId) {
+	private Response addFriend(long userId, long friendId) {
 		System.out.println("Connecting: " + userId + " with: " + friendId);
 		Vertex from = this.searchUserById(userId);
 		Vertex to = this.searchUserById(friendId);
 		from.addEdge(FRIEND_KEY, to).graph().tx().commit();
+		return new Response(ResponseCodes.STATUS_CREATED);
 	}
 
 	/**
 	 * Removes a user (vertex) from the graph along with all of its friends
 	 * (edges).
-	 * 
+	 *
 	 * @param userId
 	 *            The value of the userId property.
 	 */
-	private void removeUser(long userId) {
+	private Response removeUser(long userId) {
 		this.searchUserById(userId).remove();
 		this.graph.tx().commit();
+		return new Response(ResponseCodes.STATUS_OK);
 	}
 
 	/**
@@ -199,7 +201,6 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 				.limit(10).vertices();
 
 		for (TitanIndexQuery.Result<TitanVertex> result : vertices) {
-			System.out.println("LOOP: " + result.getElement().value(USER_NAME));
 			list.add(result.getElement().value(USER_ID_KEY));
 		}
 		return list;

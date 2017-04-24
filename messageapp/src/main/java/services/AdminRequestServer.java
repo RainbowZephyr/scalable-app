@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import utility.Constants;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -24,6 +25,9 @@ public class AdminRequestServer extends SimpleChannelInboundHandler<Map<String, 
         String strAction = (String) request.get(Constants.ACTION_NAME_KEY);
         Map<String, Object> requestParams = (Map<String, Object>)
                 request.get(Constants.REQUEST_PARAMETERS_KEY);
+        if(requestParams == null){
+            requestParams = new HashMap<String, Object>();
+        }
         return new ServiceRequest(strAction, sessionId, requestParams);
     }
 

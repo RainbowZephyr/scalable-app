@@ -67,8 +67,9 @@ public class Dispatcher {
         Command cmd;
         String strAction;
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(RequestHandle.class.getSimpleName(), requestHandle);
         params.put(ServiceRequest.class.getSimpleName(), serviceRequest);
+        serviceRequest.getData().put(RequestHandle.class.getSimpleName(), requestHandle);
+        System.out.println(serviceRequest);
         strAction = serviceRequest.getAction();
         Class<?> innerClass = _adminHtblCommands.get(strAction);
         if (innerClass != null) {

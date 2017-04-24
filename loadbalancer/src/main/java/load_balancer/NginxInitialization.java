@@ -75,7 +75,6 @@ public class NginxInitialization implements NginxJavaRingHandler {
     }
 
     public void startMessageQueueListener(String instanceName){
-//        NginxClojureRT.log.info("LISTEN AT :" + instanceName + "_OutboundQueue");
         String inboundQueueName = instanceName + "_OutboundQueue"; // outbound for the instance
         Thread thread = new Thread(new InboundMessageQueue(mqServerAddress, mqServerPort, inboundQueueName));
         thread.start();

@@ -3,7 +3,8 @@ package command.commands;
 import command.Command;
 import datastore.DataStoreConnection;
 import datastore.DataStoreConnectionFactory;
-import thread_pools.DatabaseThreadPool;
+import services.Response;
+import utility.ResponseCodes;
 
 import java.util.Map;
 
@@ -19,10 +20,13 @@ public class EchoCommand extends Command {
         Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
                 .getDataStoreConnection("concrete_data_store_connection");
         DataStoreConnection connection = (DataStoreConnection) connectionClass.newInstance();
+
+        mapUserData.put("action", "query"); // or send elli enta 3awzo
         connection.init(mapUserData);
-        DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
+//        DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
 //        Thread.sleep(5000);
-        return null;
+        Response response = new Response(ResponseCodes.STATUS_OK);
+        return response.toJson();
     }
 
     /**
@@ -34,6 +38,6 @@ public class EchoCommand extends Command {
      */
     @Override
     protected boolean shouldReturnResponse() {
-        return false;
+        return true;
     }
 }

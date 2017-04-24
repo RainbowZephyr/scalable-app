@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
 import load_balancer.Nginx;
+import nginx.clojure.NginxClojureRT;
 import nginx.clojure.NginxHttpServerChannel;
 import nginx.clojure.java.ArrayMap;
 import org.apache.commons.lang.SerializationUtils;
@@ -84,7 +85,6 @@ public class InboundMessageQueue implements Runnable, Consumer {
         String jsonStr = (String) SerializationUtils.deserialize(body);
         String correlationId = props.getCorrelationId();
         Gson gson = new Gson(); // will cause a memory leak
-
         Map<String, Object> map = gson.fromJson(jsonStr, Map.class);
         // if a request, push in the corresponding queue
         if(isRequest(map)){
@@ -96,9 +96,13 @@ public class InboundMessageQueue implements Runnable, Consumer {
         NginxHttpServerChannel channel =
                 Nginx.getChannelNginxSharedHashMap().remove(Long.parseLong(correlationId));
         // correlationId = requestId for the request
-        channel.sendResponse(new Object[] { NGX_HTTP_OK,
-                        ArrayMap.create("content-type", "text/json"),
-                        jsonStr});
+        if(channel == null) { // don't send back anything
+            NginxClojureRT.log.info("CHANNEL IS NULL");
+        }else {
+            channel.sendResponse(new Object[]{NGX_HTTP_OK,
+                    ArrayMap.create("content-type", "text/json"),
+                    jsonStr});
+        }
     }
 
     public void handleCancel(String consumerTag) {
