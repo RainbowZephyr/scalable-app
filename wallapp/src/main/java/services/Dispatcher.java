@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-import static utility.Constants.*;
+import static utility.Constants.APPLICATION_ID;
 
 /* Main Entry Class for Any Of the Independent Applications */
 
@@ -44,8 +44,8 @@ public class Dispatcher {
         Command cmd;
         String strAction;
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put(RequestHandle.class.getSimpleName(), requestHandle);
         params.put(ServiceRequest.class.getSimpleName(), serviceRequest);
+        serviceRequest.getData().put(RequestHandle.class.getSimpleName(), requestHandle);
         strAction = serviceRequest.getAction();
 
         Class<?> innerClass = _htblCommands.get(strAction);
@@ -55,9 +55,7 @@ public class Dispatcher {
             CommandsThreadPool.sharedInstance().getThreadPool().execute(cmd);
         } else {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
-            response.addToResponse(APP_ID_KEY, APPLICATION_ID);
-            response.addToResponse(RECEIVING_APP_ID_KEY, "Controller");
-            requestHandle.send(response.toJson(), null); // output to the queue
+            requestHandle.send(response.toJson(), serviceRequest.getData()); // output to the queue
         }
     }
 
@@ -82,7 +80,7 @@ public class Dispatcher {
             Response response = new Response(ResponseCodes.STATUS_NOT_IMPLEMENTED);
             response.addToResponse("app_id", APPLICATION_ID);
             response.addToResponse("receiving_app_id", "Controller");
-            requestHandle.send(response.toJson(), null); // output to the queue
+            requestHandle.send(response.toJson(), serviceRequest.getData()); // output to the queue
         }
 
     }

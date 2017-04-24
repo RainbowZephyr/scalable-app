@@ -1,10 +1,9 @@
 {
   "session_id": "",
-  "app_id": "",
-  "recieving_app_id": "",
+  "receiving_app_id": "add_friend",
   "service_type": "search",
   "request_parameters": {
-    "username": "",
-    "email": ""
+    "user_id": "",
+    "friend_id": ""
   }
 }

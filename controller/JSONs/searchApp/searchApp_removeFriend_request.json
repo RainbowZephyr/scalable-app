@@ -1,0 +1,9 @@
+{
+  "session_id": "",
+  "receiving_app_id": "search",
+  "service_type": "remove_friend",
+  "request_parameters": {
+    "user_id": "",
+    "friend_id": ""
+  }
+}

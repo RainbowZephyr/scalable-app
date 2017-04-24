@@ -1,0 +1,4 @@
+{
+  "receiving_app_id": "loadbalancer",
+  "service_type": "stop_sending"
+}

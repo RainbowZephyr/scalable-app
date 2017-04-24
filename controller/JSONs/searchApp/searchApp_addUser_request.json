@@ -1,0 +1,9 @@
+{
+  "session_id": "",
+  "receiving_app_id": "search",
+  "service_type": "add_user",
+  "request_parameters": {
+    "user_id": "",
+    "user_name": ""
+  }
+}

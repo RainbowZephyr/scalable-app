@@ -27,22 +27,22 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 
 		switch (parameters.get("action").toString()) {
 		case "add_user":
-			this.addUser((Long) parameters.get("user_id"), (String) parameters.get("user_name"));
+			this.addUser(Long.parseLong((String) parameters.get("user_id")), (String) parameters.get("user_name"));
 			break;
 		case "search_by_name":
 			result = this.searchUserByName((String) parameters.get("user_name"));
 			break;
 		case "add_friend":
-			this.addFriend((Long) parameters.get("user_id"), (Long) parameters.get("friend_id"));
+			this.addFriend(Long.parseLong((String) parameters.get("user_id")), Long.parseLong((String) parameters.get("friend_id")));
 			break;
 		case "get_friends_at":
-			result = this.getFriendsAt((Long) parameters.get("user_id"), (Integer) parameters.get("at"));
+			result = this.getFriendsAt(Long.parseLong((String) parameters.get("user_id")), Integer.parseInt((String) parameters.get("at")));
 			break;
 		case "get_friends_up_to":
-			result = this.getFriendsUpTo((Long) parameters.get("user_id"), (Integer) parameters.get("at"));
+			result = this.getFriendsUpTo(Long.parseLong((String) parameters.get("user_id")), Integer.parseInt((String) parameters.get("at")));
 			break;
 		case "remove_user":
-			this.removeUser((Long) parameters.get("user_id"));
+			this.removeUser(Long.parseLong((String) parameters.get("user_id")));
 			break;
 		case "remove_friend":
 			break;

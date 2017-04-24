@@ -91,7 +91,7 @@ public class Nginx implements NginxJavaRingHandler {
 
     public static synchronized void putInCorrespondingQueue(String json, String reqUUID) {
         Map<String, Object> map = gson.fromJson(json, Map.class);
-        String appName = (String) map.get("recieving_app_id");
+        String appName = (String) map.get("receiving_app_id");
         // get corresponding Queue
         int counter = countersHashMap.get(appName);
         // get List

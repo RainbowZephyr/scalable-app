@@ -17,7 +17,7 @@ public abstract class Command implements Runnable {
         ServiceRequest serviceRequest = (ServiceRequest)
                 parameters.get(ServiceRequest.class.getSimpleName());
         RequestHandle requestHandle = (RequestHandle)
-                parameters.get(RequestHandle.class.getSimpleName());
+                serviceRequest.getData().get(RequestHandle.class.getSimpleName());
         try {
             StringBuffer strbufResponse = execute(serviceRequest.getData());
             if (shouldReturnResponse()) {

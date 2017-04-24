@@ -1,8 +1,4 @@
 {
-  "session_id": "",
-  "app_id": "",
-  "recieving_app_id": "",
-  "service_type": "freeze",
-  "request_parameters": {
-  }
+  "receiving_app_id": "search1",
+  "service_type": "freeze"
 }

@@ -1,0 +1,9 @@
+{
+  "session_id": "",
+  "receiving_app_id": "search",
+  "service_type": "get_friends_up_to",
+  "request_parameters": {
+    "user_id": "",
+    "at": ""
+  }
+}

@@ -133,7 +133,6 @@ public class QueueConsumer implements Runnable, Consumer {
 
         // parse JSONString
         Gson gson = new Gson();
-
         Map<String, Object> map = gson.fromJson(jsonStr, Map.class);
 
         long deliveryTag = env.getDeliveryTag();

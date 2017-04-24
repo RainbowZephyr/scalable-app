@@ -1,0 +1,8 @@
+{
+  "session_id": "",
+  "receiving_app_id": "search",
+  "service_type": "remove_user",
+  "request_parameters": {
+    "user_id": ""
+  }
+}
