@@ -32,9 +32,6 @@ public class JDBC {
 		Connection connection = null;
 
 		try {
-
-//			connection = DriverManager.getConnection(
-//					"jdbc:postgresql://127.0.0.1:5430/User", "postgres","");
 			
 			connection = DriverManager.getConnection(
 					dbURL, user,pass);

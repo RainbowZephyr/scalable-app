@@ -114,6 +114,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 
 	protected void LoadPostGresProperties() throws IOException, ClassNotFoundException {
 		        Properties prop = new Properties();
+		        Statement con = null;
 		        InputStream in = new FileInputStream("config/postgres_config.properties");
 		        prop.load(in);
 		        in.close();
@@ -125,6 +126,22 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		        dbUrl = dbUrl+host+":"+port+"/"+prop.get("dbname");
 		        JDBC jdbc = new JDBC();
 		        db = jdbc.Connect(dbUrl,username, password);
+//		        try {
+//					con = db.createStatement();
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//		        Response response;
+//				try {
+//					String query = "DELETE FROM User";
+//					con.executeQuery(query);
+//					response = new Response(ResponseCodes.STATUS_OK);
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//					response = new Response(ResponseCodes.STATUS_DATA_BASE_ERROR);
+//				}
 		    }
 
 	private StringBuffer loginUser(String email, String hashedPassword)

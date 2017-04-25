@@ -3,10 +3,10 @@
   "recieving_app_id": "",
   "service_type": "signupUser",
   "request_parameters": {
-    "email": "test@test.com",
+    "email": "heba@test.com",
     "password": "password",
-    "firstName": "testFirstName",
-    "lastName": "testLastName",
+    "firstName": "heba",
+    "lastName": "salama",
     "dateOfBirth": "2001-09-28",
     "createdAt": "2020-01-25 22:30:15"
   }
