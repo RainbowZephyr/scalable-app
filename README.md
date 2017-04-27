@@ -20,8 +20,8 @@ Inside the rabbitMQ archive Downloaded (from a terminal)
   `docker run -it -d --name nginx --net=host abdoofathy/nginx_clojure:1.0`
   this downloads and runs the image detached and on the device. 
 #### NOTE: You can skip the manual section if you got the load balancer running with docker image.
-
-#### Manualy Installation
+***
+#### Manual Installation
 ##### Run Nginx using the configuration file [Nginx.Config](https://github.com/RainbowZephyr/scalable-app/blob/integration/loadbalancer/nginx.edited).
 `sudo nginx` & to stop it `sudo nginx -s stop`
 ##### make sure that the config file is edited to match your machine
@@ -46,7 +46,7 @@ and the libraries installed by maven on your device separated by `:`
 12. commons-lang/commons-lang/2.6/
 
 ### Check the docker image if that's too much.
-
+***
 #### For **Search Team** , To run TitanDB do the following
 Inside the titan archive downloaded (from a terminal)
 `cd bin`
