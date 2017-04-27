@@ -5,10 +5,24 @@
 ### To be able to run please download the following
 For Linux & Unix
 1. Message Queue [RabbitMQ](https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.9/rabbitmq-server-generic-unix-3.6.9.tar.xz).
-2. Load Balancer [Nginx-Clojure](https://nginx-clojure.github.io/quickstart.html). figure it out till I get a docker image running.
+2. Load Balancer [Nginx-Clojure](https://nginx-clojure.github.io/quickstart.html).
 3. To Be Able To Run Search **SEARCH TEAM ONLY** , Download [Titan](http://s3.thinkaurelius.com/downloads/titan/titan-1.0.0-hadoop1.zip).
 
-#### Run Nginx using the configuration file [Nginx.Config](https://github.com/RainbowZephyr/scalable-app/blob/integration/loadbalancer/nginx.edited).
+#### Run RabbitMQ by doing the following
+Inside the rabbitMQ archive Downloaded (from a terminal)
+`cd sbin`
+`./rabbitmq-server start` to start the server
+
+### Load Balancer
+#### Automatic Installation
+###### Load Balancer Docker Image
+  First start RabbitMqServer, then run the following command from a terminal
+  `docker run -it -d --name nginx --net=host abdoofathy/nginx_clojure:1.0`
+  this downloads and runs the image detached and on the device. 
+#### NOTE: You can skip the manual section if you got the load balancer running with docker image.
+
+#### Manualy Installation
+##### Run Nginx using the configuration file [Nginx.Config](https://github.com/RainbowZephyr/scalable-app/blob/integration/loadbalancer/nginx.edited).
 `sudo nginx` & to stop it `sudo nginx -s stop`
 ##### make sure that the config file is edited to match your machine
 so edit the following.
@@ -31,15 +45,9 @@ and the libraries installed by maven on your device separated by `:`
 11. com/google/code/gson/gson/2.8.0/
 12. commons-lang/commons-lang/2.6/
 
-### I will try to put a docker image that includes all that (but no promises)
+### Check the docker image if that's too much.
 
-#### Run RabbitMQ by doing the following
-Inside the rabbitMQ archive Downloaded (from a terminal)
-`cd sbin`
-`./rabbitmq-server start` to start the server
-
-
-#### For ** Search Team ** , To run TitanDB do the following
+#### For **Search Team** , To run TitanDB do the following
 Inside the titan archive downloaded (from a terminal)
 `cd bin`
 `./titan.sh` this starts titan with the default cassandra db & elasticsearch provided with titan in the archive you downloaded. (check link above)
