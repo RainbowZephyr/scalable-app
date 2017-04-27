@@ -18,7 +18,9 @@ Inside the rabbitMQ archive Downloaded (from a terminal)
 ###### Load Balancer Docker Image
   First start RabbitMqServer, then run the following command from a terminal
   `docker run -it -d --name nginx --net=host abdoofathy/nginx_clojure:1.0`
-  this downloads and runs the image detached and on the device. 
+  this downloads and runs the image detached and on the device.
+  To stop the load balancer use `docker stop nginx` & to start again `docker start nginx`.
+  the image gets saved so when you restart the device you can do  `docker start nginx` & it should work normally.
 #### NOTE: You can skip the manual section if you got the load balancer running with docker image.
 ***
 #### Manual Installation
