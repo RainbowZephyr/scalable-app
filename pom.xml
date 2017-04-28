@@ -4,11 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
     <groupId>guc.edu.scalable</groupId>
     <artifactId>scalable</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <repositories>
+        <repository>
+            <id>clojars.org</id>
+            <url>http://clojars.org/repo</url>
+        </repository>
+    </repositories>
     <dependencies>
+    
         <!-- RabbitMQ Client -->
         <dependency>
             <groupId>com.rabbitmq</groupId>
@@ -17,10 +25,33 @@
         </dependency>
 
         <!-- Netty Server Library -->
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>0.10.2.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/nginx-clojure/nginx-clojure -->
+        <dependency>
+            <groupId>com.codesnippets4all</groupId>
+            <artifactId>quick-json</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+
+
+        <!--ThreadPool Library-->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>4.1.9.Final</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
 
         <!--Unit Testing Library-->
@@ -37,6 +68,17 @@
             <artifactId>gson</artifactId>
             <version>2.8.0</version>
         </dependency>
+        <dependency>
+            <groupId>nginx-clojure</groupId>
+            <artifactId>nginx-clojure</artifactId>
+            <version>0.4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.0.45.Final</version>
+        </dependency>
+
 
         <!-- Used for SerializationUtils -->
         <dependency>
