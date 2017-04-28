@@ -174,6 +174,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		closeDB();
 		return response.toJson();
 
 	}
@@ -205,6 +206,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 			response = new Response(ResponseCodes.STATUS_DATA_BASE_ERROR);
 		}
+		closeDB();
 		return response.toJson();
 	}
 
@@ -225,6 +227,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		Response response = new Response(ResponseCodes.STATUS_OK);
+		closeDB();
 		return response.toJson();
 	}
 
@@ -263,7 +266,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		closeDB();
 		return response.toJson();
 	}
 
@@ -290,6 +293,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		Response response = new Response(ResponseCodes.STATUS_OK);
+		closeDB();
 		return response.toJson();
 	}
 
@@ -311,6 +315,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		Response response = new Response(ResponseCodes.STATUS_OK);
+		closeDB();
 		return response.toJson();
 	}
 
@@ -332,6 +337,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		Response response = new Response(ResponseCodes.STATUS_OK);
+		closeDB();
 		return response.toJson();
 	}
 
@@ -353,6 +359,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			e.printStackTrace();
 		}
 		Response response = new Response(ResponseCodes.STATUS_OK);
+		closeDB();
 		return response.toJson();
 	}
 
@@ -378,7 +385,16 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		connection.init(parameters);
 		DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
 		Response response = new Response(ResponseCodes.STATUS_OK);
+		closeDB();
 		return response.toJson();
+	}
+
+	private void closeDB(){
+		try {
+			db.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

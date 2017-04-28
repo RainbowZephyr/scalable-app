@@ -1,12 +1,6 @@
 
 function sendPostRequest(url, data, success, error) {
-  $.ajax({
-    async: true,
-    crossDomain: true,
-    url: url,
-    method: "POST",
-    dataType: "JSON",
-    processData: false,
+  $.post(url, {
     data: data,
     success: success,
     error: error
