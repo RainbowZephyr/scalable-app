@@ -3,6 +3,7 @@ package datastore.datastores;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class JDBC {
 
@@ -11,6 +12,8 @@ public class JDBC {
 		
 	}
 	protected Connection Connect(String dbURL,String user, String pass){
+//		Statement con = null;
+
 		System.out.println("-------- PostgreSQL "
 				+ "JDBC Connection Testing ------------");
 
@@ -35,6 +38,7 @@ public class JDBC {
 			
 			connection = DriverManager.getConnection(
 					dbURL, user,pass);
+	        
 
 		} catch (SQLException e) {
 

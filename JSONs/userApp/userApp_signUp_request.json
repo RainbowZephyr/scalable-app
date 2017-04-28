@@ -3,7 +3,7 @@
   "recieving_app_id": "",
   "service_type": "signupUser",
   "request_parameters": {
-    "email": "heba@test.com",
+    "email": "rania@test.com",
     "password": "password",
     "firstName": "heba",
     "lastName": "salama",

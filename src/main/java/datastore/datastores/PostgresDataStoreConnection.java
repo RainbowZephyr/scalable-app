@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -31,9 +33,11 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 	@Override
 	public StringBuffer execute(Map<String, Object> parameters)
 			throws Exception {
+		System.out.println("In Execute");
 		LoadPostGresProperties();
 		String action = (String) parameters.get("action");
 		if (action == "loginUser") {
+			System.out.println("In Execute Login");
 			String email = (String) parameters.get("email");
 			String hashedPassword = (String) parameters.get("password");
 			// hashedpassword should be decrypted
@@ -55,18 +59,18 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 
 		if (action == "removeFriend") {
-			int user1id = (Integer) parameters.get("user1ID");
-			int user2id = (Integer) parameters.get("user2ID");
+			int user1id = Integer.parseInt((String) parameters.get("user1ID"));
+			int user2id = Integer.parseInt((String) parameters.get("user2ID"));
 
 			return removeFriend(user1id, user2id);
 		}
 
 		if (action == "getUser") {
-			int userID = (Integer) parameters.get("user_id");
-
+			int userID =  Integer.parseInt((String) parameters.get("user_id"));
 			return getUser(userID);
 		}
 		if (action == "editProfile") {
+			SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
 			String email = (String) parameters.get("email");
 			String hashedPassword = (String) parameters.get("oldpassword");
 			String newPassword = (String) parameters.get("newpassword");
@@ -74,36 +78,35 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			String newFirstName = (String) parameters.get("newfirstName");
 			String lastName = (String) parameters.get("lastName");
 			String newLastName = (String) parameters.get("newlastName");
-			Date dateOfBirth = (Date) parameters.get("dateOfBirth");
-			Timestamp createdAt = (Timestamp) parameters.get("createdAt");
-
+			String dateOfBirth = (String) parameters.get("dateOfBirth");
+			java.util.Date date = sdf1.parse(dateOfBirth);
+			java.sql.Date sqlDOB = new java.sql.Date(date.getTime());  
 			editProfile(email, hashedPassword, newPassword, firstName,
-					newFirstName, lastName, newLastName, dateOfBirth, createdAt);
-
+					newFirstName, lastName, newLastName, sqlDOB);
 		}
 
 		if (action == "declineFriendRequest") {
-			int user1id = (Integer) parameters.get("user1ID");
-			int user2id = (Integer) parameters.get("user2ID");
+			int user1id = Integer.parseInt((String) parameters.get("user1ID"));
+			int user2id = Integer.parseInt((String) parameters.get("user2ID"));
 
 			return declineFriend(user1id, user2id);
 		}
 
 		if (action == "addFriend_request") {
-			int user1id = (Integer) parameters.get("user1ID");
-			int user2id = (Integer) parameters.get("user2ID");
-
+			int user1id = Integer.parseInt((String) parameters.get("user1ID"));
+			int user2id = Integer.parseInt((String) parameters.get("user2ID"));
+			
 			return addFriend(user1id, user2id);
 		}
 
 		if (action == "acceptFriendRequest") {
-			int user1id = (Integer) parameters.get("user1ID");
-			int user2id = (Integer) parameters.get("user2ID");
+			int user1id = Integer.parseInt((String) parameters.get("user1ID"));
+			int user2id = Integer.parseInt((String) parameters.get("user2ID"));
 
 			return acceptFriend(user1id, user2id);
 		}
 
-		if (action == "logOut_request") {
+		if (action == "logOut") {
 
 			int sessionID = (Integer) parameters.get("sessionID");
 			return logoutUser(sessionID);
@@ -113,6 +116,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 	}
 
 	protected void LoadPostGresProperties() throws IOException, ClassNotFoundException {
+		System.out.println("In LoadPostGresProperties");
 		        Properties prop = new Properties();
 		        Statement con = null;
 		        InputStream in = new FileInputStream("config/postgres_config.properties");
@@ -126,29 +130,14 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		        dbUrl = dbUrl+host+":"+port+"/"+prop.get("dbname");
 		        JDBC jdbc = new JDBC();
 		        db = jdbc.Connect(dbUrl,username, password);
-//		        try {
-//					con = db.createStatement();
-//				} catch (SQLException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//		        Response response;
-//				try {
-//					String query = "DELETE FROM User";
-//					con.executeQuery(query);
-//					response = new Response(ResponseCodes.STATUS_OK);
-//				} catch (SQLException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//					response = new Response(ResponseCodes.STATUS_DATA_BASE_ERROR);
-//				}
+
 		    }
 
 	private StringBuffer loginUser(String email, String hashedPassword)
 			throws InstantiationException, IllegalAccessException {
+		System.out.println("In LoginUser");
 		Statement con = null;
 		// Response response = new Response(ResponseCodes.STATUS_OK);
-
 		try {
 			con = db.createStatement();
 		} catch (SQLException e) {
@@ -158,9 +147,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		ResultSet result;
 		Response response = null;
 		try {
-			result = con.executeQuery("SELECT * FROM member WHERE email = "
-					+ email + "AND password_hash = " + hashedPassword + "LIMIT 1");
-			result.beforeFirst();
+			result = con.executeQuery("SELECT * FROM member WHERE email = '"
+					+ email + "' AND password_hash = '" + hashedPassword + "' LIMIT 1;");
 			response = new Response(ResponseCodes.STATUS_OK);
 			if (result.next()) {
 				int id = result.getInt("id");
@@ -236,8 +224,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 		ResultSet result;
 		try {
-			result = con.executeQuery("DELETE FROM friends WHERE user_1 = "
-					+ user1id + "AND user_2 =" + user2id);
+			result = con.executeQuery("DELETE FROM friends WHERE user_1 = '"
+					+ user1id + "' AND user_2 ='" + user2id+"'");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -259,8 +247,6 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		try {
 			result = con.executeQuery("SELECT * FROM member WHERE  id  = "
 					+ userID);
-			result.beforeFirst();
-
 			if (result.next()) {
 				String email = result.getString("email");
 				String firstName = result.getString("first_name");
@@ -287,8 +273,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 
 	private StringBuffer editProfile(String email, String hashedPassword,
 			String newPassword, String firstName, String newFirstname,
-			String lastName, String newLastname, Date dateOfBirth,
-			Timestamp createdAt) {
+			String lastName, String newLastname, Date sqlDOB) {
 		Statement con = null;
 		try {
 			con = db.createStatement();
@@ -298,11 +283,11 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 		ResultSet result;
 		try {
-			result = con.executeQuery("UPDATE member SET password_hash ="
-					+ newPassword + "AND first_name = " + newFirstname
-					+ "AND last_name =" + newLastname + "WHERE first_name= "
-					+ firstName + "AND last_name=" + lastName + "AND email ="
-					+ email);
+			result = con.executeQuery("UPDATE member SET password_hash ='"
+					+ newPassword + "' , first_name = '" + newFirstname
+					+ "' , last_name ='" + newLastname + "' WHERE first_name= '"
+					+ firstName + "' AND last_name= '" + lastName + "' AND email ='"
+					+ email+"';");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -322,8 +307,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		ResultSet result;
 		try {
 			result = con
-					.executeQuery("UPDATE friends SET accepted = 0 WHERE  user_1 ="
-							+ user1id + "AND user_2 = " + user2id);
+					.executeQuery("UPDATE friends SET accepted = false WHERE user_1 ='"
+							+ user1id + "' AND user_2 = '" + user2id+"'");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -333,6 +318,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 	}
 
 	private StringBuffer addFriend(int user1id, int user2id) {
+		System.out.println("");
 		Statement con = null;
 		try {
 			con = db.createStatement();
@@ -343,8 +329,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		ResultSet result;
 		try {
 			result = con
-					.executeQuery("INSERT INTO `friends`(user_1,user_2,accepted) VALUES ("
-							+ user1id + "','" + user2id + "',' 0" + "')");
+					.executeQuery("INSERT INTO friends (user_1,user_2,accepted) VALUES ('"
+							+ user1id + "', '" + user2id + "', ' 0" + "');");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -364,8 +350,8 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		ResultSet result;
 		try {
 			result = con
-					.executeQuery("UPDATE friends SET accepted = 1 WHERE  user_1 ="
-							+ user1id + "AND user_2 = " + user2id);
+					.executeQuery("UPDATE friends SET accepted = true WHERE  user_1 = '"
+							+ user1id + "' AND user_2 = '" + user2id+"'");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

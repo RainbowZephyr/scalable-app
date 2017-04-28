@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS member CASCADE;
 CREATE TABLE member (
-  id            SERIAL PRIMARY KEY ,
+  id            SERIAL PRIMARY KEY ON DELETE CASCADE,
   email         VARCHAR UNIQUE NOT NULL,
   password_hash VARCHAR        NOT NULL,
   first_name    VARCHAR        NOT NULL,

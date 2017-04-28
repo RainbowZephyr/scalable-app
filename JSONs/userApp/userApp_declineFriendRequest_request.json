@@ -1,10 +1,10 @@
-﻿ï»¿{
+﻿{
   "session_id": "",
   "app_id": "",
   "recieving_app_id": "",
   "service_type": "declineFriendRequest",
   "request_parameters": {
-    "user1ID": "",
-    "user2ID": "",
+    "user1ID": "5",
+    "user2ID": "1"
   }
 }	

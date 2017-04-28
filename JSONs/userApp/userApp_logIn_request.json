@@ -2,9 +2,9 @@
   "app_id": "",
   "session_id": "",
   "recieving_app_id": "",
-  "service_type": "logIn",
+  "service_type": "loginUser",
   "request_parameters": {
-    "email": "",
-    "password": "",
+    "email": "heba@test.com",
+    "password": "password"
   }
 }	

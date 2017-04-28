@@ -1,17 +1,17 @@
-﻿ï»¿{
+﻿{
   "session_id": "",
   "app_id": "",
   "recieving_app_id": "",
   "service_type": "editProfile",
   "request_parameters": {
-    "oldpassword": "",
-    "newpassword": "",
-    "email": "",
-    "firstName": "",
-    "newfirstName": "",
-    "lastName": "",
-     "newlastName": "",
-    "dateOfBirth": "",
-    "createdAt": "",
+    "oldpassword": "password",
+    "newpassword": "test",
+    "email": "hebasalama@test.com",
+    "firstName": "heba",
+    "newfirstName": "RANIA",
+    "lastName": "salama",
+    "newlastName": "MONEM",
+    "dateOfBirth": "2001-09-28" ,
+    "createdAt": ""
   }
 } 
