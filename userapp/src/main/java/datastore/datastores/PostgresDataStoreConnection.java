@@ -113,7 +113,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 
 	protected void LoadPostGresProperties() throws IOException, ClassNotFoundException {
 		        Properties prop = new Properties();
-		        InputStream in = new FileInputStream("config/postgres_config.properties");
+		        InputStream in = new FileInputStream("userapp/config/postgres_config.properties");
 		        prop.load(in);
 		        in.close();
 		        String dbUrl = "jdbc:postgresql://";
@@ -140,9 +140,9 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		ResultSet result;
 		Response response = null;
 		try {
-			result = con.executeQuery("SELECT * FROM member WHERE email = "
-					+ email + "AND password_hash = " + hashedPassword + "LIMIT 1");
-			result.beforeFirst();
+			result = con.executeQuery("SELECT * FROM member WHERE email ="
+					+ "'" +email +"'" + "AND password_hash = " + "'"+ hashedPassword +"'" + "LIMIT 1");
+
 			response = new Response(ResponseCodes.STATUS_OK);
 			if (result.next()) {
 				int id = result.getInt("id");

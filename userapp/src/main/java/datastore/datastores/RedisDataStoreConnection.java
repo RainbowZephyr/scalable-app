@@ -11,14 +11,14 @@ public class RedisDataStoreConnection extends  DataStoreConnection{
 	Jedis jedis;
 	@Override
 	public StringBuffer execute(Map<String, Object> parameters) throws Exception {
-		 jedis = new Jedis("localhost");  //TODO redis client address 
+		 jedis = new Jedis("localhost");  //TODO redis client address
 		String action = (String) parameters.get("action");
 		if(action == null){
 			return badRequest();
 		}
 		if(action.equals("addSession")){
 			String sessionId = (String) parameters.get("sessionId");
-			String userId = (String) parameters.get("userId");
+			String userId = parameters.get("userId")+"";
 			if(sessionId == null || userId == null){
 				return badRequest();
 			}
@@ -78,5 +78,9 @@ public class RedisDataStoreConnection extends  DataStoreConnection{
 		response.addProperty("responseCode", ResponseCodes.STATUS_BAD_REQUEST);
 		return new StringBuffer(response.toString());
 	}
-	
+
+	@Override
+	protected boolean shouldReturnResponse() {
+		return false;
+	}
 }

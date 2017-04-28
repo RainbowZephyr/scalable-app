@@ -25,7 +25,10 @@ public abstract class DataStoreConnection implements Runnable {
             StringBuffer strBuffer = execute(parameters);
             RequestHandle requestHandle = (RequestHandle)
                     parameters.get(RequestHandle.class.getSimpleName());
-            requestHandle.send(strBuffer, parameters);
+            if (shouldReturnResponse()) {
+                // send response to the queue
+                requestHandle.send(strBuffer, parameters);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -33,5 +36,9 @@ public abstract class DataStoreConnection implements Runnable {
 
     public void init(Map<String, Object> parameters) {
         this.parameters = parameters;
+    }
+
+    protected boolean shouldReturnResponse() {
+        return true;
     }
 }
