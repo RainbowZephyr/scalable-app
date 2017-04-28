@@ -79,3 +79,10 @@ Example to run two instances of user app.
 7. Send a post request using curl, Insomnia or postman, the jsons are included within each folder under JSONs directory
 8. By default the controller is waiting for AdminRequests on port 4001, so send AdminRequests on `http://127.0.0.1:4001/`
 9. By default the load balancer is waiting for requests on Port 80, so send ApplicationRequests on `http://127.0.0.1:80/java`
+
+
+#### To test using browser you need nodejs installed
+### NOTE: please make sure that rabbitMQ, docker image (nginx), and the app that's intended to be tested are running in that order.
+1. install express.
+2. from inside the folder [frontend-server](https://github.com/RainbowZephyr/scalable-app/tree/integration/frontend-server) run the following command `node frontend-server.js`.
+3. you should see that the app is listening on port 3000, now you can use the app from the browser.
