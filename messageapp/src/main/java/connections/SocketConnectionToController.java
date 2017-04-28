@@ -59,7 +59,7 @@ public class SocketConnectionToController implements SocketConnection {
         this.ctx = ctx;
     }
 
-    @Override
+
     public void sendMessage(String response, Map<String, Object> additionalParams) throws IOException {
         response += "\n";
         ctx.writeAndFlush(response);

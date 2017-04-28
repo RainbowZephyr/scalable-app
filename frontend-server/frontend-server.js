@@ -23,7 +23,7 @@ app.use(function(req, res, next) {
 
 app.get('/', function (req, res) {
   // if user not logged in (redirect to login)
-  console.log("SESSION",req.session.sessionId , !req.session.sessionId );
+
   if(!req.session.sessionId){
     res.redirect('/login');
   }else{
@@ -32,7 +32,6 @@ app.get('/', function (req, res) {
 })
 
 app.get('/login', function (req, res) {
-  console.log('sessionId',req.session.sessionId);
   // if user has a valid session id then redirect to home
   if(req.session.sessionId){
     res.redirect('/');
@@ -91,11 +90,11 @@ app.post('/register', function (req, res) {
           "password": req.body.password,
           "firstName": req.body.firstName,
           "lastName": req.body.lastName,
-          "dateOfBirth": req.body.date,
+          "dateOfBirth": req.body.dateOfBirth,
           "createdAt": Date.now()
         }
       });
-
+      console.log(data);
       helpers.sendPostRequest(data,
         function(result){
           let jsonObject = JSON.parse(result);

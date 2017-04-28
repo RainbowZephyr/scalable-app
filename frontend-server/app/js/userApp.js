@@ -20,11 +20,11 @@ $('#signup').submit(function (e){
   e.preventDefault();
   let email = $('#signupInputEmail1').val();
   let pass =  $('#signupInputPassword1').val();
-  let rePass = $('#signupInputRePassword1').val();
+  let repass = $('#signupInputRePassword1').val();
   let firstName = $('#signupInputFirstName1').val();
   let lastName = $('#signupInputFirstName1').val();
   let dateOfBirth = $('#signupInputDateOfBirth1').val();
-
+  
   if(pass === repass){
    let req = {
            url: '/register',

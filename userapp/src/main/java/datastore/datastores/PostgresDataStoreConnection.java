@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -46,9 +47,12 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			String lastName = (String) parameters.get("lastName");
 			String dateString = (String) parameters.get("dateOfBirth");
 			Date dateOfBirth = Date.valueOf(dateString);
-			String createdAtString = (String) parameters.get("createdAt");
-			Timestamp createdAt = Timestamp.valueOf(createdAtString);
-
+			double createdAtString = Double.parseDouble(parameters.get("createdAt")+"");
+			Date itemDate = new Date((long) createdAtString);
+			String itemDateStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").
+					format(itemDate);
+			Timestamp createdAt = Timestamp.valueOf(itemDateStr);
+			
 			return signupUser(email, hashedPassword, firstName, lastName,
 					dateOfBirth, createdAt);
 		}
