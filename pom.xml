@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,35 +16,27 @@
         </repository>
     </repositories>
     <dependencies>
+        <!-- RabbitMQ Client -->
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>2.9.0</version>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>4.1.0</version>
         </dependency>
+
+        <!-- Netty Server Library -->        
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
             <version>0.10.2.0</version>
         </dependency>
 
-<<<<<<< Updated upstream
         <!-- https://mvnrepository.com/artifact/nginx-clojure/nginx-clojure -->
-=======
         <dependency>
             <groupId>com.codesnippets4all</groupId>
             <artifactId>quick-json</artifactId>
             <version>1.0.4</version>
         </dependency>
->>>>>>> Stashed changes
-        <dependency>
-            <groupId>nginx-clojure</groupId>
-            <artifactId>nginx-clojure</artifactId>
-            <version>0.4.4</version>
-        </dependency>
 
-
-
-<<<<<<< Updated upstream
         <!--ThreadPool Library-->
         <dependency>
             <groupId>io.netty</groupId>
@@ -78,14 +70,43 @@
             <artifactId>nginx-clojure</artifactId>
             <version>0.4.4</version>
         </dependency>
-=======
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>4.0.45.Final</version>
         </dependency>
 
->>>>>>> Stashed changes
+
+        <!-- Used for SerializationUtils -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <!-- Apache Common IO -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+		<!-- Jedis, redis client -->
+		<dependency>
+		    <groupId>redis.clients</groupId>
+		    <artifactId>jedis</artifactId>
+		    <version>2.9.0</version>
+		    <type>jar</type>
+		    <scope>compile</scope>
+		</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+<dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <version>42.0.0</version>
+</dependency>
+
 
     </dependencies>
 

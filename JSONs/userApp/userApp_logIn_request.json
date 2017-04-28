@@ -1,10 +1,10 @@
 ﻿{
-	"session_id":"",
-	"app_id": "" ,
-	"recieving_app_id": "",
-       "service_type":"logIn",
-	"request_parameters": {
-       	"userName":"",
-       	"passWord":"",
-        }
+  "app_id": "",
+  "session_id": "",
+  "recieving_app_id": "",
+  "service_type": "loginUser",
+  "request_parameters": {
+    "email": "heba@test.com",
+    "password": "password"
+  }
 }	
