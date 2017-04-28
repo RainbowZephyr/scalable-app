@@ -7,6 +7,7 @@ For Linux & Unix
 1. Message Queue [RabbitMQ](https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.9/rabbitmq-server-generic-unix-3.6.9.tar.xz).
 2. Load Balancer [Nginx-Clojure](https://nginx-clojure.github.io/quickstart.html).
 3. To Be Able To Run Search **SEARCH TEAM ONLY** , Download [Titan](http://s3.thinkaurelius.com/downloads/titan/titan-1.0.0-hadoop1.zip).
+4. Install Redis. `docker run --name redis -p 6379:6379 -d redis:3.0-alpine` (you must have docker installed first)
 
 #### Run RabbitMQ by doing the following
 Inside the rabbitMQ archive Downloaded (from a terminal)
