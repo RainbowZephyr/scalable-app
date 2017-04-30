@@ -120,7 +120,7 @@ app.post('/register', function (req, res) {
   }
 })
 
-app.get('/friend/edit_profile', function (req, res) {
+app.get('/user/edit_profile', function (req, res) {
   if(!req.session.sessionId){
     res.redirect('/');
   }else{
@@ -128,16 +128,17 @@ app.get('/friend/edit_profile', function (req, res) {
   }
 })
 
-app.post('/friend/edit_profile', function (req, res) {
+app.post('/user/edit_profile', function (req, res) {
   // if user is logged in then redirect home
   if(!req.session.sessionId){
     res.redirect('/');
   }else{
     let data = JSON.stringify(
       {
+        "session_id": req.session.sessionId,
         "app_id": "",
         "receiving_app_id": "user",
-        "service_type": "signupUser",
+        "service_type": "editProfile",
         "request_parameters": {
 
         }
@@ -146,11 +147,11 @@ app.post('/friend/edit_profile', function (req, res) {
         function(result){
           let jsonObject = JSON.parse(result);
           if(jsonObject.response_status == 404){
-            res.send({redirect: '/edit_profile'}); // send errors lw 7abeb (user not found)
+            res.send({redirect: '/edit_profile'}); // send errors lw 7abeb
           }else{
             // should send a request to add user to graph
             console.log(jsonObject.id);
-            res.send({redirect: '/'}); // redirect to login
+            res.send({redirect: '/'}); // redirect to home
           }
       });
   }
@@ -163,22 +164,22 @@ app.post('/friend/add_request', function (req, res) {
   }else{
     let data = JSON.stringify(
       {
+        "session_id":req.session.sessionId,
         "app_id": "",
         "receiving_app_id": "user",
-        "service_type": "signupUser",
+        "service_type": "addFriend",
         "request_parameters": {
-
+          "user1ID": req.session.userId,
+          "user2ID": req.body.friendUserId
         }
       });
       helpers.sendPostRequest(data,
         function(result){
-          let jsonObject = JSON.parse(result);
           if(jsonObject.response_status == 404){
-            res.send({redirect: '/register'}); // send errors lw 7abeb (user not found)
+            res.send({redirect: '/'}); // send errors lw 7abeb (req not sent)
           }else{
             // should send a request to add user to graph
-            console.log(jsonObject.id);
-            res.send({redirect: '/login'}); // redirect to login
+            // show message user req sent
           }
       });
   }
@@ -192,11 +193,13 @@ app.post('/friend/accept_request', function (req, res) {
   }else{
     let data = JSON.stringify(
       {
+        "session_id":req.session.sessionId,
         "app_id": "",
         "receiving_app_id": "user",
-        "service_type": "signupUser",
+        "service_type": "acceptFriendRequest",
         "request_parameters": {
-
+          "user1ID": req.session.userId,
+          "user2ID": req.body.friendUserId
         }
       });
       helpers.sendPostRequest(data,
@@ -221,11 +224,13 @@ app.post('/friend/decline_request', function (req, res) {
   }else{
     let data = JSON.stringify(
       {
+        "session_id":req.session.sessionId,
         "app_id": "",
         "receiving_app_id": "user",
-        "service_type": "signupUser",
+        "service_type": "declineFriendRequest",
         "request_parameters": {
-
+          "user1ID": req.session.userId,
+          "user2ID": req.body.friendUserId
         }
       });
       helpers.sendPostRequest(data,
@@ -243,10 +248,37 @@ app.post('/friend/decline_request', function (req, res) {
 })
 
 
+app.post('/friend/remove_friend', function (req, res) {
+  // if user is logged in then redirect home
+  if(req.session.sessionId){
+    res.redirect('/');
+  }else{
+    let data = JSON.stringify(
+      {
+        "session_id":req.session.sessionId,
+        "app_id": "",
+        "receiving_app_id": "user",
+        "service_type": "removeFriend",
+        "request_parameters": {
+          "user1ID": req.session.userId,
+          "user2ID": req.body.friendUserId
+        }
+      });
+      helpers.sendPostRequest(data,
+        function(result){
+          let jsonObject = JSON.parse(result);
+          if(jsonObject.response_status == 404){
+            res.send({redirect: '/register'}); // send errors lw 7abeb (user not found)
+          }else{
+            // should send a request to add user to graph
+            console.log(jsonObject.id);
+            res.send({redirect: '/login'}); // redirect to login
+          }
+      });
+  }
+})
 
-
-
-app.post('/search', function(req, res){
+app.post('/search/user', function(req, res){
 
   let data = JSON.stringify(
     {
@@ -256,6 +288,48 @@ app.post('/search', function(req, res){
     "request_parameters":
       {
         "user_name": req.body.query
+      }
+    }
+  );
+  console.log(data);
+  helpers.sendPostRequest(data,
+    function(result){
+      res.send(result);
+  });
+})
+
+app.post('/search/friendsUpTo', function(req, res){
+
+  let data = JSON.stringify(
+    {
+    "session_id": req.session.sessionId,
+    "receiving_app_id": "search",
+    "service_type": "get_friends_up_to",
+    "request_parameters":
+      {
+        "user_id": req.session.sessionId,
+        "at": req.body.at
+      }
+    }
+  );
+  console.log(data);
+  helpers.sendPostRequest(data,
+    function(result){
+      res.send(result);
+  });
+})
+
+app.post('/search/friendsAt', function(req, res){
+
+  let data = JSON.stringify(
+    {
+    "session_id": req.session.sessionId,
+    "receiving_app_id": "search",
+    "service_type": "get_friends_at",
+    "request_parameters":
+      {
+        "user_id": req.session.sessionId,
+        "at": req.body.at
       }
     }
   );

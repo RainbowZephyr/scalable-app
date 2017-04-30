@@ -315,7 +315,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		ResultSet result;
 		try {
 			result = con
-					.executeQuery("UPDATE friends SET accepted = 0 WHERE  user_1 ="
+					.executeQuery("UPDATE friends SET accepted = 2 WHERE  user_1 ="
 							+ user1id + "AND user_2 = " + user2id);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
