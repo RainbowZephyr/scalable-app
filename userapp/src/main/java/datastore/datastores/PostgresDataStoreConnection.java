@@ -52,7 +52,7 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 			String itemDateStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").
 					format(itemDate);
 			Timestamp createdAt = Timestamp.valueOf(itemDateStr);
-			
+
 			return signupUser(email, hashedPassword, firstName, lastName,
 					dateOfBirth, createdAt);
 		}
@@ -202,9 +202,12 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 					+ "'" + firstName + "',"
 					+ "'" + lastName + "',"
 					+ "'" + dateOfBirth + "',"
-					+ "'" + createdAt + "')";
-			con.execute(query); // use Execute if inserting (executeQuery otherwise)
+					+ "'" + createdAt + "') RETURNING ID";
+			ResultSet rs = con.executeQuery(query); // use Execute if inserting (executeQuery otherwise)
+			rs.next();
+			long id = rs.getInt(1);
 			response = new Response(ResponseCodes.STATUS_OK);
+			response.addToResponse("id", id);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

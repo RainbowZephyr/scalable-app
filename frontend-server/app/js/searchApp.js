@@ -1,10 +1,5 @@
-function onSuccess(result){
-  // display users
+function onError(result){
   console.log(result);
-  // send a request to the user app to get users names (result is an array of ids)
-
-  // on the callback of that show results
-  renderResults(result.response_body.results);
 }
 
 // renders result to html
@@ -29,7 +24,6 @@ function renderResults(results){
        "</div>"+
     "</div>"
   }
-  console.log(result);
   content.append(result);
 }
 
@@ -42,21 +36,21 @@ function onError(error){
 $('#search').submit(function (e){
   e.preventDefault();
   // let session_id = helpers.getSessionId();
-  let session_id = 1;
   let searchQuery = $('#searchData').val();
   // clear it
   $('#searchData').val('');
 
-  let data = JSON.stringify(
-    {
-    "session_id": "",
-    "receiving_app_id": "search",
-    "service_type": "search_by_name",
-    "request_parameters":
-      {
-        "user_name": searchQuery
-      }
-    }
-  );
-  sendPostRequest('http://127.0.0.1/java', data, onSuccess, onError);
+  let req = {
+          url: '/search',
+          type: 'POST',
+          data: {
+            query: searchQuery
+          },
+          success: function (response) {
+            response = JSON.parse(response);
+              renderResults(response.response_body.results);
+          },
+          error: onError
+        };
+    $.ajax(req);
 });

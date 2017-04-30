@@ -17,7 +17,7 @@ public final class Constants {
             IS_ADMIN_COMMAND_KEY = "is_admin_command",
             RESPONSE_STATUS_KEY = "response_status",
             CORRELATION_ID_KEY = "correlation_id";
-    public final static int SPECIAL_PORT = 6002;
+    public final static int SPECIAL_PORT = 6003;
     public static String APPLICATION_ID = "ACTUAL APPLICATION ID SHOULD BE HERE INSTEAD";
 
     public static void setAppId(String appId){

@@ -24,7 +24,7 @@ $('#signup').submit(function (e){
   let firstName = $('#signupInputFirstName1').val();
   let lastName = $('#signupInputFirstName1').val();
   let dateOfBirth = $('#signupInputDateOfBirth1').val();
-  
+
   if(pass === repass){
    let req = {
            url: '/register',
@@ -49,3 +49,14 @@ function redirect(data){
     window.location = data.redirect
   }
 }
+
+$('#logout').click(function (e){
+  let req = {
+          url: '/logout',
+          type: 'POST',
+          success: function (response) {
+            redirect(response);
+          }
+        };
+  $.ajax(req);
+})
