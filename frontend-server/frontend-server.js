@@ -128,6 +128,34 @@ app.get('/user/edit_profile', function (req, res) {
   }
 })
 
+app.post('/user/get', function(req, res){
+  // send req to user app
+  if(!req.session.sessionId){
+    res.redirect('/');
+  }else{
+    let data = JSON.stringify(
+      {
+        "session_id": req.session.sessionId,
+        "app_id": "",
+        "receiving_app_id": "user",
+        "service_type": "getUser",
+        "request_parameters": {
+          "user_id": req.body.userId
+        }
+      });
+      helpers.sendPostRequest(data,
+        function(result){
+          let jsonObject = JSON.parse(result);
+          if(jsonObject.response_status == 404){
+            res.send({redirect: '/'}); // send errors lw 7abeb
+          }else{
+            // should send a request to add user to graph
+            res.send(jsonObject);    
+          }
+      });
+  }
+})
+
 app.post('/user/edit_profile', function (req, res) {
   // if user is logged in then redirect home
   if(!req.session.sessionId){
@@ -279,23 +307,25 @@ app.post('/friend/remove_friend', function (req, res) {
 })
 
 app.post('/search/user', function(req, res){
-
-  let data = JSON.stringify(
-    {
-    "session_id": req.session.sessionId,
-    "receiving_app_id": "search",
-    "service_type": "search_by_name",
-    "request_parameters":
+  if(!req.session.sessionId){
+    res.redirect('/');
+  }else{
+    let data = JSON.stringify(
       {
-        "user_name": req.body.query
+      "session_id": req.session.sessionId,
+      "receiving_app_id": "search",
+      "service_type": "search_by_name",
+      "request_parameters":
+        {
+          "user_name": req.body.query
+        }
       }
-    }
-  );
-  console.log(data);
-  helpers.sendPostRequest(data,
-    function(result){
-      res.send(result);
-  });
+    );
+    helpers.sendPostRequest(data,
+      function(result){
+        res.send(result);
+    });
+  }
 })
 
 app.post('/search/friendsUpTo', function(req, res){
@@ -312,7 +342,6 @@ app.post('/search/friendsUpTo', function(req, res){
       }
     }
   );
-  console.log(data);
   helpers.sendPostRequest(data,
     function(result){
       res.send(result);
@@ -333,7 +362,7 @@ app.post('/search/friendsAt', function(req, res){
       }
     }
   );
-  console.log(data);
+
   helpers.sendPostRequest(data,
     function(result){
       res.send(result);

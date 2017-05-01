@@ -58,14 +58,14 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		}
 
 		if (action == "removeFriend") {
-			int user1id = (Integer) parameters.get("user1ID");
-			int user2id = (Integer) parameters.get("user2ID");
+			int user1id = (int) Double.parseDouble(parameters.get("user1ID")+"");
+			int user2id = (int) Double.parseDouble(parameters.get("user2ID")+"");
 
 			return removeFriend(user1id, user2id);
 		}
 
 		if (action == "getUser") {
-			int userID = (Integer) parameters.get("user_id");
+			int userID = (int) Double.parseDouble(parameters.get("user_id")+"");
 
 			return getUser(userID);
 		}
@@ -251,7 +251,6 @@ public class PostgresDataStoreConnection extends DataStoreConnection {
 		try {
 			result = con.executeQuery("SELECT * FROM member WHERE  id  = "
 					+ userID);
-			result.beforeFirst();
 
 			if (result.next()) {
 				String email = result.getString("email");

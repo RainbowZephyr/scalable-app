@@ -6,6 +6,7 @@ import com.thinkaurelius.titan.core.schema.Mapping;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
 import com.thinkaurelius.titan.core.util.TitanCleanup;
 import datastore.DataStoreConnection;
+import javafx.util.Pair;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import services.Response;
@@ -195,13 +196,13 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 	 *            The value to search for.
 	 * @return A list of users (vertices) at most ten, if found.
 	 */
-	private List<Long> searchUserByName(String userName) {
-		List<Long> list = new ArrayList<Long>();
+	private List<Pair<Long,String>> searchUserByName(String userName) {
+		List<Pair<Long, String>> list = new ArrayList<>();
 		Iterable<Result<TitanVertex>> vertices = this.graph.indexQuery(NAME_INDEX, USER_NAME + ":(*" + userName + "*)")
 				.limit(10).vertices();
 
 		for (TitanIndexQuery.Result<TitanVertex> result : vertices) {
-			list.add(result.getElement().value(USER_ID_KEY));
+			list.add(new Pair<>(result.getElement().value(USER_ID_KEY), result.getElement().value(USER_NAME)));
 		}
 		return list;
 	}
