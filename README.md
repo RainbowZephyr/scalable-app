@@ -63,9 +63,9 @@ Each sub app has a separate folder, to run an app make sure that all the above a
 To run an app, run the main method in the main class in the default package.
 #### Running Instance of Each App
 Example to run one instance of user app
-1. Compile Nginx.java & reload nginx service by running the command `sudo nginx -s reload` from a terminal.
-2. Run main.main (main method inside main class of the app).
-3. Send a post request using curl, Insomnia or postman, the jsons are included within each folder under JSONs directory
+1. Compile Nginx.java & reload nginx service by running the command `sudo nginx -s reload` from a terminal (skip this if you go the docker image running).
+2. Run main.main (main method inside main class of the app you want to test).
+3. Send a post request using curl, Insomnia or postman, the jsons are included within each folder under JSONs directory of the app.
 4. By default the controller is waiting for AdminRequests on port 4001, so send AdminRequests on `http://127.0.0.1:4001/`
 5. By default the load balancer is waiting for requests on Port 80, so send ApplicationRequests on `http://127.0.0.1:80/java`
 #### Running Multiple Instances of Each App
