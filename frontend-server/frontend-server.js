@@ -66,6 +66,29 @@ app.post('/login', function(req, res){
   });
 })
 
+app.post('/SearchForThreads', function(req, res){
+  let data = JSON.stringify(
+    {
+    "app_id": "",
+    "receiving_app_id": "message",
+    "service_type": "searchForThreads",
+    "request_parameters": {
+		"nameQuery": req.body.nameQuery
+      }
+    }
+  );
+  helpers.sendPostRequest(data,
+        function(result){
+		  console.log(result);
+          let jsonObject = JSON.parse(result);
+          if(jsonObject.response_status == 404){
+            res.send({redirect: '/'});
+          }else{
+            res.send(jsonObject);    
+          }
+      },(err)=>{console.log(err)});
+})
+
 app.get('/register', function (req, res) {
   // if user is logged in then redirect home
   if(req.session.sessionId){
