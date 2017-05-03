@@ -16,7 +16,7 @@ $('#SearchForThreads').submit(function (e){
 
 $('#createMessageThread').submit(function (e){
   e.preventDefault();
-  let messageThreadName = $('#inputNameQuery').val();
+  let messageThreadName = $('#messageThreadName').val();
   let userId = $('#userId').val();
   let req = {
         url: '/createMessageThread',
