@@ -79,7 +79,6 @@ app.post('/SearchForThreads', function(req, res){
   );
   helpers.sendPostRequest(data,
         function(result){
-		  console.log(result);
           let jsonObject = JSON.parse(result);
           if(jsonObject.response_status == 404){
             res.send({redirect: '/'});

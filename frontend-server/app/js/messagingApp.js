@@ -8,6 +8,8 @@ $('#SearchForThreads').submit(function (e){
           nameQuery: nameQuery
         },
         success: function (response) {
+
+            console.log(response);
           redirect(response);
         }
       };

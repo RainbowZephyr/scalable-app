@@ -263,7 +263,7 @@ public class MongodbDataStoreConnection extends DataStoreConnection {
 	    	properties = new Properties();
 	    	InputStream input = null;
 	    	try {
-				input = new FileInputStream("config/mongodb.properties");
+				input = new FileInputStream("messageapp/config/mongodb.properties");
 				// load a properties file
 		    	properties.load(input);
 			} catch (IOException e) {
