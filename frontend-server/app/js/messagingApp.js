@@ -53,3 +53,37 @@ $('#sendMessage').submit(function (e){
       };
   $.ajax(req);
 });
+
+$('#getUsersInThread').submit(function (e){
+  e.preventDefault();
+  let messageThreadId = $('#messageThreadId').val();
+  let req = {
+        url: '/getUsersInThread',
+        type: 'POST',
+        data: {
+          'messageThreadId': messageThreadId
+        },
+        success: function (response) {
+          redirect(response);
+        }
+      };
+  $.ajax(req);
+});
+
+$('#removeUserFromThread').submit(function (e){
+  e.preventDefault();
+  let messageThreadId = $('#messageThreadId').val();
+  let userId = $('#userId').val();
+  let req = {
+        url: '/removeUserFromThread',
+        type: 'POST',
+        data: {
+          'messageThreadId': messageThreadId,
+          'userId' : userId
+        },
+        success: function (response) {
+          redirect(response);
+        }
+      };
+  $.ajax(req);
+});

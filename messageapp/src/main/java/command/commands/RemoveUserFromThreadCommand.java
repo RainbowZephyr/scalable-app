@@ -20,18 +20,9 @@ public class RemoveUserFromThreadCommand extends Command
 
 		DataStoreConnection connection = (DataStoreConnection) connectionClass.newInstance();
 
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("action", "removeUserFromThread");
+		requestMapData.put("action", "removeUserFromThread");
 
-		String threadId = requestMapData.get("threadId").toString();
-		parameters.put("threadId", threadId);
-
-		String userId = requestMapData.get("userId").toString();
-		parameters.put("userId", userId);
-
-		RequestHandle requestHandle = (RequestHandle) this.parameters.get(RequestHandle.class.getSimpleName());
-		parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
-		connection.init(parameters);
+		connection.init(requestMapData);
 		DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
 		return null;
 	}

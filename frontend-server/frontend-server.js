@@ -137,6 +137,53 @@ app.post('/sendMessage', function(req, res){
       },(err)=>{console.log(err)});
 })
 
+app.post('/getUsersInThread', function(req, res){
+  let data = JSON.stringify(
+    {
+    "app_id": "",
+    "receiving_app_id": "message",
+    "service_type": "getUsersInThread",
+    "request_parameters": {
+    "messageThreadId": req.body.messageThreadId
+      }
+    }
+  );
+  helpers.sendPostRequest(data,
+        function(result){
+      console.log(result);
+          let jsonObject = JSON.parse(result);
+          if(jsonObject.response_status == 404){
+            res.send({redirect: '/'});
+          }else{
+            res.send(jsonObject);    
+          }
+      },(err)=>{console.log(err)});
+})
+
+app.post('/removeUserFromThread', function(req, res){
+  let data = JSON.stringify(
+    {
+    "app_id": "",
+    "receiving_app_id": "message",
+    "service_type": "removeUserFromThread",
+    "request_parameters": {
+    "messageThreadId": req.body.messageThreadId,
+    "userId": req.body.userId
+      }
+    }
+  );
+  helpers.sendPostRequest(data,
+        function(result){
+      console.log(result);
+          let jsonObject = JSON.parse(result);
+          if(jsonObject.response_status == 404){
+            res.send({redirect: '/'});
+          }else{
+            res.send(jsonObject);    
+          }
+      },(err)=>{console.log(err)});
+})
+
 app.get('/register', function (req, res) {
   // if user is logged in then redirect home
   if(req.session.sessionId){
