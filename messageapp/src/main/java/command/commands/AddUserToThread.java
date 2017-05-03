@@ -14,22 +14,13 @@ public class AddUserToThread extends Command  {
 
 	@Override
 	protected StringBuffer execute(Map<String, Object> requestMapData) throws Exception {
-		String threadId = (String) requestMapData.get("threadId");
-		String userId = (String) requestMapData.get("userId");
-		
-		Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
+        Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
                 .getDataStoreConnection("mongodb_data_store_connection");
         DataStoreConnection connection = (DataStoreConnection) connectionClass.newInstance();
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        
-        parameters.put("action", "AddUserToThread");
-        parameters.put("userId", (String) requestMapData.get("userId"));
-        parameters.put("threadId", (String) requestMapData.get("threadId"));
-        
-		RequestHandle requestHandle = (RequestHandle)
-                this.parameters.get(RequestHandle.class.getSimpleName());
-        parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
-        connection.init(parameters);
+
+        requestMapData.put("action", "AddUserToThread");
+
+        connection.init(requestMapData);
         DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
 		
 		return null;

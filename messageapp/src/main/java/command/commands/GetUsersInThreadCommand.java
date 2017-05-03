@@ -15,17 +15,11 @@ public class GetUsersInThreadCommand extends Command
 	{
 		Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
 				.getDataStoreConnection("mongodb_data_store_connection");
-
 		DataStoreConnection connection = (DataStoreConnection) connectionClass.newInstance();
 
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("action", "getUsersInThread");
-		String threadId = requestMapData.get("threadId").toString();
-		parameters.put("threadId", threadId);
+		requestMapData.put("action", "getUsersInThread");
 
-		RequestHandle requestHandle = (RequestHandle) this.parameters.get(RequestHandle.class.getSimpleName());
-		parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
-		connection.init(parameters);
+		connection.init(requestMapData);
 		DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
 		return null;
 	}

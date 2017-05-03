@@ -26,23 +26,16 @@ public class RetrieveMessages extends Command {
        		response.addProperty("responseCode", ResponseCodes.STATUS_BAD_REQUEST);
        		return new StringBuffer(response.toString());
        	}
-		
-		parameters.put("startDate", startDate);
-        parameters.put("endDate", endDate);
-        parameters.put("threadId", threadId);
-        parameters.put("action", "RetriveMessages");
+
+
+		requestMapData.put("action", "RetriveMessages");
 		
 		
 		Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
                 .getDataStoreConnection("mongodb_data_store_connection");
         DataStoreConnection connection = (DataStoreConnection) connectionClass.newInstance();
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        
-        
-		RequestHandle requestHandle = (RequestHandle)
-                this.parameters.get(RequestHandle.class.getSimpleName());
-        parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
-        connection.init(parameters);
+
+        connection.init(requestMapData);
         DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
 		return null;
 	}

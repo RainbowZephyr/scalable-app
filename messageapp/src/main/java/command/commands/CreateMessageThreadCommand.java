@@ -16,14 +16,10 @@ public class CreateMessageThreadCommand extends Command{
 		Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
                 .getDataStoreConnection("mongodb_data_store_connection");
         DataStoreConnection connection = (DataStoreConnection) connectionClass.newInstance();
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("action", "createMessagesThread");
-        parameters.put("userId", (String) requestMapData.get("userId"));
-        parameters.put("threadName", (String) requestMapData.get("threadName"));
-        RequestHandle requestHandle = (RequestHandle)
-                this.parameters.get(RequestHandle.class.getSimpleName());
-        parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
-        connection.init(parameters);
+
+        requestMapData.put("action", "createMessagesThread");
+
+        connection.init(requestMapData);
         DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);
         return null;
 	}

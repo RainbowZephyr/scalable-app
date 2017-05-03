@@ -31,28 +31,19 @@ public class sendMessageCommand extends Command {
 		Class<?> connectionClass = DataStoreConnectionFactory.sharedInstance()
                 .getDataStoreConnection("mongodb_data_store_connection");
         DataStoreConnection connection = (DataStoreConnection) connectionClass.newInstance();
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        
-        
-        parameters.put("fromUserId", userId);
-        parameters.put("messageBody", messageBody);
-        parameters.put("threadId", threadId);
+
         
         if(imageUrl == null){
-        	parameters.put("action", "sendTextMessage");
-            RequestHandle requestHandle = (RequestHandle)
-                    this.parameters.get(RequestHandle.class.getSimpleName());
-            parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
-            connection.init(parameters);
+            requestMapData.put("action", "sendTextMessage");
+
+            connection.init(requestMapData);
             DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);	
         }
         else{
-        	parameters.put("action", "sendImageMessage");
-        	parameters.put("imageUrl", imageUrl);
-            RequestHandle requestHandle = (RequestHandle)
-                    this.parameters.get(RequestHandle.class.getSimpleName());
-            parameters.put(RequestHandle.class.getSimpleName(), requestHandle);
-            connection.init(parameters);
+
+            requestMapData.put("action", "sendImageMessage");
+
+            connection.init(requestMapData);
             DatabaseThreadPool.sharedInstance().getThreadPool().execute(connection);	
         }
         return null;
