@@ -169,7 +169,7 @@ public class ControllerHelper {
 
 		// Start the client.
 		Channel channel = b.connect(host, port).channel(); // (5)
-		// Add to appropriate channel group
+		// Add to appropriate channel group.png
 		AppType appType = ControllerHelper.sharedInstance().getAppByName(app_id).getAppType();
 		switch (appType) {
 		case search:

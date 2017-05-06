@@ -19,6 +19,7 @@
    <!--[if lt IE 9]><script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script><script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script><![endif]-->
    <!-- Bootstrap CSS-->
    <link rel="stylesheet" href="css/bootstrap.css">
+
    <!-- Vendor CSS-->
    <link rel="stylesheet" href="fontawesome/css/font-awesome.min.css">
    <link rel="stylesheet" href="animo/animate+animo.css">
@@ -31,6 +32,8 @@
    <script src="modernizr/modernizr.js" type="application/javascript"></script>
    <!-- FastClick for mobiles-->
    <script src="fastclick/fastclick.js" type="application/javascript"></script>
+
+    <link rel="stylesheet" href="css/dropdowns-enhancement.css">
 </head>
 
 <body>
@@ -71,13 +74,16 @@
                      <div class="label label-danger">21</div>
                   </a>
                   <!-- START Dropdown menu-->
-                  <ul class="dropdown-menu">
-                     <li class="dropdown-menu-header">You have 5 new messages</li>
+                  <ul class="dropdown-menu noclose">
+                     <!-- <li class="dropdown-menu-header">You have 5 new messages</li>-->
+                      <li>
+                          <input style="width: 100%;" id="SearchForThreads" placeholder="Search for chat" ></input>
+                      </li>
                      <li>
                         <div class="scroll-viewport">
-                           <!-- START list group-->
-                           <div class="list-group scroll-content">
-                              <!-- START list group item-->
+                           <!-- START lgroup.pngroup-->
+                           <div id="SearchForThreadsResult" class="list-group scroll-content">
+                              <!-- START lgroup.pngroup item-->
                               <a href="#" class="list-group-item">
                                  <div class="media">
                                     <div class="pull-left">
@@ -93,8 +99,8 @@
                                     </div>
                                  </div>
                               </a>
-                              <!-- END list group item-->
-                              <!-- START list group item-->
+                              <!-- END lgroup.pngroup item-->
+                              <!-- START lgroup.pngroup item-->
                               <a href="#" class="list-group-item">
                                  <div class="media">
                                     <div class="pull-left">
@@ -110,8 +116,8 @@
                                     </div>
                                  </div>
                               </a>
-                              <!-- END list group item-->
-                              <!-- START list group item-->
+                              <!-- END lgroup.pngroup item-->
+                              <!-- START lgroup.pngroup item-->
                               <a href="#" class="list-group-item">
                                  <div class="media">
                                     <div class="pull-left">
@@ -127,8 +133,8 @@
                                     </div>
                                  </div>
                               </a>
-                              <!-- END list group item-->
-                              <!-- START list group item-->
+                              <!-- END lgroup.pngroup item-->
+                              <!-- START lgroup.pngroup item-->
                               <a href="#" class="list-group-item">
                                  <div class="media">
                                     <div class="pull-left">
@@ -144,8 +150,8 @@
                                     </div>
                                  </div>
                               </a>
-                              <!-- END list group item-->
-                              <!-- START list group item-->
+                              <!-- END lgroup.pngroup item-->
+                              <!-- START lgroup.pngroup item-->
                               <a href="#" class="list-group-item">
                                  <div class="media">
                                     <div class="pull-left">
@@ -161,9 +167,9 @@
                                     </div>
                                  </div>
                               </a>
-                              <!-- END list group item-->
+                              <!-- END lgroup.pngroup item-->
                            </div>
-                           <!-- END list group-->
+                           <!-- END lgroup.pngroup-->
                         </div>
                      </li>
                      <!-- START dropdown footer-->
@@ -202,7 +208,7 @@
                   <!-- START Dropdown menu-->
                   <ul class="dropdown-menu">
                      <li>
-                        <!-- START list group-->
+                        <!-- START lgroup.pngroup-->
                         <div class="list-group">
                            <!-- list item-->
                            <a href="#" class="list-group-item">
@@ -253,7 +259,7 @@
                               <span class="badge">14</span>
                            </a>
                         </div>
-                        <!-- END list group-->
+                        <!-- END lgroup.pngroup-->
                      </li>
                   </ul>
                   <!-- END Dropdown menu-->
@@ -888,6 +894,8 @@
    <script src="js/searchApp.js"></script>
    <script src="js/userApp.js"></script>
    <script src="js/wallApp.js"></script>
+   <script src="js/messagingApp.js"></script>
+   <script src="js/dropdowns-enhancement.js"></script>
    <!-- END Scripts-->
 </body>
 
