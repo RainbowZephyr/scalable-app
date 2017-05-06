@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Wall</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+	<div>
+		<strong id="notification"></strong>
+	</div>
+	<form onsubmit="handleSubmit()">
+		<textarea id="content"></textarea>
+	</form>
+	<div>
+		<ul id="wallposts">
+		</ul>
+	</div>
+
+	<script type="text/javascript">
+		function handleSubmit (e) {
+			e.preventDefault();
+			var content = $('#content').val();
+			var userid = document.cookie;
+			var data = {
+				content: content,
+				userid: userid
+			}
+			$.ajax({
+				type: 'POST',
+				url: '/posts',
+				data: data,
+				success: function(data){
+					$('#notification').text('Post successful');
+					setTimeout(function(){
+						$('#notification').text('');
+					}, 5000)
+				}
+			})
+		}
+
+		$(document).ready(function(){
+			$.ajax({
+				type: 'GET',
+				url: '/posts',
+				data: {
+					user: document.cookie
+				},
+				success: function(data){
+					var content = data.response_load.posts;
+					for(var i = 0; i < content.length; i++){
+						var text = content[i].post_text;
+						var comments = content[i].post_comments;
+						$('#wallposts').append(
+							'<li id="post'++content[i].post_id'">'
+								+'<div>'
+									+'<p id="content'+content[i].post_id+'">'+content[i].post_text+'</p>'
+									+'<button onclick="delete('+content[i].post_id+')">'+X+'</button>'
+									+'<button onclick="edit('+content[i].post_id+')">'+Edit+'</button>'
+									+'<form onsubmit="update()" id="formupdate'+content[i].post_id+'">'
+										+'<input type="hidden" value"'+content[i].post_id+'" name="postid" >'
+										+'<input type="text" value="" name="edit">'
+										+'<input type="submit">'
+									+'</form>'
+								+'</div>'
+								+'<div id="holder'+comments[i].comment_id+'">'
+								+'</div>'
+							+'</li>')
+						for (var j = 0; j < comments.length; j++) {
+							$('#holder'+comments[i].comment_id).append(
+								'<div>'
+									+'<p id="comment'+comments[j].comment_id+'">'+comments[j]+'</p>'
+									+'<button onclick="deleteComment('+comments[j].comment_id+')">'+X+'</button>'
+								+'</div>'
+							)
+						}
+						$('#wallposts').append(
+							'<form onsubmit="addComment()">'
+								+'<input type="hidden" name="postid" value="'+content[i].post_id+'">'
+								+'<input type="text" name="addcomment">'
+								+'<input type="submit" value="Add comment">'
+							+'</form>'
+						)
+					}
+				}
+			})
+		});
+		function addComment(e){
+			e.preventDefault();
+			data = {
+				user_id: document.cookie,
+				post_id: e.target.postid,
+				post_text: e.target.addcomment
+			}
+			$.ajax({
+				type: 'POST',
+				url: '/add_comment',
+				data: data,
+				success: function(){
+					$('#notification').text('Comment successful');
+					setTimeout(function(){
+						$('#notification').text('');
+					}, 5000)
+				}
+			})
+		}
+		function delete(postid){
+			$.ajax({
+				type: 'DELETE',
+				url: '/delete_post',
+				data: {
+					post_id: postid
+				},
+				success: function(){
+					$('#notification').text('Deleted');
+					setTimeout(function(){
+						$('#notification').text('');
+					}, 5000)
+					$('#post'+postid.toString()).hide();
+				}
+			})
+		}
+		function deleteComment(commentid){
+			$.ajax({
+				type: 'DELETE',
+				url: '/delete_comment',
+				data: {
+					comment_id: commentid
+				},
+				success: function(){
+					$('#notification').text('Deleted');
+					setTimeout(function(){
+						$('#notification').text('');
+					}, 5000)
+					$('#comment'+commentid.toString()).hide();
+				}
+			})
+		}
+		function edit(postid){
+			$('#content'+postid).hide();
+			$('#formupdate'+postid).show();
+		}
+		function update(e){
+			e.preventDefault();
+			var postid = e.target.postid;
+			var content = e.target.edit;
+			$.ajax({
+				type: 'UPDATE',
+				url: '/update_post',
+				data: {
+					post_id: postid,
+					post_text: content
+				},
+				success: function(){
+					$('#notification').text('Post Updated');
+					setTimeout(function(){
+						$('#notification').text('');
+					}, 5000)
+					$('#post'+postid.toString()).hide();
+				}
+			})
+		}
+	</script>
+</body>
+</html>
