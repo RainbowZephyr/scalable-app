@@ -38,43 +38,61 @@ $('#SearchForThreads').keyup(function (e){
   }
 });
 
-$('#createMessageThread').submit(function (e){
-  e.preventDefault();
-  let messageThreadName = $('#messageThreadName').val();
-  let userId = $('#userId').val();
-  let req = {
+$('.messageContact').click(function(e){
+  let contactId = $(".messageContactName",this).data("concatUserId");
+  let contactName = $(".messageContactName",this).text();
+  let UserId = $(".MessageApp").data("userId");
+  console.log(UserId);
+  console.log(contactId);
+  console.log(contactName);
+  createMessageThread(contactName, UserId,function(response){
+    console.log(response);
+    let threadId = response.threadId;
+    //TODO add user with id = contactId to this thread
+    redirect(response);
+  });
+
+})
+
+var createMessageThread = function(messageThreadName, userId,callback){
+    let req = {
         url: '/createMessageThread',
         type: 'POST',
         data: {
           'messageThreadName': messageThreadName,
-	  'userId': userId
+    'userId': userId
         },
         success: function (response) {
-          redirect(response);
+          callback(response);
         }
       };
   $.ajax(req);
-});
+}
+
 
 $('#sendMessage').submit(function (e){
   e.preventDefault();
   let messageThreadId = $('#messageThreadId').val();
   let userId = $('#userId').val();
   let message = $('#newMessage').val()
+  
+});
+
+var sendMessage = function(messageThreadId, userId, message){
   let req = {
         url: '/sendMessage',
         type: 'POST',
         data: {
           'messageThreadId': messageThreadId,
-	  'userId': userId,
-	  'messageBody': message
+    'userId': userId,
+    'messageBody': message
         },
         success: function (response) {
           redirect(response);
         }
       };
   $.ajax(req);
-});
+}
 
 $('#getUsersInThread').submit(function (e){
   e.preventDefault();
