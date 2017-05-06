@@ -678,7 +678,7 @@
       </aside>
       <!-- End aside-->
       <!-- START aside-->
-      <aside class="offsidebar MessageApp" data-user-id="20">
+      <aside class="offsidebar messageApp" data-user-id="20">
          <!-- START Off Sidebar (right)-->
          <nav>
             <ul class="nav">
@@ -849,6 +849,30 @@
       <!-- END Main section-->
    </div>
    <!-- END Main wrapper-->
+   <!-- START Message Modal-->
+   <div class="modal fade" id="messageModal" data-message-thread-id="wengerOut" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" >Send Message</h4>
+        </div>
+        <div class="modal-body">
+          <p>Some text in the modal.</p>
+          
+        </div>
+        <div class="modal-footer">
+          <input type="text" class="form-control" id ="sendMessageContent" style="margin-bottom:1em">
+           <button type="button" class="btn btn-success" id="sendMessageButton">Send Message</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+   <!-- END Message Modal-->
    <!-- START Scripts-->
    <!-- Main vendor Scripts-->
    <script src="jquery/jquery.min.js"></script>

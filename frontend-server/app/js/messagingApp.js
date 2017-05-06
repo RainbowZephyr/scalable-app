@@ -41,14 +41,17 @@ $('#SearchForThreads').keyup(function (e){
 $('.messageContact').click(function(e){
   let contactId = $(".messageContactName",this).data("concatUserId");
   let contactName = $(".messageContactName",this).text();
-  let UserId = $(".MessageApp").data("userId");
-  console.log(UserId);
+  let userId = $(".messageApp").data("userId");
+  console.log(userId);
   console.log(contactId);
   console.log(contactName);
-  createMessageThread(contactName, UserId,function(response){
+  createMessageThread(contactName, userId,function(response){
     console.log(response);
     let threadId = response.threadId;
     //TODO add user with id = contactId to this thread
+    $('#messageModal').data("messageThreadId",threadId);
+    $('#messageModal').find(".modal-body").text('"'+contactName+'" message thread has been created with id = "'+threadId+'"');
+    $('#messageModal').modal('show');
     redirect(response);
   });
 
@@ -70,15 +73,23 @@ var createMessageThread = function(messageThreadName, userId,callback){
 }
 
 
-$('#sendMessage').submit(function (e){
+$('#sendMessageButton').click(function (e){
   e.preventDefault();
-  let messageThreadId = $('#messageThreadId').val();
-  let userId = $('#userId').val();
-  let message = $('#newMessage').val()
+  let messageThreadId = $('#messageModal').data("messageThreadId");
+  let userId = $(".messageApp").data("userId");
+  let message = $('#sendMessageContent').val();
+  console.log(messageThreadId);
+  console.log(userId);
+  console.log(message);
+  sendMessage(messageThreadId, userId, message, function(response){
+    console.log(response);
+    $('#messageModal').find(".modal-body").append('<br />"'+message+'" message is sent successfully');
+    $('#sendMessageContent').val("");
+  });
   
 });
 
-var sendMessage = function(messageThreadId, userId, message){
+var sendMessage = function(messageThreadId, userId, message, callback){
   let req = {
         url: '/sendMessage',
         type: 'POST',
@@ -88,6 +99,7 @@ var sendMessage = function(messageThreadId, userId, message){
     'messageBody': message
         },
         success: function (response) {
+          callback(response);
           redirect(response);
         }
       };
