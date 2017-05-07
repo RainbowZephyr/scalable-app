@@ -106,6 +106,32 @@ var sendMessage = function(messageThreadId, userId, message, callback){
   $.ajax(req);
 }
 
+
+$('#showUsersButton').click(function (e){
+  e.preventDefault();
+  let messageThreadId = $('#messageModal').data("messageThreadId");
+  getAllusersInThread(messageThreadId, function(response){
+    console.log(response);
+  });
+  
+});
+
+
+var getAllusersInThread = function(messageThreadId, callback){
+   let req = {
+        url: '/getUsersInThread',
+        type: 'POST',
+        data: {
+          'messageThreadId': messageThreadId
+        },
+        success: function (response) {
+          redirect(response);
+        }
+      };
+  $.ajax(req);
+}
+
+/*
 $('#getUsersInThread').submit(function (e){
   e.preventDefault();
   let messageThreadId = $('#messageThreadId').val();
@@ -120,8 +146,36 @@ $('#getUsersInThread').submit(function (e){
         }
       };
   $.ajax(req);
+});*/
+
+
+$('#leaveButton').click(function (e){
+  e.preventDefault();
+  let messageThreadId = $('#messageModal').data("messageThreadId");
+  let userId = $(".messageApp").data("userId");
+  removeFromThread(messageThreadId, userId, function(response){
+    console.log(response);
+    $('#messageModal').find(".modal-body").append('<br />Left successfully');
+  });
+  
 });
 
+
+var removeFromThread = function(messageThreadId, userId, callback){
+   let req = {
+        url: '/removeUserFromThread',
+        type: 'POST',
+        data: {
+          'messageThreadId': messageThreadId,
+          'userId' : userId
+        },
+        success: function (response) {
+          redirect(response);
+        }
+      };
+  $.ajax(req);
+}
+/*
 $('#removeUserFromThread').submit(function (e){
   e.preventDefault();
   let messageThreadId = $('#messageThreadId').val();
@@ -138,4 +192,4 @@ $('#removeUserFromThread').submit(function (e){
         }
       };
   $.ajax(req);
-});
+});*/
