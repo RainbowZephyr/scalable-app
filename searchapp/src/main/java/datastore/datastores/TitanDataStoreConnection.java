@@ -36,13 +36,13 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 			result = this.searchUserByName((String) parameters.get("user_name"));
 			break;
 		case "add_friend":
-			this.addFriend((long)Double.parseDouble(parameters.get("user_id")+""), (long)Double.parseDouble(parameters.get("friend_id")+""));
+			response = this.addFriend((long)Double.parseDouble(parameters.get("user_id")+""), (long)Double.parseDouble(parameters.get("friend_id")+""));
 			break;
 		case "get_friends_at":
 			result = this.getFriendsAt((long) Double.parseDouble(parameters.get("user_id")+""), Integer.parseInt(parameters.get("at")+""));
 			break;
 		case "get_friends_up_to":
-			result = this.getFriendsUpTo((long) Double.parseDouble(parameters.get("user_id")+""), (Integer) parameters.get("at"));
+			result = this.getFriendsUpTo((long) Double.parseDouble(parameters.get("user_id")+""), Integer.parseInt(parameters.get("at")+""));
 			break;
 		case "remove_user":
 			response = removeUser((long) Double.parseDouble(parameters.get("user_id")+""));
@@ -209,14 +209,19 @@ public class TitanDataStoreConnection extends DataStoreConnection {
 
 	private List<Object> getFriendsAt(long userId, int level) {
 		Vertex userNode = this.searchUserById(userId);
-
-		return this.graph.traversal().V(userNode).repeat(__.both(FRIEND_KEY)).times(level).hasId().values(USER_ID_KEY)
+		return this.graph.traversal().V(userNode).repeat(__.both(FRIEND_KEY))
+				.times(level)
+				.unfold()
+				.values(USER_ID_KEY)
 				.next(Integer.MAX_VALUE);
 	}
 
 	private List<Object> getFriendsUpTo(long userId, int level) {
 		Vertex userNode = this.searchUserById(userId);
-		return this.graph.traversal().V(userNode).repeat(__.both(FRIEND_KEY).aggregate("all")).times(level).cap("all")
+		return this.graph.traversal().V(userNode).repeat(__.both(FRIEND_KEY)
+				.aggregate("all"))
+				.times(level)
+				.cap("all")
 				.unfold().values(USER_ID_KEY).next(Integer.MAX_VALUE);
 	}
 
