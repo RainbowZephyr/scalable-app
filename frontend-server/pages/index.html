@@ -678,7 +678,7 @@
       </aside>
       <!-- End aside-->
       <!-- START aside-->
-      <aside class="offsidebar">
+      <aside class="offsidebar messageApp" data-user-id="20">
          <!-- START Off Sidebar (right)-->
          <nav>
             <ul class="nav">
@@ -711,7 +711,7 @@
                <!-- END list title-->
                <li>
                   <!-- START User status-->
-                  <a href="#" class="media p mt0">
+                  <a href="#" class="media p mt0 messageContact">
                      <span class="pull-right">
                         <span class="point point-success point-lg"></span>
                      </span>
@@ -722,15 +722,15 @@
                      <!-- Contact info-->
                      <span class="media-body">
                         <span class="media-heading">
-                           <strong>Laura Sam</strong>
+                           <strong class="messageContactName" data-concat-user-id="21">Laura Sam</strong>
                            <br>
-                           <small class="text-muted">lau39</small>
+                           <!-- <small class="text-muted">lau39</small> -->
                         </span>
                      </span>
                   </a>
                   <!-- END User status-->
                   <!-- START User status-->
-                  <a href="#" class="media p mt0">
+                  <a href="#" class="media p mt0 messageContact">
                      <span class="pull-right">
                         <span class="point point-success point-lg"></span>
                      </span>
@@ -741,15 +741,15 @@
                      <!-- Contact info-->
                      <span class="media-body">
                         <span class="media-heading">
-                           <strong>Beverley Pierce</strong>
+                           <strong class="messageContactName" data-concat-user-id="22">Beverley Pierce</strong>
                            <br>
-                           <small class="text-muted">be40210</small>
+                           <!-- <small class="text-muted">be40210</small> -->
                         </span>
                      </span>
                   </a>
                   <!-- END User status-->
                   <!-- START User status-->
-                  <a href="#" class="media p mt0">
+                  <a href="#" class="media p mt0 messageContact">
                      <span class="pull-right">
                         <span class="point point-danger point-lg"></span>
                      </span>
@@ -760,32 +760,14 @@
                      <!-- Contact info-->
                      <span class="media-body">
                         <span class="media-heading">
-                           <strong>Mika Long</strong>
+                           <strong class="messageContactName" data-concat-user-id="23">Mika Long</strong>
                            <br>
-                           <small class="text-muted">longlong</small>
+                           <!-- <small class="text-muted">longlong</small> -->
                         </span>
                      </span>
                   </a>
                   <!-- END User status-->
-                  <!-- START User status-->
-                  <a href="#" class="media p mt0">
-                     <span class="pull-right">
-                        <span class="point point-warning point-lg"></span>
-                     </span>
-                     <span class="pull-left">
-                        <!-- Contact avatar-->
-                        <img src="img/user/08.jpg" alt="Image" class="media-object img-circle thumb48">
-                     </span>
-                     <!-- Contact info-->
-                     <span class="media-body">
-                        <span class="media-heading">
-                           <strong>Danielle Berry</strong>
-                           <br>
-                           <small class="text-muted">hunter49</small>
-                        </span>
-                     </span>
-                  </a>
-                  <!-- END User status-->
+
                </li>
                <!-- START list title-->
                <li class="p">
@@ -794,7 +776,7 @@
                <!-- END list title-->
                <li>
                   <!-- START User status-->
-                  <a href="#" class="media p mt0">
+                  <a href="#" class="media p mt0 messageContact">
                      <span class="pull-right">
                         <span class="point point-lg"></span>
                      </span>
@@ -805,15 +787,15 @@
                      <!-- Contact info-->
                      <span class="media-body">
                         <span class="media-heading">
-                           <strong>Martin Cooper</strong>
+                           <strong class="messageContactName" data-concat-user-id="24">Martin Cooper</strong>
                            <br>
-                           <small class="text-muted">maryo</small>
+                           <!-- <small class="text-muted">maryo</small> -->
                         </span>
                      </span>
                   </a>
                   <!-- END User status-->
                   <!-- START User status-->
-                  <a href="#" class="media p mt0">
+                  <a href="#" class="media p mt0 messageContact">
                      <span class="pull-right">
                         <span class="point point-lg"></span>
                      </span>
@@ -824,9 +806,9 @@
                      <!-- Contact info-->
                      <span class="media-body">
                         <span class="media-heading">
-                           <strong>Daniel Curtis</strong>
+                           <strong class="messageContactName" data-concat-user-id="25">Daniel Curtis</strong>
                            <br>
-                           <small class="text-muted">danni</small>
+                           <!-- <small class="text-muted">danni</small> -->
                         </span>
                      </span>
                   </a>
@@ -867,6 +849,30 @@
       <!-- END Main section-->
    </div>
    <!-- END Main wrapper-->
+   <!-- START Message Modal-->
+   <div class="modal fade" id="messageModal" data-message-thread-id="wengerOut" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" >Send Message</h4>
+        </div>
+        <div class="modal-body">
+          <p>Some text in the modal.</p>
+          
+        </div>
+        <div class="modal-footer">
+          <input type="text" class="form-control" id ="sendMessageContent" style="margin-bottom:1em">
+           <button type="button" class="btn btn-success" id="sendMessageButton">Send Message</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+   <!-- END Message Modal-->
    <!-- START Scripts-->
    <!-- Main vendor Scripts-->
    <script src="jquery/jquery.min.js"></script>
